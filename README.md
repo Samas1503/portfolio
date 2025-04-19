@@ -40,8 +40,8 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 ## Migrate database
 ```bash
 # Guarda los cambios realizados en los schemas
-npx generate
+npx drizzle-kit generate
 # Actualiza la bd los cambios de lo schemas
-npx push
+npx drizzle-kit push
 # Obtiene los cambios realizados en la bd
-npm pull
+npm drizzle-kit pull
