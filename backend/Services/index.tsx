@@ -1,9 +1,13 @@
 import getDataService from "./getData.service";
-import postOrUpdateDataService from "./postData.service"
+import postDataService from "./postData.service"
+import updateDataService from "./updateData.service"
+import deleteDataService from "./deleteData.service"
 
 const services = {
   ...getDataService,
-  ...postOrUpdateDataService,
+  ...postDataService,
+  ...updateDataService,
+  ...deleteDataService,
 }
 
 export default services;

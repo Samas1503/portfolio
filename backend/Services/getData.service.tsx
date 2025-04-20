@@ -7,7 +7,7 @@ const getAllDataService = async (table: SchemaKeys) => {
   return data;
 };
 
-const getDataByIdService = async (table: SchemaKeys, id: number) => {
+const getDataByIdService = async (id: number, table: SchemaKeys) => {
   const data = repository.getDataByIdRepository(id, table);
   return data;
 };

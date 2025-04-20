@@ -67,8 +67,8 @@ export const formsData = {
         "DevOps",
       ]),
       nombre: z.string(),
-      nivel: z.string(),
-      valor: z.enum(["Básico", "Intermedio", "Experimentado"]),
+      nivel: z.enum(["Básico", "Intermedio", "Experimentado"]),
+      valor: z.coerce.number(),
     }),
     fields: [
       {

@@ -1,13 +1,13 @@
-// import { dataPortfolio } from "@/data";
 import Title from "../shared/title";
 import Image from "next/image";
 import Link from "next/link";
 import { Button, buttonVariants } from "../ui/button";
-import services from "@/backend/Services";
+// import services from "@/backend/Services";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
+import { apiFetch } from "./fetch/tech-all";
 
 const Portfolio = async () => {
-  const dataPortfolio = await services.getAllDataService("proyectos");
+  const dataPortfolio = await apiFetch({resource:"proyectos"});
   return (
     <div className="p-4 max-w-4xl md:py-24 mx-auto" id="portfolio">
       <Title title="Portfolio" subtitle="Trabajos recientes" />

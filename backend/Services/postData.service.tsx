@@ -6,6 +6,7 @@ const postDataService = async (
   table: SchemaKeys
 ) => {
   try {
+    console.log(data);
     const parsed = schemas[table].create.parse(data);
     const result = await repository.postDataRepository(parsed, table);
     return result;
