@@ -181,6 +181,47 @@ export const formsData = {
       },
     ],
   },
+  mensajes: {
+    schema: z.object({
+      id_mensaje: z.string(),
+      origen: z.string(),
+      nombre: z.string(),
+      destino: z.string(),
+      mensaje: z.string(),
+    }),
+    fields: [
+      {
+        label: "id_mensaje",
+        name: "id_mensaje",
+        placeholder: "id_mensaje",
+        type: "hidden",
+      },
+      {
+        label: "origen",
+        name: "origen",
+        placeholder: "Correo electronico Emisor",
+        type: "text",
+      },
+      {
+        label: "nombre",
+        name: "nombre",
+        placeholder: "Nombre del Emisor",
+        type: "text",
+      },
+      {
+        label: "destino",
+        name: "destino",
+        placeholder: "Correo electronico Receptor",
+        type: "text",
+      },
+      {
+        label: "mensaje",
+        name: "mensaje",
+        placeholder: "Mensaje",
+        type: "text",
+      },
+    ],
+  },
 };
 
 export type FormType = keyof typeof formsData;

@@ -1,29 +1,61 @@
 // app/api/table/[id]/route.ts
-import { NextResponse } from 'next/server'
-import services from '@/backend/Services'
-import { SchemaKeys } from "@/backend/data/schemas";
+import { NextResponse } from "next/server";
+import { commonParams, commonQuery } from "@/utils/schemasRequest";
+import { SchemaKeys, schemas } from "@/backend/data/schemas";
+import { serializeData } from "@/utils/serialize";
+import { withValidation } from "@/utils/withValidation";
+import services from "@/backend/Services";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const tipo = new URL(request.url).searchParams.get('tipo') as SchemaKeys;
-  const id = parseInt(params.id, 10)
-  if (!tipo) throw new Error('falta ?tipo=')
-  const data = await services.getDataByIdService(id, tipo)
-  return NextResponse.json(data)
-}
+// GET
+export const GET = withValidation(
+  async (req, { params }) => {
+    const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
+    const data = await services.getDataByIdService(params.id, tipo);
+    if (!data)
+      return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+    return NextResponse.json(serializeData(data));
+  },
+  {
+    GET: {
+      params: commonParams,
+      query: commonQuery,
+    },
+  }
+);
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
-  const tipo = new URL(request.url).searchParams.get('tipo') as SchemaKeys;
-  const id = parseInt(params.id, 10)
-  const body = await request.json()
-  if (!tipo) throw new Error('falta ?tipo=')
-  const updated = await services.updateDataService(id, body, tipo)
-  return NextResponse.json(updated)
-}
+// PATCH
+export const PATCH = withValidation(
+  async (req, ctx) => {
+    const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
+    const body = ctx.validated?.body as object;
+    const updated = await services.updateDataService(params.id, body, tipo);
+    return NextResponse.json(serializeData(updated));
+  },
+  {
+    PATCH: {
+      params: commonParams,
+      query: commonQuery,
+      body: ({ query }) => {
+        const tipo = (query as Record<string, unknown>)?.tipo as SchemaKeys;
+        return schemas[tipo].create;
+      },
+    },
+  }
+);
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-  const tipo = new URL(request.url).searchParams.get('tipo') as SchemaKeys;
-  const id = parseInt(params.id, 10)
-  if (!tipo) throw new Error('falta ?tipo=')
-  await services.deleteDataByIdService(id, tipo)
-  return NextResponse.json({ success: true })
-}
+// PATCH
+export const DELETE = withValidation(
+  async (req, { params }) => {
+    const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
+    const deleted = await services.deleteDataByIdService(params.id, tipo);
+    if (!deleted)
+      return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+    return NextResponse.json(serializeData(deleted));
+  },
+  {
+    PATCH: {
+      params: commonParams,
+      query: commonQuery,
+    },
+  }
+);

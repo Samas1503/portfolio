@@ -1,33 +1,33 @@
 import { sqliteTable, integer, text, real } from "drizzle-orm/sqlite-core";
 
 export const proyectos = sqliteTable("Proyectos", {
-  id: integer("id"),
+  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
   titulo: text("titulo"),
   imagen: text("imagen"),
   urlGithub: text("url_github"),
   urlDemo: text("url_demo"),
-  estado: integer({mode: "boolean"}),
+  estado: integer({ mode: "boolean" }).default(false),
 });
 
 export const skills = sqliteTable("Skills", {
-    id: integer("id"),
-    tipo: text("tipo"),
-    nombre: text("nombre"),
-    nivel: text("nivel"),
-    valor: integer("valor"),
-    estado: integer({mode: "boolean"}),
+  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
+  tipo: text("tipo"),
+  nombre: text("nombre"),
+  nivel: text("nivel"),
+  valor: integer("valor"),
+  estado: integer({ mode: "boolean" }).default(false),
 });
 
 export const servicios = sqliteTable("Servicios", {
-    id: integer("id"),
-    tipo: text("tipo"),
-    icono: text("icono"),
-    nombre: text("nombre"),
-    estado: integer({mode: "boolean"}),
+  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
+  tipo: text("tipo"),
+  icono: text("icono"),
+  nombre: text("nombre"),
+  estado: integer({ mode: "boolean" }).default(false),
 });
 
 export const experiencia = sqliteTable("Experiencia", {
-  id: integer("id"),
+  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
   empresa: text("empresa"),
   cargo: text("cargo"),
   fecha_inicio: text("fecha_inicio"),
@@ -37,15 +37,24 @@ export const experiencia = sqliteTable("Experiencia", {
   longitud: real("longitud"),
   nombreReferencia: text("nombre_referencia"),
   nroReferencia: integer("nro_referencia"),
-  estado: integer({mode: "boolean"}),
+  estado: integer({ mode: "boolean" }).default(false),
 });
 
 export const contacto = sqliteTable("Contacto", {
-  id: integer("id"),
+  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
   nombre: text("nombre"),
   titulo: text("titulo"),
   link: text("link"),
   icono: text("icono"),
-  estado: integer({mode: "boolean"}),
+  estado: integer({ mode: "boolean" }).default(false),
 });
 
+export const mensajes = sqliteTable("Mensajes", {
+  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
+  id_mensaje: text("id_mensaje").unique(),
+  origen: text("origen"),
+  nombre: text("nombre"),
+  destino: text("destino"),
+  mensaje: text("mensaje"),
+  estado: integer({ mode: "boolean" }).default(false),
+});

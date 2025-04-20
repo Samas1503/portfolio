@@ -1,35 +1,40 @@
 // app/api/table/route.ts
-import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import services from "@/backend/Services";
-import { SchemaKeys } from "@/backend/data/schemas";
+import { SchemaKeys, schemas } from "@/backend/data/schemas";
+import { withValidation } from "@/utils/withValidation";
+import { serializeData } from "@/utils/serialize";
+import { commonParams, commonQuery } from "@/utils/schemasRequest";
 
-export async function GET(req: NextRequest) {
-  const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
-
-  if (!tipo) {
-    return new Response(JSON.stringify({ error: "tipo es requerido" }), { status: 400 });
-  }
-
-  try {
+// GET
+export const GET = withValidation(
+  async (req) => {
+    const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
     const data = await services.getAllDataService(tipo);
-    return Response.json(data);
-  } catch (error) {
-    return new Response(JSON.stringify({ message: "Error al obtener los datos", error  }), { status: 500 });
+    return NextResponse.json(serializeData(data));
+  },
+  {
+    GET: {
+      params: commonParams,
+    },
   }
-}
+);
 
-export async function POST(req: NextRequest) {
-  const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
-
-  if (!tipo) {
-    return new Response(JSON.stringify({ error: "tipo es requerido" }), { status: 400 });
-  }
-
-  try {
-    const body = await req.json();
+// POST
+export const POST = withValidation(
+  async (req, ctx) => {
+    const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
+    const body = ctx.validated?.body as object;
     const data = await services.postDataService(body, tipo);
-    return Response.json(data);
-  } catch (error) {
-    return new Response(JSON.stringify({ message: "Error al guardar los datos", error  }), { status: 500 });
+    return NextResponse.json(serializeData(data));
+  },
+  {
+    POST: {
+      query: commonQuery,
+      body: ({ query }) => {
+        const tipo = (query as Record<string, unknown>)?.tipo as SchemaKeys;
+        return schemas[tipo].create;
+      },
+    },
   }
-}
+);

@@ -8,8 +8,12 @@ const getAllDataRepository = async (table: SchemaKeys) => {
 };
 
 const getDataByIdRepository = async (id: number, table: SchemaKeys) => {
-  const data = await db.select().from(schemas[table].schema).where(eq(schemas[table].schema.id, id));
-  return data;
+  const tableSchema = schemas[table].schema;
+  const data = await db
+    .select()
+    .from(tableSchema)
+    .where(eq(tableSchema.id, id));
+  return data[0];
 };
 
 const repository = {

@@ -10,6 +10,7 @@ import {
 import { DynamicForm } from "./DynamicForm";
 import { formsData, FormType } from "./formsData";
 import { useUsuario } from "@/context/UserContext";
+import { apiFetch } from "../fetch/tech-all";
 
 // Mapa de formularios disponibles
 const formMap = formsData;
@@ -25,7 +26,8 @@ export const ModalTriggerButton = ({ tipoFormulario, children }: Props) => {
   const { usuario } = useUsuario();
 
   const handleSubmit = async (data: unknown): Promise<void> => {
-    console.log(`Datos de ${tipoFormulario}:`, data);
+    const result = await apiFetch({resource: tipoFormulario, method: "POST", data})
+    console.log(result);
     setOpen(false);
   };
 

@@ -1,6 +1,7 @@
 import {
   contacto,
   experiencia,
+  mensajes,
   proyectos,
   servicios,
   skills,
@@ -8,6 +9,7 @@ import {
 import {
   contactoInsertSchema,
   experienciaInsertSchema,
+  mensajesInsertSchema,
   proyectosInsertSchema,
   serviciosInsertSchema,
   skillsInsertSchema,
@@ -18,6 +20,7 @@ import {
   serviciosUpdateSchema,
   experienciaUpdateSchema,
   contactoUpdateSchema,
+  mensajesUpdateSchema,
 } from "@/backend/db/schemas/update-schemas";
 
 export const schemas = {
@@ -45,6 +48,11 @@ export const schemas = {
     schema: contacto,
     create: contactoInsertSchema,
     update: contactoUpdateSchema,
+  },
+  mensajes:{
+    schema: mensajes,
+    create: mensajesInsertSchema,
+    update: mensajesUpdateSchema,
   },
 };
 
