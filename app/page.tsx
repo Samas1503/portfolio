@@ -1,6 +1,6 @@
 import AboutMe from "@/components/pages/about-me";
 import Contact from "@/components/pages/contact";
-import Experience from "@/components/pages/experiencie";
+import Skils from "@/components/pages/skils";
 import Footer from "@/components/pages/footer";
 import Introduction from "@/components/pages/introduction";
 import Navbar from "@/components/pages/narvar";
@@ -8,6 +8,7 @@ import Portfolio from "@/components/pages/portfolio";
 import Services from "@/components/pages/services";
 import Testimonials from "@/components/pages/testimonials";
 import InfoUsuario from "@/components/info-usuario";
+import Works from "@/components/pages/works";
 
 export default function Home() {
   return (
@@ -16,7 +17,8 @@ export default function Home() {
       <Navbar />
       <Introduction />
       <AboutMe />
-      <Experience />
+      <Works />
+      <Skils />
       <Services />
       <Portfolio />
       <Testimonials />

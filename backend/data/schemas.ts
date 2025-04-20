@@ -26,7 +26,7 @@ export const schemas = {
     create: proyectosInsertSchema,
     update: proyectosUpdateSchema,
   },
-  skills:{
+  skils:{
     schema: skills,
     create: skillsInsertSchema,
     update: skillsUpdateSchema,

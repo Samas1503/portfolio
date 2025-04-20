@@ -1,9 +1,16 @@
 import { Phone } from "lucide-react";
 import { Button } from "../ui/button";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../ui/carousel";
 import { dataAboutMe, dataSlider } from "@/data";
 import Title from "../shared/title";
 import Image from "next/image";
+import Link from "next/link";
 
 const AboutMe = () => {
   return (
@@ -34,8 +41,8 @@ const AboutMe = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious/>
-            <CarouselNext/>
+            <CarouselPrevious />
+            <CarouselNext />
           </Carousel>
         </div>
         <div>
@@ -66,8 +73,10 @@ const AboutMe = () => {
           </p>
 
           <Button>
-            <Phone size={20} className="mr-2" />
-            Hablemos
+            <Link href="tel:3884558285" className="flex">
+              <Phone size={20} className="mr-2" />
+              Hablemos
+            </Link>
           </Button>
         </div>
       </div>

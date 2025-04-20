@@ -7,6 +7,8 @@ import {
   CodeSquare,
   Home,
   Inbox,
+  Lightbulb,
+  LucideWorkflow,
   Mail,
   PanelsTopLeft,
   Phone,
@@ -20,19 +22,19 @@ export const dataAboutMe = [
     id: 1,
     name: "Experiencia",
     icon: <Briefcase />,
-    description: "+4 años de experiencia",
+    description: "+2 años de experiencia",
   },
   {
     id: 2,
     name: "Clientes",
     icon: <UsersRound />,
-    description: "+200 clientes satisfechos",
+    description: "+20 clientes satisfechos",
   },
   {
     id: 3,
     name: "Proyectos",
     icon: <Wrench />,
-    description: "+50 completados",
+    description: "+5 completados",
   },
 ];
 
@@ -51,18 +53,30 @@ export const itemsNavbar = [
   },
   {
     id: 3,
+    title: "Work",
+    icon: <LucideWorkflow size={20} />,
+    link: "#work",
+  },
+  {
+    id: 4,
+    title: "Skils",
+    icon: <Lightbulb size={20} />,
+    link: "#skils",
+  },
+  {
+    id: 5,
     title: "Book",
     icon: <BookText size={20} />,
     link: "#services",
   },
   {
-    id: 4,
+    id: 6,
     title: "Target",
     icon: <CodeSquare size={20} />,
     link: "#portfolio",
   },
   {
-    id: 5,
+    id: 7,
     title: "Home",
     icon: <Mail size={20} />,
     link: "#contact",
@@ -132,6 +146,28 @@ export const dataPortfolio = [
     urlDemo: "#!",
   },
 ];
+
+export const dataWorks = [
+  {
+    id: 1,
+    empresa: "Google Inc.",
+    cargo: "Desarrollador Backend",
+    fecha_inicio: "01/01/2000",
+    fecha_fin: "01/02/2009",
+    ubicacion: "California",
+    latitud: -24.185808088573562,
+    longitud: -65.29946537558496,
+    nombreReferencia: "Papa dios",
+    nroReferencia: "3884558284",
+  },
+];
+
+// enum([
+//   "",
+//   "Backend Development",
+//   "Database Management",
+//   "DevOps",
+// ])
 
 export const dataExperience = [
   {

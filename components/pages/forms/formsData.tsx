@@ -58,7 +58,7 @@ export const formsData = {
       },
     ],
   },
-  skills: {
+  skils: {
     schema: z.object({
       tipo: z.enum([
         "Frontend Development",
@@ -68,7 +68,7 @@ export const formsData = {
       ]),
       nombre: z.string(),
       nivel: z.string(),
-      valor: z.string(),
+      valor: z.enum(["Básico", "Intermedio", "Experimentado"]),
     }),
     fields: [
       {
@@ -106,7 +106,7 @@ export const formsData = {
       },
     ],
   },
-  experiencia: {
+  work: {
     schema: z.object({
       empresa: z.string(),
       cargo: z.string(),
