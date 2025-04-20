@@ -7,12 +7,12 @@ import Navbar from "@/components/pages/narvar";
 import Portfolio from "@/components/pages/portfolio";
 import Services from "@/components/pages/services";
 import Testimonials from "@/components/pages/testimonials";
-import LogOutButton from "./logout/page";
+import InfoUsuario from "@/components/info-usuario";
 
 export default function Home() {
   return (
     <main className="pb-40">
-      <LogOutButton />
+      <InfoUsuario />
       <Navbar />
       <Introduction />
       <AboutMe />

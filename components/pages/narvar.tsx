@@ -1,6 +1,7 @@
 import { itemsNavbar } from "@/data";
 import Link from "next/link";
 import { ToggleTheme } from "../theme/toogle-theme";
+import LogOutButton from "@/app/logout/page";
 
 const Navbar = () => {
   return (
@@ -14,7 +15,8 @@ const Navbar = () => {
             <Link href={item.link}>{item.icon}</Link>
           </div>
         ))}
-        <ToggleTheme/>
+        <ToggleTheme />
+        <LogOutButton />
       </div>
     </nav>
   );

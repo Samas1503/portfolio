@@ -2,6 +2,8 @@ import { dataExperience } from "@/data";
 import Title from "../shared/title";
 import { BadgeCheck } from "lucide-react";
 import { Progress } from "../ui/progress";
+import { ModalTriggerButton } from "./forms/ModalTriggerButton";
+import { Button } from "../ui/button";
 
 const Experience = () => {
   return (
@@ -25,6 +27,12 @@ const Experience = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="flex justify-center items-center max-w-4xl mx-auto mt-10">
+        <ModalTriggerButton tipoFormulario="skills">
+          <Button type="button">Agregar una Skill</Button>
+        </ModalTriggerButton>
       </div>
     </div>
   );

@@ -1,7 +1,8 @@
 import { dataContact } from "@/data";
 import Title from "../shared/title";
 import Link from "next/link";
-import ContactForm from "./contact-form";
+import ContactForm from "./forms/contact-form";
+// import { DynamicForm } from "./forms/DynamicForm";
 
 const Contact = () => {
   return (
@@ -25,7 +26,8 @@ const Contact = () => {
           ))}
         </div>
         <div className="col-span-2">
-            <ContactForm/>
+          <ContactForm/>
+          {/* <DynamicForm formType="contacto" /> */}
         </div>
       </div>
     </div>

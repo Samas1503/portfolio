@@ -1,0 +1,186 @@
+import { z } from "zod";
+
+export const formsData = {
+  contacto: {
+    schema: z.object({
+      username: z.string().min(2),
+      email: z.string().email(),
+      message: z.string(),
+    }),
+    fields: [
+      {
+        label: "Username",
+        name: "username",
+        placeholder: "Tu nombre",
+        type: "text",
+      },
+      {
+        label: "Email",
+        name: "email",
+        placeholder: "Tu correo",
+        type: "email" as const,
+      },
+      {
+        label: "Mensaje",
+        name: "message",
+        placeholder: "Tu mensaje",
+        type: "textarea" as const,
+      },
+    ],
+  },
+  portfolio: {
+    schema: z.object({
+      titulo: z.string(),
+      imagen: z.string(),
+      urlGithub: z.string(),
+      urlDemo: z.string(),
+    }),
+    fields: [
+      { label: "Titulo", name: "titulo", placeholder: "Titulo del Proyecto" },
+      {
+        label: "Imagen del Proyecto",
+        name: "imagen",
+        placeholder: "Imagen del Proyecto",
+        accept: "image/*",
+        type: "file" as const,
+      },
+      {
+        label: "URL del Repositorio",
+        name: "urlGithub",
+        placeholder: "URL del Repositorio",
+        type: "text" as const,
+      },
+      {
+        label: "URL de la Demo  ",
+        name: "urlDemo",
+        placeholder: "URL de la demo",
+        type: "text" as const,
+      },
+    ],
+  },
+  skills: {
+    schema: z.object({
+      tipo: z.enum([
+        "Frontend Development",
+        "Backend Development",
+        "Database Management",
+        "DevOps",
+      ]),
+      nombre: z.string(),
+      nivel: z.string(),
+      valor: z.string(),
+    }),
+    fields: [
+      {
+        label: "tipo",
+        name: "tipo",
+        placeholder: "Tipo de Habilidad",
+        type: "dropdown",
+        values: [
+          "Frontend Development",
+          "Backend Development",
+          "Database Management",
+          "DevOps",
+        ],
+      },
+      {
+        label: "nombre",
+        name: "nombre",
+        placeholder: "Nombre de la Habilidad",
+        type: "text" as const,
+      },
+      {
+        label: "nivel",
+        name: "nivel",
+        placeholder: "Nivel de la Habilidad",
+        type: "dropdown" as const,
+        values: ["Básico", "Intermedio", "Experimentado"],
+      },
+      {
+        label: "valor",
+        name: "valor",
+        placeholder: "Valor del 1 al 100",
+        type: "number" as const,
+        max: "100",
+        min: "1",
+      },
+    ],
+  },
+  experiencia: {
+    schema: z.object({
+      empresa: z.string(),
+      cargo: z.string(),
+      fecha_inicio: z.string(),
+      fecha_fin: z.string(),
+      ubicacion: z.string(),
+      latitud: z.coerce.number(),
+      longitud: z.coerce.number(),
+      nombreReferencia: z.string(),
+      nroReferencia: z.string(),
+    }),
+    fields: [
+      {
+        label: "Nombre de la Empresa",
+        name: "empresa",
+        placeholder: "Nombre de la Empresa",
+        type: "text" as const,
+      },
+      {
+        label: "Nombre del Cargo",
+        name: "cargo",
+        placeholder: "Nivel del Cargo",
+        type: "text" as const,
+      },
+      {
+        label: "Fecha de Inicio",
+        name: "fecha_inicio",
+        placeholder: "Inicio",
+        type: "date" as const,
+      },
+      {
+        label: "Fecha de Finalizacion",
+        name: "fecha_fin",
+        placeholder: "Fin",
+        type: "date" as const,
+      },
+      {
+        label: "Ubicacion",
+        name: "ubicacion",
+        placeholder: "Ubicacion del Trabajo",
+        type: "text" as const,
+      },
+      {
+        label: "Geolocalizacion",
+        name: "geolocalizacion",
+        placeholder: "geolocalizacion",
+        type: "geolocalization" as const,
+      },
+      {
+        label: "Latitud",
+        name: "latitud",
+        placeholder: "Latitud",
+        type: "hidden" as const,
+      },
+      {
+        label: "Longitud",
+        name: "longitud",
+        placeholder: "Longitud",
+        type: "hidden" as const,
+      },
+      {
+        label: "Nombre de Referencia",
+        name: "nombreReferencia",
+        placeholder: "Nombre de la Referencia",
+        type: "text" as const,
+      },
+      {
+        label: "Nro de Referencia",
+        name: "nroReferencia",
+        placeholder: "Nro de Referencia",
+        type: "number" as const,
+      },
+    ],
+  },
+};
+
+export type FormType = keyof typeof formsData;

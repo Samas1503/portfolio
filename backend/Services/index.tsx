@@ -1,7 +1,9 @@
-import getDataPortfolioService from "./getDataPortfolio.service";
+import getDataService from "./getData.service";
+import postOrUpdateDataService from "./postData.service"
 
 const services = {
-  ...getDataPortfolioService,
+  ...getDataService,
+  ...postOrUpdateDataService,
 }
 
 export default services;

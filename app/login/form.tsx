@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { startTransition, useActionState } from "react";
+import { startTransition, useActionState, useEffect } from "react";
 import { z } from "zod";
 
 import {
@@ -18,8 +18,14 @@ import { Input } from "@/components/ui/input";
 import { SubmitButton } from "./submitButton";
 import loginSchema from "./schema";
 import { login } from "./actions";
+import { useUsuario } from "@/context/UserContext";
+import { redirect, useRouter } from "next/navigation";
 
 export function LoginForm() {
+  const router = useRouter();
+  const [state, formAction] = useActionState(login, undefined);
+  const { usuario, setUsuario } = useUsuario();
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -27,8 +33,6 @@ export function LoginForm() {
       password: "",
     },
   });
-
-  const [state, formAction] = useActionState(login, undefined);
 
   const clientSubmit = (data: z.infer<typeof loginSchema>) => {
     const formData = new FormData();
@@ -38,9 +42,16 @@ export function LoginForm() {
     startTransition(async () => {
       await formAction(formData);
     });
-    
+
+    setUsuario(true);
   };
 
+  useEffect(() => {
+    if (usuario) {
+      router.push("/");
+    }
+  }, [usuario]);
+  
   return (
     <Form {...form}>
       <form

@@ -2,7 +2,7 @@ import { sqliteTable, integer, text, real } from "drizzle-orm/sqlite-core";
 
 export const proyectos = sqliteTable("Proyectos", {
   id: integer("id"),
-  titlo: text("titlo"),
+  titulo: text("titulo"),
   imagen: text("imagen"),
   urlGithub: text("url_github"),
   urlDemo: text("url_demo"),
@@ -48,3 +48,4 @@ export const contacto = sqliteTable("Contacto", {
   icono: text("icono"),
   estado: integer({mode: "boolean"}),
 });
+
