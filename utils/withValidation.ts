@@ -1,9 +1,24 @@
 import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
 
-type Handler = (
+// type Handler = (
+//   req: NextRequest,
+//   ctx: { params: unknown; validated?: { body?: unknown; query?: unknown } }
+// ) => Promise<Response>;
+
+type Handler<
+  P = unknown,
+  Q = unknown,
+  B = unknown
+> = (
   req: NextRequest,
-  ctx: { params: unknown; validated?: { body?: unknown; query?: unknown } }
+  ctx: {
+    params: P;
+    validated?: {
+      query?: Q;
+      body?: B;
+    };
+  }
 ) => Promise<Response>;
 
 type DynamicSchemaSet = {

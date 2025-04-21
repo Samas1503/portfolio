@@ -23,7 +23,8 @@ import { useRouter } from "next/navigation";
 
 export function LoginForm() {
   const router = useRouter();
-  const [formAction] = useActionState(login, undefined);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [state, formAction] = useActionState(login, undefined);
   const { usuario, setUsuario } = useUsuario();
 
   const form = useForm<z.infer<typeof loginSchema>>({
