@@ -43,7 +43,7 @@ export function withValidation(
   // schemasByMethod: MethodSchemas
 ): (
   req: NextRequest,
-  ctx: { params: Record<string, string>, validated: { body?: unknown; query?: unknown } }
+  ctx: { params: Record<string, string> }
 ) => Promise<Response> {
   return async (req, ctx) => {
     const method = req.method.toUpperCase();
