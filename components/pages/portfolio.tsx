@@ -49,14 +49,23 @@ const Portfolio = () => {
   };
 
   return (
-    <div className="p-4 max-w-4xl md:py-24 mx-auto" id="portfolio">
+    <div className="p-4 max-w-7xl md:py-24 mx-auto" id="portfolio">
       <Title title="Portfolio" subtitle="Trabajos recientes" />
-      <div className="grid md:grid-cols-3 gap-14 mt-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-14 mt-4">
         {Object.values(dataPortfolio)?.map((data) => (
           <div key={data.id}>
+            <div className="flex justify-between">
             {"titulo" in data && (
               <h3 className="text-xl mb-4">{String(data.titulo)}</h3>
             )}
+            <DeleteButton
+                  tipoSchema={resource as FormType}
+                  id={Number(data.id)}
+                  onSuccess={handleDelete}
+                  className="relative top-0 left-0"
+                  tipoElemento={""}
+                />
+            </div>
             <Image
               src={
                 "image" in data && data.image
@@ -68,7 +77,7 @@ const Portfolio = () => {
               height={300}
               className="rounded-2xl w-full"
             />
-            <div className="mt-5 flex gap-7">
+            <div className="mt-5 flex gap-10">
               <Link
                 className={buttonVariants({ variant: "outline" })}
                 href={
@@ -85,13 +94,6 @@ const Portfolio = () => {
               >
                 Live demo
               </Link>
-              <DeleteButton
-                    tipoSchema={resource as FormType}
-                    id={Number(data.id)}
-                    onSuccess={handleDelete}
-                    className="relative top-0 left-2"
-                    tipoElemento={""}
-                  />
             </div>
           </div>
         ))}

@@ -102,148 +102,6 @@ export const dataSlider = [
   },
 ];
 
-export const dataPortfolio = [
-  {
-    id: 1,
-    titlo: "Web Pro",
-    imagen: "/image-1.jpg",
-    urlGithub: "#!",
-    urlDemo: "#!",
-  },
-  {
-    id: 2,
-    titlo: "Desarrollo Web Ágil",
-    imagen: "/image-2.jpg",
-    urlGithub: "#!",
-    urlDemo: "#!",
-  },
-  {
-    id: 3,
-    titlo: "Estrategias Web",
-    imagen: "/image-3.jpg",
-    urlGithub: "#!",
-    urlDemo: "#!",
-  },
-  {
-    id: 4,
-    titlo: "Navegando Ideas Creativas",
-    imagen: "/image-4.jpg",
-    urlGithub: "#!",
-    urlDemo: "#!",
-  },
-  {
-    id: 5,
-    titlo: "Sitios Web Impactantes",
-    imagen: "/image-5.jpg",
-    urlGithub: "#!",
-    urlDemo: "#!",
-  },
-  {
-    id: 6,
-    titlo: "Proyectos Web Dinámicos",
-    imagen: "/image-6.jpg",
-    urlGithub: "#!",
-    urlDemo: "#!",
-  },
-];
-
-export const dataWorks = [
-  {
-    id: 1,
-    empresa: "Google Inc.",
-    cargo: "Desarrollador Backend",
-    fecha_inicio: "01/01/2000",
-    fecha_fin: "01/02/2009",
-    ubicacion: "California",
-    latitud: -24.185808088573562,
-    longitud: -65.29946537558496,
-    nombreReferencia: "Papa dios",
-    nroReferencia: "3884558284",
-  },
-];
-
-// enum([
-//   "",
-//   "Backend Development",
-//   "Database Management",
-//   "DevOps",
-// ])
-
-export const dataExperience = [
-  {
-    id: 1,
-    title: "Frontend Development  💄",
-    experience: [
-      {
-        name: "HTML",
-        subtitle: "Experimentado",
-        value: 80,
-      },
-      {
-        name: "CSS",
-        subtitle: "Intermedio",
-        value: 75,
-      },
-      {
-        name: "JavaScript",
-        subtitle: "Experimentado",
-        value: 60,
-      },
-      {
-        name: "Tailwind CSS",
-        subtitle: "Experimentado",
-        value: 30,
-      },
-      {
-        name: "React",
-        subtitle: "Experimentado",
-        value: 60,
-      },
-      {
-        name: "Bootstrap",
-        subtitle: "Basic",
-        value: 50,
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: "Backend Development  🥷",
-    experience: [
-      {
-        name: "Node JS",
-        subtitle: "Experimentado",
-        value: 80,
-      },
-      {
-        name: "Mongo DB",
-        subtitle: "Intermedio",
-        value: 75,
-      },
-      {
-        name: "Python",
-        subtitle: "Basic",
-        value: 60,
-      },
-      {
-        name: "MySQL",
-        subtitle: "Experimentado",
-        value: 60,
-      },
-      {
-        name: "PHP",
-        subtitle: "Experimentado",
-        value: 60,
-      },
-      {
-        name: "Django",
-        subtitle: "Basic",
-        value: 60,
-      },
-    ],
-  },
-];
-
 export const dataServices = [
   {
     id: 1,
@@ -335,22 +193,22 @@ export const dataContact = [
   {
     id: 1,
     title: "Teléfono",
-    subtitle: "+34 677 66 66 33",
-    link: "tel:+34677666633",
+    subtitle: "+54 9 3884558285",
+    link: "tel:+5493884558285",
     icon: <Phone />,
   },
   {
     id: 2,
     title: "Github",
-    subtitle: "github.com/ratasi",
-    link: "github.com/ratasi",
+    subtitle: "github.com/Samas1503",
+    link: "https://github.com/Samas1503",
     icon: <Code2 />,
   },
   {
     id: 3,
     title: "Email",
-    subtitle: "email@email.com",
-    link: "mailto:test@test.com",
+    subtitle: "samueleliasparedes.10@gmail.com",
+    link: "mailto:samueleliasparedes.10@gmail.com",
     icon: <Inbox />,
   },
 ];

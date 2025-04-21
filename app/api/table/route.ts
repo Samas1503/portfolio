@@ -37,8 +37,8 @@ export const POST = withValidation(
 
       // Extraer archivo
       const file =
-        formData.get("archivo") ||
-        formData.get("imagen") ||
+        formData.get("file") ||
+        formData.get("image") ||
         formData.get("audio") ||
         formData.get("video");
 
