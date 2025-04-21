@@ -12,16 +12,24 @@ import { existsSync } from "fs";
 // GET
 export const GET = withValidation(
   async (req) => {
-    const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
-    const data = await services.getAllDataService(tipo);
-    return NextResponse.json(serializeData(data), {
-      status: 200,
-      headers: new Headers({
-        "Access-Control-Allow-Origin": process.env.NEXT_PUBLIC_FRONTEND_URL || "*",
-        "Access-Control-Allow-Methods": "GET",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      }),
-    });
+    try {
+      const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
+      const data = await services.getAllDataService(tipo);
+      const origin = req.headers.get("origin");
+      console.log(data);
+      return NextResponse.json(serializeData(data), {
+        status: 200,
+        headers: new Headers({
+          "Access-Control-Allow-Origin": origin || "*",
+          "Access-Control-Allow-Methods": "GET",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        }),
+      });
+    } catch (error) {
+      return NextResponse.json(error, {
+        status: 500,
+      });
+    }
   },
   {
     GET: {
@@ -33,73 +41,81 @@ export const GET = withValidation(
 // POST
 export const POST = withValidation(
   async (req, ctx) => {
-    const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
-    const contentType = req.headers.get("content-type");
+    try {
+      const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
+      const contentType = req.headers.get("content-type");
 
-    let uploadedFileInfo = null;
-    // eslint-disable-next-line prefer-const, @typescript-eslint/no-explicit-any
-    let formFields: Record<string, any> = {};
+      let uploadedFileInfo = null;
+      // eslint-disable-next-line prefer-const, @typescript-eslint/no-explicit-any
+      let formFields: Record<string, any> = {};
 
-    if (contentType?.includes("multipart/form-data")) {
-      const formData = await req.formData();
+      if (contentType?.includes("multipart/form-data")) {
+        const formData = await req.formData();
 
-      // Extraer archivo
-      const file =
-        formData.get("file") ||
-        formData.get("image") ||
-        formData.get("audio") ||
-        formData.get("video");
+        // Extraer archivo
+        const file =
+          formData.get("file") ||
+          formData.get("image") ||
+          formData.get("audio") ||
+          formData.get("video");
 
-      // Extraer campos normales
-      for (const [key, value] of formData.entries()) {
-        if (typeof value === "string") {
-          formFields[key] = value;
+        // Extraer campos normales
+        for (const [key, value] of formData.entries()) {
+          if (typeof value === "string") {
+            formFields[key] = value;
+          }
+        }
+
+        if (file && file instanceof File) {
+          const arrayBuffer = await file.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+
+          const uploadDir = path.join(process.cwd(), "public/uploads");
+          if (!existsSync(uploadDir)) {
+            await mkdir(uploadDir, { recursive: true });
+          }
+
+          const extension = path.extname(file.name);
+          const baseName = path.basename(file.name, extension);
+          const uniqueName = `${baseName}-${Date.now()}${extension}`;
+          const filePath = path.join(uploadDir, uniqueName);
+
+          await writeFile(filePath, buffer);
+
+          uploadedFileInfo = {
+            name: file.name,
+            savedAs: uniqueName,
+            type: file.type,
+            size: file.size,
+            path: `/uploads/${uniqueName}`,
+          };
         }
       }
 
-      if (file && file instanceof File) {
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
+      const body = contentType?.includes("multipart/form-data")
+        ? {
+            ...formFields,
+            [String(uploadedFileInfo?.type.split("/")[0] || "")]:
+              uploadedFileInfo?.path,
+          }
+        : (ctx.validated?.body as object);
 
-        const uploadDir = path.join(process.cwd(), "public/uploads");
-        if (!existsSync(uploadDir)) {
-          await mkdir(uploadDir, { recursive: true });
-        }
+      const data = await services.postDataService(body, tipo);
 
-        const extension = path.extname(file.name);
-        const baseName = path.basename(file.name, extension);
-        const uniqueName = `${baseName}-${Date.now()}${extension}`;
-        const filePath = path.join(uploadDir, uniqueName);
-
-        await writeFile(filePath, buffer);
-
-        uploadedFileInfo = {
-          name: file.name,
-          savedAs: uniqueName,
-          type: file.type,
-          size: file.size,
-          path: `/uploads/${uniqueName}`,
-        };
-      }
+      const origin = req.headers.get("origin");
+      return NextResponse.json(serializeData(data), {
+        status: 200,
+        headers: new Headers({
+          "Access-Control-Allow-Origin": origin || "*",
+          "Access-Control-Allow-Methods": "POST",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        }),
+      });
+    } catch (error) {
+      return NextResponse.json(error, {
+        status: 500,
+      });
     }
-
-    const body = contentType?.includes("multipart/form-data")
-      ? {
-          ...formFields,
-          [String(uploadedFileInfo?.type.split("/")[0] || "")]:
-            uploadedFileInfo?.path,
-        }
-      : (ctx.validated?.body as object);
-
-    const data = await services.postDataService(body, tipo);
-    return NextResponse.json(serializeData(data), {
-      status: 200,
-      headers: new Headers({
-        "Access-Control-Allow-Origin": process.env.NEXT_PUBLIC_FRONTEND_URL || "*",
-        "Access-Control-Allow-Methods": "POST",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      }),
-    });
   },
   {
     POST: {

@@ -21,10 +21,10 @@ export async function apiFetch<T = unknown, R = unknown>({
     url += `/${encodeURIComponent(String(id))}`;
   }
   url += `?tipo=${encodeURIComponent(resource)}`;
-
   const isFormData = typeof FormData !== "undefined" && data instanceof FormData;
 
   const opts: RequestInit = {
+    mode: "no-cors",
     method,
     headers: isFormData ? undefined : { "Content-Type": "application/json" },
     body:
