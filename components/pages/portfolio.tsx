@@ -20,6 +20,7 @@ const Portfolio = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await apiFetch({ resource });
+      console.log(data);
       setDataPortfolio(data as ArrayPortfolio);
     };
     fetchData();
