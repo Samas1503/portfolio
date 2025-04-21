@@ -30,7 +30,7 @@ export const POST = withValidation(
     const contentType = req.headers.get("content-type");
 
     let uploadedFileInfo = null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line prefer-const, @typescript-eslint/no-explicit-any
     let formFields: Record<string, any> = {};
 
     if (contentType?.includes("multipart/form-data")) {
