@@ -25,6 +25,7 @@ export async function apiFetch<T = unknown, R = unknown>({
   const isFormData = typeof FormData !== "undefined" && data instanceof FormData;
 
   const opts: RequestInit = {
+    mode: "no-cors",
     method,
     headers: isFormData ? undefined : { "Content-Type": "application/json" },
     body:
