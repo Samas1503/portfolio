@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormType } from "@/components/pages/forms/formsData";
 import { apiFetch } from "@/components/pages/fetch/tech-all";
+import { useUsuario } from "@/context/UserContext";
 
 type Props = {
   id: number;
@@ -19,7 +20,8 @@ const deleteElement = async (id: number, tipo: FormType) => {
 };
 
 const DeleteButton = ({ id, tipoSchema, tipoElemento, onSuccess, className }: Props) => {
-  return (
+  const { usuario } = useUsuario();
+  return ( usuario &&
     <Button
       className={className}
       onClick={() => {

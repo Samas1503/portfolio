@@ -74,7 +74,6 @@ export function DynamicForm<T extends z.ZodTypeAny>({
 
   return (
     <Form {...form}>
-      {/* Agregar `encType="multipart/form-data"` solo cuando haya un campo de tipo file */}
       <form
         onSubmit={form.handleSubmit(handleFinalSubmit)}
         className="space-y-6"
