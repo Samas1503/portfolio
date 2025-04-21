@@ -21,7 +21,7 @@ export async function apiFetch<T = unknown, R = unknown>({
     url += `/${encodeURIComponent(String(id))}`;
   }
   url += `?tipo=${encodeURIComponent(resource)}`;
-
+  console.log(url)
   const isFormData = typeof FormData !== "undefined" && data instanceof FormData;
 
   const opts: RequestInit = {
