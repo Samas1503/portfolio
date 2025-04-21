@@ -25,7 +25,7 @@ export function withValidation(
   // schemasByMethod: MethodSchemas
 ): (
   req: NextRequest,
-  ctx: { params: Record<string, string> | Promise<Record<string, string>> } // Manejar la promesa
+  ctx: { params: Promise<Record<string, string>> } // Manejar la promesa
 ) => Promise<Response> {
   return async (req, ctx) => {
     const method = req.method.toUpperCase();
