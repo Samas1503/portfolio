@@ -15,11 +15,13 @@ export const GET = withValidation(
       const data = await services.getDataByIdService(Number(params.id), tipo);
       if (!data)
         return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+
+      const origin = req.headers.get("origin");
+
       return NextResponse.json(serializeData(data), {
         status: 200,
         headers: new Headers({
-          "Access-Control-Allow-Origin":
-            process.env.NEXT_PUBLIC_FRONTEND_URL || "*",
+          "Access-Control-Allow-Origin": origin || "*",
           "Access-Control-Allow-Methods": "GET",
           "Access-Control-Allow-Headers": "Content-Type, Authorization",
         }),
@@ -50,11 +52,13 @@ export const PATCH = withValidation(
         body,
         tipo
       );
+
+      const origin = req.headers.get("origin");
+
       return NextResponse.json(serializeData(updated), {
         status: 200,
         headers: new Headers({
-          "Access-Control-Allow-Origin":
-            process.env.NEXT_PUBLIC_FRONTEND_URL || "*",
+          "Access-Control-Allow-Origin": origin || "*",
           "Access-Control-Allow-Methods": "PATCH",
           "Access-Control-Allow-Headers": "Content-Type, Authorization",
         }),
@@ -89,11 +93,13 @@ export const DELETE = withValidation(
       );
       if (!deleted)
         return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+
+      const origin = req.headers.get("origin");      
+
       return NextResponse.json(serializeData(deleted), {
         status: 200,
         headers: new Headers({
-          "Access-Control-Allow-Origin":
-            process.env.NEXT_PUBLIC_FRONTEND_URL || "*",
+          "Access-Control-Allow-Origin": origin || "*",
           "Access-Control-Allow-Methods": "DELETE",
           "Access-Control-Allow-Headers": "Content-Type, Authorization",
         }),

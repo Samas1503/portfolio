@@ -15,11 +15,11 @@ export const GET = withValidation(
     try {
       const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
       const data = await services.getAllDataService(tipo);
+      const origin = req.headers.get("origin");
       return NextResponse.json(serializeData(data), {
         status: 200,
         headers: new Headers({
-          "Access-Control-Allow-Origin":
-            process.env.NEXT_PUBLIC_FRONTEND_URL || "*",
+          "Access-Control-Allow-Origin": origin || "*",
           "Access-Control-Allow-Methods": "GET",
           "Access-Control-Allow-Headers": "Content-Type, Authorization",
         }),
@@ -100,11 +100,12 @@ export const POST = withValidation(
         : (ctx.validated?.body as object);
 
       const data = await services.postDataService(body, tipo);
+
+      const origin = req.headers.get("origin");
       return NextResponse.json(serializeData(data), {
         status: 200,
         headers: new Headers({
-          "Access-Control-Allow-Origin":
-            process.env.NEXT_PUBLIC_FRONTEND_URL || "*",
+          "Access-Control-Allow-Origin": origin || "*",
           "Access-Control-Allow-Methods": "POST",
           "Access-Control-Allow-Headers": "Content-Type, Authorization",
         }),
