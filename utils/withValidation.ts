@@ -43,18 +43,18 @@ export function withValidation(
     const schemas = schemasByMethod[method];
     const validated: Record<string, unknown> = {};
 
-    if (!schemas) return handler(req, ctx);
+    const rawParams = await ctx.params;
+    const params = typeof rawParams === "object" ? rawParams : {};
+    
+    if (!schemas) return handler(req, { ...ctx, params });
 
     try {
-      const params = await ctx.params;
-
       // Validate params
       if (schemas.params && params) {
         const result = schemas.params.safeParse(params);
         if (!result.success) {
-          const issues = result.error?.format?.() ?? "Formato desconocido";
           return NextResponse.json(
-            { error: "Parámetros inválidos", issues },
+            { error: "Parámetros inválidos", issues: result.error.format() },
             { status: 400 }
           );
         }
@@ -103,7 +103,7 @@ export function withValidation(
         }
       }
 
-      return handler(req, { ...ctx, validated });
+      return handler(req, { params, validated });
     } catch (err) {
       console.error("Error en validación:", err);
       return NextResponse.json(
