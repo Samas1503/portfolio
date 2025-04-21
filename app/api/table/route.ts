@@ -14,7 +14,14 @@ export const GET = withValidation(
   async (req) => {
     const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
     const data = await services.getAllDataService(tipo);
-    return NextResponse.json(serializeData(data));
+    return NextResponse.json(serializeData(data), {
+      status: 200,
+      headers: new Headers({
+        "Access-Control-Allow-Origin": process.env.NEXT_PUBLIC_FRONTEND_URL || "*",
+        "Access-Control-Allow-Methods": "GET",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      }),
+    });
   },
   {
     GET: {
@@ -79,17 +86,20 @@ export const POST = withValidation(
     const body = contentType?.includes("multipart/form-data")
       ? {
           ...formFields,
-          [String(uploadedFileInfo?.type.split("/")[0] || "")]: uploadedFileInfo?.path,
+          [String(uploadedFileInfo?.type.split("/")[0] || "")]:
+            uploadedFileInfo?.path,
         }
       : (ctx.validated?.body as object);
 
-    // console.log({
-    //   body,
-    //   file: uploadedFileInfo,
-    // });
-
     const data = await services.postDataService(body, tipo);
-    return NextResponse.json(data);
+    return NextResponse.json(serializeData(data), {
+      status: 200,
+      headers: new Headers({
+        "Access-Control-Allow-Origin": process.env.NEXT_PUBLIC_FRONTEND_URL || "*",
+        "Access-Control-Allow-Methods": "POST",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      }),
+    });
   },
   {
     POST: {

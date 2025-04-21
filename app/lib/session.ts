@@ -35,7 +35,7 @@ export async function encript(payload: SessionPayload) {
     .sign(encodeKey);
 }
 
-export async function decrypt(session: string | undefined = "") {
+export async function decrypt(session: string) {
   try {
     const { payload } = await jwtVerify(session, encodeKey, {
       algorithms: ["HS256"],
