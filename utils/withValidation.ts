@@ -1,24 +1,6 @@
 import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
 
-// type Handler = (
-//   req: NextRequest,
-//   ctx: { params: unknown; validated?: { body?: unknown; query?: unknown } }
-// ) => Promise<Response>;
-
-// type DynamicSchemaSet = {
-//   params?: z.ZodTypeAny;
-//   query?: z.ZodTypeAny;
-//   body?: (ctx: {
-//     query?: unknown;
-//     params?: unknown;
-//   }) => z.ZodTypeAny | undefined; // puede depender de query o params
-// };
-
-// type MethodSchemas = {
-//   [method: string]: DynamicSchemaSet;
-// };
-
 type WithValidationHandler = (
   req: NextRequest,
   ctx: {
@@ -43,14 +25,15 @@ export function withValidation(
   // schemasByMethod: MethodSchemas
 ): (
   req: NextRequest,
-  ctx: { params: Record<string, string> }
+  ctx: { params: Record<string, string> | Promise<Record<string, string>> } // Manejar la promesa
 ) => Promise<Response> {
   return async (req, ctx) => {
     const method = req.method.toUpperCase();
     const schemas = methodSchemas[method];
     const validated: Record<string, unknown> = {};
 
-    const params = await ctx.params || {};
+    // Asegurarse de que `params` sea resuelto si es una promesa
+    const params = await ctx.params;
 
     if (!schemas) return handler(req, { ...ctx, params });
 
@@ -84,7 +67,7 @@ export function withValidation(
         validated.query = result.data;
       }
 
-      // Validación de body
+      // Validación de body (cuando no es GET)
       if (schemas.body && method !== "GET") {
         const contentType = req.headers.get("content-type");
 
