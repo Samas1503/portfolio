@@ -56,6 +56,7 @@ const Skills = () => {
         if (updatedTipo && updatedTipo.length > 0) {
           return { ...prev, [tipoElemento]: updatedTipo };
         } else {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { [tipoElemento]: _, ...rest } = prev;
           return rest;
         }

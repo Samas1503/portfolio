@@ -62,10 +62,12 @@ export function DynamicForm<T extends z.ZodTypeAny>({
         if (fileRefs.current[key]) {
           formData.append(key, fileRefs.current[key] as File);
         } else {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           formData.append(key, value as any);
         }
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onSubmit?.(formData as any);
     } else {
       onSubmit?.(data);

@@ -19,11 +19,11 @@ import { SubmitButton } from "./submitButton";
 import loginSchema from "./schema";
 import { login } from "./actions";
 import { useUsuario } from "@/context/UserContext";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export function LoginForm() {
   const router = useRouter();
-  const [state, formAction] = useActionState(login, undefined);
+  const [formAction] = useActionState(login, undefined);
   const { usuario, setUsuario } = useUsuario();
 
   const form = useForm<z.infer<typeof loginSchema>>({

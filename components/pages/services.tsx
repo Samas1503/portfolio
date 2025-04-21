@@ -1,8 +1,6 @@
 import { dataServices } from "@/data";
 import Title from "../shared/title";
 import { Check } from "lucide-react";
-import { ModalTriggerButton } from "./forms/ModalTriggerButton";
-import { Button } from "../ui/button";
 
 const Services = () => {
   return (
