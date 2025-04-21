@@ -6,18 +6,18 @@ import { NextRequest, NextResponse } from "next/server";
 //   ctx: { params: unknown; validated?: { body?: unknown; query?: unknown } }
 // ) => Promise<Response>;
 
-type DynamicSchemaSet = {
-  params?: z.ZodTypeAny;
-  query?: z.ZodTypeAny;
-  body?: (ctx: {
-    query?: unknown;
-    params?: unknown;
-  }) => z.ZodTypeAny | undefined; // puede depender de query o params
-};
+// type DynamicSchemaSet = {
+//   params?: z.ZodTypeAny;
+//   query?: z.ZodTypeAny;
+//   body?: (ctx: {
+//     query?: unknown;
+//     params?: unknown;
+//   }) => z.ZodTypeAny | undefined; // puede depender de query o params
+// };
 
-type MethodSchemas = {
-  [method: string]: DynamicSchemaSet;
-};
+// type MethodSchemas = {
+//   [method: string]: DynamicSchemaSet;
+// };
 
 type WithValidationHandler = (
   req: NextRequest,
@@ -31,16 +31,23 @@ type WithValidationHandler = (
   }
 ) => Promise<Response>;
 
+type Schemas = {
+  params?: z.ZodTypeAny;
+  query?: z.ZodTypeAny;
+  body?: z.ZodTypeAny | ((ctx: { query?: unknown; params?: unknown }) => z.ZodTypeAny);
+};
+
 export function withValidation(
   handler: WithValidationHandler,
-  schemasByMethod: MethodSchemas
+  methodSchemas: Record<string, Schemas>
+  // schemasByMethod: MethodSchemas
 ): (
   req: NextRequest,
   ctx: { params: { [key: string]: string } }
 ) => Promise<Response> {
   return async (req, ctx) => {
     const method = req.method.toUpperCase();
-    const schemas = schemasByMethod[method];
+    const schemas = methodSchemas[method];
     const validated: Record<string, unknown> = {};
 
     const rawParams = await ctx.params;
