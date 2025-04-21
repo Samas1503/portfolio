@@ -143,10 +143,10 @@ export function DynamicForm<T extends z.ZodTypeAny>({
                           const lat = Number(coords.lat);
                           const lng = Number(coords.lng);
 
-                          form.setValue("latitud", lat, {
+                          form.setValue("latitud" as Path<z.infer<T>>, lat as PathValue<z.infer<T>, Path<z.infer<T>>>, {
                             shouldValidate: true,
                           });
-                          form.setValue("longitud", lng, {
+                          form.setValue("longitud" as Path<z.infer<T>>, lng as PathValue<z.infer<T>, Path<z.infer<T>>>, {
                             shouldValidate: true,
                           });
                         }}
