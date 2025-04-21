@@ -51,7 +51,7 @@ export function LoginForm() {
     if (usuario) {
       router.push("/");
     }
-  }, [usuario]);
+  }, [router, usuario]);
   
   return (
     <Form {...form}>

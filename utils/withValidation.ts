@@ -34,7 +34,10 @@ type WithValidationHandler = (
 export function withValidation(
   handler: WithValidationHandler,
   schemasByMethod: MethodSchemas
-): (req: NextRequest, ctx: { params: { [key: string]: string } }) => Promise<Response> {
+): (
+  req: NextRequest,
+  ctx: { params: { [key: string]: string } }
+) => Promise<Response> {
   return async (req, ctx) => {
     const method = req.method.toUpperCase();
     const schemas = schemasByMethod[method];
@@ -43,14 +46,15 @@ export function withValidation(
     if (!schemas) return handler(req, ctx);
 
     try {
-      const params = ctx.params;
+      const params = await ctx.params;
 
       // Validate params
       if (schemas.params && params) {
         const result = schemas.params.safeParse(params);
         if (!result.success) {
+          const issues = result.error?.format?.() ?? "Formato desconocido";
           return NextResponse.json(
-            { error: "Parámetros inválidos", issues: result.error.format() },
+            { error: "Parámetros inválidos", issues },
             { status: 400 }
           );
         }
@@ -80,9 +84,13 @@ export function withValidation(
 
         if (!contentType?.includes("multipart/form-data")) {
           const rawBody = await req.json();
-          const dynamicSchema = typeof schemas.body === "function"
-            ? schemas.body({ query: validated.query, params: validated.params })
-            : schemas.body;
+          const dynamicSchema =
+            typeof schemas.body === "function"
+              ? schemas.body({
+                  query: validated.query,
+                  params: validated.params,
+                })
+              : schemas.body;
 
           const result = await dynamicSchema?.safeParseAsync(rawBody);
           if (!result?.success) {

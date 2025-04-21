@@ -8,7 +8,8 @@ import services from "@/backend/Services";
 
 // GET
 export const GET = withValidation(
-  async (req, { params }) => {
+  async (req, ctx) => {
+    const params = await ctx.params;
     const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
     const data = await services.getDataByIdService(Number(params.id), tipo);
     if (!data)
@@ -26,9 +27,14 @@ export const GET = withValidation(
 // PATCH
 export const PATCH = withValidation(
   async (req, ctx) => {
+    const params = await ctx.params;
     const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
     const body = ctx.validated?.body as object;
-    const updated = await services.updateDataService(Number(ctx.params.id), body, tipo);
+    const updated = await services.updateDataService(
+      Number(params.id),
+      body,
+      tipo
+    );
     return NextResponse.json(serializeData(updated));
   },
   {
@@ -45,9 +51,13 @@ export const PATCH = withValidation(
 
 // PATCH
 export const DELETE = withValidation(
-  async (req, { params }) => {
+  async (req, ctx) => {
+    const params = await ctx.params;
     const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
-    const deleted = await services.deleteDataByIdService(Number(params.id), tipo);
+    const deleted = await services.deleteDataByIdService(
+      Number(params.id),
+      tipo
+    );
     if (!deleted)
       return NextResponse.json({ error: "No encontrado" }, { status: 404 });
     return NextResponse.json(serializeData(deleted));
