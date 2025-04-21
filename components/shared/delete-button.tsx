@@ -26,7 +26,7 @@ const DeleteButton = ({ id, tipoSchema, tipoElemento, onSuccess, className }: Pr
       className={className}
       onClick={() => {
         deleteElement(id, tipoSchema);
-        onSuccess?.(id, tipoElemento);
+        onSuccess?.(id, tipoElemento as FormType);
       }}
       type="button"
     >

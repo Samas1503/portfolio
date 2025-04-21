@@ -1,59 +1,62 @@
 import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
 
-type Handler = (
+type WithValidationHandler = (
   req: NextRequest,
-  ctx: { params: unknown; validated?: { body?: unknown; query?: unknown } }
+  ctx: {
+    params: Record<string, string>;
+    validated?: {
+      query?: unknown;
+      body?: unknown;
+      params?: unknown;
+    };
+  }
 ) => Promise<Response>;
 
-type DynamicSchemaSet = {
+type Schemas = {
   params?: z.ZodTypeAny;
   query?: z.ZodTypeAny;
-  body?: (ctx: {
-    query?: unknown;
-    params?: unknown;
-  }) => z.ZodTypeAny | undefined; // puede depender de query o params
-};
-
-type MethodSchemas = {
-  [method: string]: DynamicSchemaSet;
+  body?: z.ZodTypeAny | ((ctx: { query?: unknown; params?: unknown }) => z.ZodTypeAny);
 };
 
 export function withValidation(
-  handler: Handler,
-  schemasByMethod: MethodSchemas
-): Handler {
+  handler: WithValidationHandler,
+  methodSchemas: Record<string, Schemas>
+  // schemasByMethod: MethodSchemas
+): (
+  req: NextRequest,
+  ctx: { params: Promise<Record<string, string>> } // Manejar la promesa
+) => Promise<Response> {
   return async (req, ctx) => {
     const method = req.method.toUpperCase();
-    const schemas = schemasByMethod[method];
+    const schemas = methodSchemas[method];
+    const validated: Record<string, unknown> = {};
 
-    if (!schemas) return handler(req, ctx);
+    // Asegurarse de que `params` sea resuelto si es una promesa
+    const params = await ctx.params;
+
+    if (!schemas) return handler(req, { ...ctx, params });
 
     try {
-      const resolvedParams = await ctx.params;
-      if (schemas.params && resolvedParams) {
-        if (typeof ctx.params !== "object" || ctx.params === null) {
-          return NextResponse.json(
-            { error: "params no es un objeto válido" },
-            { status: 400 }
-          );
-        }
-        const result = schemas.params.safeParse(resolvedParams);
+      // Validación de parámetros (params)
+      if (schemas.params && params) {
+        const result = schemas.params.safeParse(params);
         if (!result.success) {
-          console.log("Errores de validación:", result.error.format());
           return NextResponse.json(
             { error: "Parámetros inválidos", issues: result.error.format() },
             { status: 400 }
           );
         }
-        ctx.params = result.data;
+        validated.params = result.data;
       }
 
+      // Validación de query
       if (schemas.query) {
         const queryObj: Record<string, string> = {};
         req.nextUrl.searchParams.forEach((value, key) => {
           queryObj[key] = value;
         });
+
         const result = await schemas.query.safeParseAsync(queryObj);
         if (!result.success) {
           return NextResponse.json(
@@ -61,36 +64,35 @@ export function withValidation(
             { status: 400 }
           );
         }
-        ctx.validated = { ...(ctx.validated || {}), query: result.data };
+        validated.query = result.data;
       }
 
+      // Validación de body (cuando no es GET)
       if (schemas.body && method !== "GET") {
         const contentType = req.headers.get("content-type");
-        
-        if (contentType?.includes("multipart/form-data")) {
-          // Dejar que el handler lo maneje
-          return handler(req, ctx);
-        }
-      
-        const rawBody = await req.json(); // ← solo si NO es multipart
-        const dynamicSchema = typeof schemas.body === "function"
-          ? schemas.body({ query: ctx.validated?.query, params: ctx.params })
-          : schemas.body;
-      
-        if (!dynamicSchema) {
-          return NextResponse.json({ error: "No se pudo determinar el schema del body" }, { status: 400 });
-        }
-      
-        const result = await dynamicSchema.safeParseAsync(rawBody);
-        if (!result.success) {
-          return NextResponse.json({ error: "Body inválido", issues: result.error.format() }, { status: 400 });
-        }
-      
-        ctx.validated = { ...(ctx.validated || {}), body: result.data };
-      }
-      
 
-      return handler(req, ctx);
+        if (!contentType?.includes("multipart/form-data")) {
+          const rawBody = await req.json();
+          const dynamicSchema =
+            typeof schemas.body === "function"
+              ? schemas.body({
+                  query: validated.query,
+                  params: validated.params,
+                })
+              : schemas.body;
+
+          const result = await dynamicSchema?.safeParseAsync(rawBody);
+          if (!result?.success) {
+            return NextResponse.json(
+              { error: "Body inválido", issues: result?.error.format() },
+              { status: 400 }
+            );
+          }
+          validated.body = result.data;
+        }
+      }
+
+      return handler(req, { params, validated });
     } catch (err) {
       console.error("Error en validación:", err);
       return NextResponse.json(

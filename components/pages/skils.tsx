@@ -12,9 +12,10 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 
 type Skill = z.infer<typeof formsData.skills.schema>;
+type ArraySkill = Skill[];
 
 const Skills = () => {
-  const [dataSkills, setDataSkills] = useState<Record<string, Skill[]>>({});
+  const [dataSkills, setDataSkills] = useState<Record<string, ArraySkill>>({});
   const resource = "skills";
   useEffect(() => {
     const fetchData = async () => {
@@ -35,10 +36,7 @@ const Skills = () => {
 
       setDataSkills(
         Object.fromEntries(
-          Array.from(map.entries()).map(([key, value]) => [
-            key,
-            value as Skill[],
-          ])
+          Array.from(map.entries()).map(([key, value]) => [key, value])
         )
       );
     };
@@ -61,7 +59,7 @@ const Skills = () => {
           return rest;
         }
       }
-      
+
       return prev;
     });
   };
@@ -71,8 +69,6 @@ const Skills = () => {
       ...prev,
       [data.tipo]: [...(prev[data.tipo] || []), data],
     }));
-
-    console.log(dataSkills);
   };
 
   return (
@@ -88,7 +84,7 @@ const Skills = () => {
                   <DeleteButton
                     tipoSchema={resource as FormType}
                     tipoElemento={item.tipo}
-                    id={item.id}
+                    id={item.id!}
                     onSuccess={handleDelete}
                     className="absolute top-0 right-2"
                   />
@@ -106,7 +102,12 @@ const Skills = () => {
       </div>
 
       <div className="flex justify-center items-center max-w-4xl mx-auto mt-10">
-        <ModalTriggerButton onSuccess={handleCreate} tipoFormulario="skills">
+        <ModalTriggerButton
+          onSuccess={(result) => {
+            handleCreate(result as Skill);
+          }}
+          tipoFormulario="skills"
+        >
           <Button type="button">Agregar una Skill</Button>
         </ModalTriggerButton>
       </div>

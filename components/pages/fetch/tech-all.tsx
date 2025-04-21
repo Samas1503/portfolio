@@ -6,7 +6,7 @@ type ApiParams<T> = {
 };
 
 function getBase() {
-  return "http://localhost:3000";
+  return process.env.NEXT_PUBLIC_BACKEND_URL;
 }
 
 export async function apiFetch<T = unknown, R = unknown>({

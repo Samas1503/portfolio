@@ -20,98 +20,89 @@ import { FormType } from "./forms/formsData";
 import { useEffect, useState } from "react";
 import { formsData } from "@/components/pages/forms/formsData";
 
-type Experiencia = z.infer<typeof formsData.work.schema>;
+type Experiencia = typeof formsData.work.schema;
+type ArrayExperiencia = Array<z.infer<Experiencia>>;
 
 const Works = () => {
-  const [dataExperience, setDataExperiencie] = useState<
-    Record<string, Experiencia[]>
-  >({});
-
+  const [dataExperience, setDataExperiencie] = useState<ArrayExperiencia>();
   const resource = "work";
   useEffect(() => {
     const fetchData = async () => {
       const data = await apiFetch({ resource });
-      setDataExperiencie(data as Record<string, Experiencia[]>);
+      setDataExperiencie(data as ArrayExperiencia);
     };
     fetchData();
   }, []);
 
   const handleDelete = (id: number) => {
     setDataExperiencie((prev) => {
-      const newData = Object.fromEntries(
-        Object.entries(prev).map(([key, value]) => [
-          key,
-          Array(value).filter((item) => Number(item.id) !== id),
-        ])
-      );
-
-      for (const key in newData) {
-        if (newData[key].length === 0) {
-          delete newData[key];
-        }
-      }
-
+      if (!prev) return [];
+      const newData = prev
+        .map((item) => (Number(item.id) !== id ? item : null))
+        .filter(Boolean) as ArrayExperiencia;
       return newData;
     });
   };
 
   const handleCreate = (data: Experiencia) => {
-    setDataExperiencie((prev) => (prev.length > 0 ? [...prev, data] : [data]));
+    setDataExperiencie((prev) =>
+      prev && prev.length > 0
+        ? [...prev, data as unknown as z.infer<Experiencia>]
+        : [data as unknown as z.infer<Experiencia>]
+    );
   };
 
   return (
     <div className="p-6 md:px-12 md:py-44 max-w-5xl mx-auto" id="work">
       <Title title="Trabajos" subtitle="Experiencia Laboral" />
       <div className="grid justify-center md:grid-cols-2 gap-8 mt-5">
-        {Object.values(dataExperience)
-          ?.flat()
-          ?.map((data: Experiencia) => (
-            <Card key={data.id} className="w-auto max-w-[400px]">
-              <CardHeader>
-                <CardTitle className="flex justify-around">
-                  <DeleteButton
-                    tipoSchema={resource as FormType}
-                    id={Number(data.id)}
-                    onSuccess={handleDelete}
-                    className="me-4"
-                    tipoElemento={""}
+        {dataExperience?.map((data) => (
+          <Card key={data.id} className="w-auto max-w-[400px]">
+            <CardHeader>
+              <CardTitle className="flex justify-around">
+                <DeleteButton
+                  tipoSchema={resource as FormType}
+                  id={Number(data.id)}
+                  onSuccess={handleDelete}
+                  className="me-4"
+                  tipoElemento={""}
+                />
+                <strong className="">{data.empresa}</strong>
+                <small>
+                  {data.fecha_inicio} - {data.fecha_fin}
+                </small>
+              </CardTitle>
+              <CardDescription>
+                <strong>{data.cargo}</strong>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {typeof data.latitud === "number" &&
+                typeof data.longitud === "number" &&
+                !isNaN(data.latitud) &&
+                !isNaN(data.longitud) && (
+                  <GoogleMaps
+                    value={{ lat: data.latitud, lng: data.longitud }}
                   />
-                  <strong className="">{data.empresa}</strong>
-                  <small>
-                    {data.fecha_inicio} - {data.fecha_fin}
-                  </small>
-                </CardTitle>
-                <CardDescription>
-                  <strong>{data.cargo}</strong>
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {typeof data.latitud === "number" &&
-                  typeof data.longitud === "number" &&
-                  !isNaN(data.latitud) &&
-                  !isNaN(data.longitud) && (
-                    <GoogleMaps
-                      value={{ lat: data.latitud, lng: data.longitud }}
-                    />
-                  )}
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <p>
-                  <strong>Referencia: </strong>
-                  {data.nombreReferencia}
-                </p>
-                <Button type="button">
-                  <Link href={"tel:" + data.nroReferencia} target="_blank">
-                    Contactar
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+                )}
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <p>
+                <strong>Referencia: </strong>
+                {data.nombreReferencia}
+              </p>
+              <Button type="button">
+                <Link href={"tel:" + data.nroReferencia} target="_blank">
+                  Contactar
+                </Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
       </div>
 
       <div className="flex justify-center items-center max-w-4xl mx-auto mt-10">
-        <ModalTriggerButton onSuccess={handleCreate} tipoFormulario="work">
+        <ModalTriggerButton onSuccess={(result: unknown) => handleCreate(result as Experiencia)} tipoFormulario="work">
           <Button type="button">Agregar Experiencia Laboral</Button>
         </ModalTriggerButton>
       </div>
