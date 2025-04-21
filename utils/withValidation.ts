@@ -22,7 +22,7 @@ import { NextRequest, NextResponse } from "next/server";
 type WithValidationHandler = (
   req: NextRequest,
   ctx: {
-    params: { [key: string]: string };
+    params: Record<string, string>;
     validated?: {
       query?: unknown;
       body?: unknown;
@@ -43,20 +43,19 @@ export function withValidation(
   // schemasByMethod: MethodSchemas
 ): (
   req: NextRequest,
-  ctx: { params: { [key: string]: string } }
+  ctx: { params: Record<string, string>, validated: { body?: unknown; query?: unknown } }
 ) => Promise<Response> {
   return async (req, ctx) => {
     const method = req.method.toUpperCase();
     const schemas = methodSchemas[method];
     const validated: Record<string, unknown> = {};
 
-    const rawParams = await ctx.params;
-    const params = typeof rawParams === "object" ? rawParams : {};
-    
+    const params = await ctx.params || {};
+
     if (!schemas) return handler(req, { ...ctx, params });
 
     try {
-      // Validate params
+      // Validación de parámetros (params)
       if (schemas.params && params) {
         const result = schemas.params.safeParse(params);
         if (!result.success) {
@@ -68,7 +67,7 @@ export function withValidation(
         validated.params = result.data;
       }
 
-      // Validate query
+      // Validación de query
       if (schemas.query) {
         const queryObj: Record<string, string> = {};
         req.nextUrl.searchParams.forEach((value, key) => {
@@ -85,7 +84,7 @@ export function withValidation(
         validated.query = result.data;
       }
 
-      // Validate body
+      // Validación de body
       if (schemas.body && method !== "GET") {
         const contentType = req.headers.get("content-type");
 
