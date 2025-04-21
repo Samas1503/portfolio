@@ -3,6 +3,7 @@ import { z } from "zod";
 export const formsData = {
   contacto: {
     schema: z.object({
+      id: z.number().optional(),
       username: z.string().min(2),
       email: z.string().email(),
       message: z.string(),
@@ -28,10 +29,11 @@ export const formsData = {
       },
     ],
   },
-  portfolio: {
+  proyectos: {
     schema: z.object({
+      id: z.number().optional(),
       titulo: z.string(),
-      imagen: z.string(),
+      image: z.string(),
       urlGithub: z.string(),
       urlDemo: z.string(),
     }),
@@ -39,7 +41,7 @@ export const formsData = {
       { label: "Titulo", name: "titulo", placeholder: "Titulo del Proyecto" },
       {
         label: "Imagen del Proyecto",
-        name: "imagen",
+        name: "image",
         placeholder: "Imagen del Proyecto",
         accept: "image/*",
         type: "file" as const,
@@ -58,8 +60,9 @@ export const formsData = {
       },
     ],
   },
-  skils: {
+  skills: {
     schema: z.object({
+      id: z.number().optional(),
       tipo: z.enum([
         "Frontend Development",
         "Backend Development",
@@ -108,6 +111,7 @@ export const formsData = {
   },
   work: {
     schema: z.object({
+      id: z.number().optional(),
       empresa: z.string(),
       cargo: z.string(),
       fecha_inicio: z.string(),
@@ -116,7 +120,7 @@ export const formsData = {
       latitud: z.coerce.number(),
       longitud: z.coerce.number(),
       nombreReferencia: z.string(),
-      nroReferencia: z.string(),
+      nroReferencia: z.coerce.number(),
     }),
     fields: [
       {
@@ -183,6 +187,7 @@ export const formsData = {
   },
   mensajes: {
     schema: z.object({
+      id: z.number().optional(),
       id_mensaje: z.string(),
       origen: z.string(),
       nombre: z.string(),

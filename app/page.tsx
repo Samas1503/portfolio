@@ -1,6 +1,6 @@
 import AboutMe from "@/components/pages/about-me";
 import Contact from "@/components/pages/contact";
-import Skils from "@/components/pages/skils";
+import Skills from "@/components/pages/skils";
 import Footer from "@/components/pages/footer";
 import Introduction from "@/components/pages/introduction";
 import Navbar from "@/components/pages/narvar";
@@ -18,7 +18,7 @@ export default function Home() {
       <Introduction />
       <AboutMe />
       <Works />
-      <Skils />
+      <Skills />
       <Services />
       <Portfolio />
       <Testimonials />

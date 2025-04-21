@@ -1,26 +1,66 @@
+"use client";
+
 import Title from "../shared/title";
 import Image from "next/image";
 import Link from "next/link";
 import { Button, buttonVariants } from "../ui/button";
-// import services from "@/backend/Services";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { apiFetch } from "./fetch/tech-all";
+import { formsData, FormType } from "./forms/formsData";
+import { useEffect, useState } from "react";
+import DeleteButton from "../shared/delete-button";
 
-const Portfolio = async () => {
-  const dataPortfolio = await apiFetch({resource:"proyectos"});
+type Portfolio = typeof formsData.proyectos.schema;
+
+const Portfolio = () => {
+  const [dataPortfolio, setDataPortfolio] = useState<
+    Record<string, Portfolio[]>
+  >({});
+  const resource = "proyectos";
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await apiFetch({ resource });
+      setDataPortfolio(data as Record<string, Portfolio[]>);      
+    };
+    fetchData();
+  }, []);
+
+  const handleDelete = (id: number) => {
+    setDataPortfolio((prev) => {
+      const newData = Object.fromEntries(
+        Object.entries(prev).map(([key, value]) => [
+          key,
+          Array(value).filter((item) => Number(item.id) !== id),
+        ])
+      );
+
+      for (const key in newData) {
+        if (newData[key].length === 0) {
+          delete newData[key];
+        }
+      }
+      
+      return newData;
+    });
+  };
+
+  const handleCreate = (data: Portfolio) => {
+    setDataPortfolio((prev) => (prev.length > 0 ? [...prev, data] : [data]));
+  };
+
   return (
     <div className="p-4 max-w-4xl md:py-24 mx-auto" id="portfolio">
       <Title title="Portfolio" subtitle="Trabajos recientes" />
       <div className="grid md:grid-cols-3 gap-14 mt-4">
-        {dataPortfolio.map((data) => (
+        {Object.values(dataPortfolio)?.map((data) => (
           <div key={data.id}>
             {"titulo" in data && (
-              <h3 className="text-xl mb-4">{data.titulo}</h3>
+              <h3 className="text-xl mb-4">{String(data.titulo)}</h3>
             )}
             <Image
               src={
-                "imagen" in data && data.imagen
-                  ? data.imagen
+                "image" in data && data.image
+                  ? data.image
                   : "/placeholder-image.png"
               }
               alt="Image"
@@ -45,12 +85,19 @@ const Portfolio = async () => {
               >
                 Live demo
               </Link>
+              <DeleteButton
+                    tipoSchema={resource as FormType}
+                    id={Number(data.id)}
+                    onSuccess={handleDelete}
+                    className="relative top-0 left-2"
+                    tipoElemento={""}
+                  />
             </div>
           </div>
         ))}
       </div>
       <div className="flex justify-center items-center max-w-4xl mx-auto mt-10">
-        <ModalTriggerButton tipoFormulario="portfolio">
+        <ModalTriggerButton onSuccess={handleCreate} tipoFormulario="proyectos">
           <Button type="button">Agregar Proyecto</Button>
         </ModalTriggerButton>
       </div>

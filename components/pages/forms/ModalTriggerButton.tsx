@@ -18,16 +18,25 @@ const formMap = formsData;
 type Props = {
   tipoFormulario: FormType;
   children: React.ReactNode;
+  onSuccess?: (data: unknown) => void;
 };
 
-export const ModalTriggerButton = ({ tipoFormulario, children }: Props) => {
+export const ModalTriggerButton = ({
+  tipoFormulario,
+  onSuccess,
+  children,
+}: Props) => {
   const [open, setOpen] = useState(false);
   const formConfig = formMap[tipoFormulario];
   const { usuario } = useUsuario();
 
   const handleSubmit = async (data: unknown): Promise<void> => {
-    const result = await apiFetch({resource: tipoFormulario, method: "POST", data})
-    console.log(result);
+    const result = await apiFetch({
+      resource: tipoFormulario,
+      method: "POST",
+      data,
+    });
+    onSuccess?.(result, data.tipo);
     setOpen(false);
   };
 

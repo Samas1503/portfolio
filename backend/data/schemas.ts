@@ -29,7 +29,7 @@ export const schemas = {
     create: proyectosInsertSchema,
     update: proyectosUpdateSchema,
   },
-  skils:{
+  skills:{
     schema: skills,
     create: skillsInsertSchema,
     update: skillsUpdateSchema,
@@ -39,7 +39,7 @@ export const schemas = {
     create: serviciosInsertSchema,
     update: serviciosUpdateSchema,
   },
-  experiencia:{
+  work:{
     schema: experiencia,
     create: experienciaInsertSchema,
     update: experienciaUpdateSchema,

@@ -53,7 +53,7 @@ export const DELETE = withValidation(
     return NextResponse.json(serializeData(deleted));
   },
   {
-    PATCH: {
+    DELETE: {
       params: commonParams,
       query: commonQuery,
     },

@@ -65,33 +65,30 @@ export function withValidation(
       }
 
       if (schemas.body && method !== "GET") {
-        const rawBody = await req.json();
+        const contentType = req.headers.get("content-type");
+        
+        if (contentType?.includes("multipart/form-data")) {
+          // Dejar que el handler lo maneje
+          return handler(req, ctx);
+        }
       
-        const dynamicSchema =
-          typeof schemas.body === "function"
-            ? schemas.body({
-                query: ctx.validated?.query,
-                params: ctx.params,
-              })
-            : schemas.body;
+        const rawBody = await req.json(); // ← solo si NO es multipart
+        const dynamicSchema = typeof schemas.body === "function"
+          ? schemas.body({ query: ctx.validated?.query, params: ctx.params })
+          : schemas.body;
       
         if (!dynamicSchema) {
-          return NextResponse.json(
-            { error: "No se pudo determinar el schema del body" },
-            { status: 400 }
-          );
+          return NextResponse.json({ error: "No se pudo determinar el schema del body" }, { status: 400 });
         }
       
         const result = await dynamicSchema.safeParseAsync(rawBody);
         if (!result.success) {
-          return NextResponse.json(
-            { error: "Body inválido", issues: result.error.format() },
-            { status: 400 }
-          );
+          return NextResponse.json({ error: "Body inválido", issues: result.error.format() }, { status: 400 });
         }
       
         ctx.validated = { ...(ctx.validated || {}), body: result.data };
       }
+      
 
       return handler(req, ctx);
     } catch (err) {

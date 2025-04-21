@@ -10,7 +10,7 @@ const Footer = () => {
         </div>
         <div className="px-2 flex justify-between md:gap-8 items-center">
           <Link href="#bout-me">Sobre mi</Link>
-          <Link href="#skils">Habilidades</Link>
+          <Link href="#skills">Habilidades</Link>
           <Link href="#services">Mis Servicios</Link>
           <Link href="#portfolio">Portfolio</Link>
           <Link href="#contact">Contacto</Link>

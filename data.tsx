@@ -59,9 +59,9 @@ export const itemsNavbar = [
   },
   {
     id: 4,
-    title: "Skils",
+    title: "skills",
     icon: <Lightbulb size={20} />,
-    link: "#skils",
+    link: "#skills",
   },
   {
     id: 5,

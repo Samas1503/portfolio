@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { DynamicFormProps } from "./types";
-import { number, z } from "zod";
+import { z } from "zod";
 import {
   DropdownMenu,
   DropdownMenuRadioItem,
@@ -24,7 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import GoogleMaps from "../google-maps";
 
 export function DynamicForm<T extends z.ZodTypeAny>({
@@ -35,6 +35,9 @@ export function DynamicForm<T extends z.ZodTypeAny>({
   const [dropdownValues, setDropdownValues] = useState<
     Record<string, string | undefined>
   >({});
+  
+  const fileRefs = useRef<Record<string, File | null>>({});
+
   const form = useForm<z.infer<T>>({
     resolver: zodResolver(schema),
     defaultValues: Object.fromEntries(
@@ -49,9 +52,34 @@ export function DynamicForm<T extends z.ZodTypeAny>({
     ) as z.infer<T>,
   });
 
+  const hasFileField = fields.some((f) => f.type === "file");
+
+  const handleFinalSubmit = async (data: z.infer<T>) => {
+    if (hasFileField) {
+      const formData = new FormData();
+
+      for (const [key, value] of Object.entries(data)) {
+        if (fileRefs.current[key]) {
+          formData.append(key, fileRefs.current[key] as File);
+        } else {
+          formData.append(key, value as any);
+        }
+      }
+
+      onSubmit?.(formData as any);
+    } else {
+      onSubmit?.(data);
+    }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      {/* Agregar `encType="multipart/form-data"` solo cuando haya un campo de tipo file */}
+      <form
+        onSubmit={form.handleSubmit(handleFinalSubmit)}
+        className="space-y-6"
+        encType={hasFileField ? "multipart/form-data" : undefined}
+      >
         {fields.map((field) => {
           return (
             <FormField
@@ -61,8 +89,7 @@ export function DynamicForm<T extends z.ZodTypeAny>({
               render={({ field: rhfField }) => (
                 <FormItem>
                   <FormLabel>
-                    {" "}
-                    {field.type !== "hidden" ? field.label : ""}{" "}
+                    {field.type !== "hidden" ? field.label : ""}
                   </FormLabel>
                   <FormControl>
                     {field.type === "textarea" ? (
@@ -121,6 +148,16 @@ export function DynamicForm<T extends z.ZodTypeAny>({
                           form.setValue("longitud", lng, {
                             shouldValidate: true,
                           });
+                        }}
+                      />
+                    ) : field.type === "file" ? (
+                      <Input
+                        type="file"
+                        accept={field.accept || undefined}
+                        placeholder={field.placeholder}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] || null;
+                          fileRefs.current[field.name] = file;
                         }}
                       />
                     ) : (

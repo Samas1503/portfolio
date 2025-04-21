@@ -3,7 +3,7 @@ import { sqliteTable, integer, text, real } from "drizzle-orm/sqlite-core";
 export const proyectos = sqliteTable("Proyectos", {
   id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
   titulo: text("titulo"),
-  imagen: text("imagen"),
+  image: text("image"),
   urlGithub: text("url_github"),
   urlDemo: text("url_demo"),
   estado: integer({ mode: "boolean" }).default(false),
