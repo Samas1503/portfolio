@@ -11,6 +11,7 @@ import { DynamicForm } from "./DynamicForm";
 import { formsData, FormType } from "./formsData";
 import { useUsuario } from "@/context/UserContext";
 import { apiFetch } from "../fetch/tech-all";
+import { FieldType } from "./types";
 
 // Mapa de formularios disponibles
 const formMap = formsData;
@@ -18,7 +19,7 @@ const formMap = formsData;
 type Props = {
   tipoFormulario: FormType;
   children: React.ReactNode;
-  onSuccess?: (data: unknown) => void;
+  onSuccess?: (result: unknown, tipo: string) => void;
 };
 
 export const ModalTriggerButton = ({
@@ -27,7 +28,10 @@ export const ModalTriggerButton = ({
   children,
 }: Props) => {
   const [open, setOpen] = useState(false);
-  const formConfig = formMap[tipoFormulario];
+  const formConfig = formMap[tipoFormulario] as {
+    schema: typeof formMap[FormType]['schema'];
+    fields: FieldType[];
+  };
   const { usuario } = useUsuario();
 
   const handleSubmit = async (data: unknown): Promise<void> => {
@@ -36,7 +40,9 @@ export const ModalTriggerButton = ({
       method: "POST",
       data,
     });
-    onSuccess?.(result, data.tipo);
+
+    const typedData = data as { tipo: string };
+    onSuccess?.(result, typedData.tipo);
     setOpen(false);
   };
 
