@@ -1,60 +1,61 @@
-import { sqliteTable, integer, text, real } from "drizzle-orm/sqlite-core";
+import { mysqlTable, int, text, boolean, float } from "drizzle-orm/mysql-core";
+// import { mysqlTable, integer, text, real } from "drizzle-orm/sqlite-core";
 
-export const project = sqliteTable("Proyectos", {
-  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
+export const proyectos = mysqlTable("Proyectos", {
+  id: int().primaryKey().autoincrement().notNull(),
   titulo: text("titulo"),
   image: text("image"),
   urlGithub: text("url_github"),
   urlDemo: text("url_demo"),
-  estado: integer({ mode: "boolean" }).default(false),
+  estado: boolean().default(true),
 });
 
-export const skills = sqliteTable("Skills", {
-  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
+export const skills = mysqlTable("Skills", {
+  id: int().primaryKey().autoincrement().notNull(),
   tipo: text("tipo"),
   nombre: text("nombre"),
   nivel: text("nivel"),
-  valor: integer("valor"),
-  estado: integer({ mode: "boolean" }).default(false),
+  valor: int("valor"),
+  estado: boolean().default(true),
 });
 
-export const servicios = sqliteTable("Servicios", {
-  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
+export const servicios = mysqlTable("Servicios", {
+  id: int().primaryKey().autoincrement().notNull(),
   tipo: text("tipo"),
   icono: text("icono"),
   nombre: text("nombre"),
-  estado: integer({ mode: "boolean" }).default(false),
+  estado: boolean().default(true),
 });
 
-export const experience = sqliteTable("Experiencia", {
-  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
+export const experiencia = mysqlTable("Experiencia", {
+  id: int().primaryKey().autoincrement().notNull(),
   empresa: text("empresa"),
   cargo: text("cargo"),
   fecha_inicio: text("fecha_inicio"),
   fecha_fin: text("fecha_fin"),
   ubicacion: text("ubicacion"),
-  latitud: real("latitud"),
-  longitud: real("longitud"),
+  latitud: float("latitud"),
+  longitud: float("longitud"),
   nombreReferencia: text("nombre_referencia"),
-  nroReferencia: integer("nro_referencia"),
-  estado: integer({ mode: "boolean" }).default(false),
+  nroReferencia: int("nro_referencia"),
+  estado: boolean().default(true),
 });
 
-export const contacto = sqliteTable("Contacto", {
-  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
+export const contacto = mysqlTable("Contacto", {
+  id: int().primaryKey().autoincrement().notNull(),
   nombre: text("nombre"),
   titulo: text("titulo"),
   link: text("link"),
   icono: text("icono"),
-  estado: integer({ mode: "boolean" }).default(false),
+  estado: boolean().default(true),
 });
 
-export const mensajes = sqliteTable("Mensajes", {
-  id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
-  id_mensaje: text("id_mensaje").unique(),
+export const mensajes = mysqlTable("Mensajes", {
+  id: int().primaryKey().autoincrement().notNull(),
+  id_mensaje: text("id_mensaje"),
   origen: text("origen"),
   nombre: text("nombre"),
   destino: text("destino"),
   mensaje: text("mensaje"),
-  estado: integer({ mode: "boolean" }).default(false),
+  estado: boolean().default(true),
 });

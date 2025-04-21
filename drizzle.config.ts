@@ -1,10 +1,9 @@
 import { defineConfig } from "drizzle-kit";
+import { dbConfig } from "./backend/db/config"; // Ruta al archivo de configuración
 
 export default defineConfig({
-  dialect: "sqlite",
+  dialect: "mysql",
   schema: "./backend/db/schemas/schemas.tsx",
   out: "./drizzle",
-  dbCredentials: {
-    url: "./backend/db/sqlite.db"
-  },
+  dbCredentials: dbConfig,
 });
