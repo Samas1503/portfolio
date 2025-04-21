@@ -16,6 +16,7 @@ export const GET = withValidation(
       const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
       const data = await services.getAllDataService(tipo);
       const origin = req.headers.get("origin");
+      console.log(data);
       return NextResponse.json(serializeData(data), {
         status: 200,
         headers: new Headers({
