@@ -6,21 +6,6 @@ import { NextRequest, NextResponse } from "next/server";
 //   ctx: { params: unknown; validated?: { body?: unknown; query?: unknown } }
 // ) => Promise<Response>;
 
-type Handler<
-  P = unknown,
-  Q = unknown,
-  B = unknown
-> = (
-  req: NextRequest,
-  ctx: {
-    params: P;
-    validated?: {
-      query?: Q;
-      body?: B;
-    };
-  }
-) => Promise<Response>;
-
 type DynamicSchemaSet = {
   params?: z.ZodTypeAny;
   query?: z.ZodTypeAny;
@@ -34,41 +19,51 @@ type MethodSchemas = {
   [method: string]: DynamicSchemaSet;
 };
 
+type WithValidationHandler = (
+  req: NextRequest,
+  ctx: {
+    params: { [key: string]: string };
+    validated?: {
+      query?: unknown;
+      body?: unknown;
+      params?: unknown;
+    };
+  }
+) => Promise<Response>;
+
 export function withValidation(
-  handler: Handler,
+  handler: WithValidationHandler,
   schemasByMethod: MethodSchemas
-): Handler {
+): (req: NextRequest, ctx: { params: { [key: string]: string } }) => Promise<Response> {
   return async (req, ctx) => {
     const method = req.method.toUpperCase();
     const schemas = schemasByMethod[method];
+    const validated: Record<string, unknown> = {};
 
     if (!schemas) return handler(req, ctx);
 
     try {
-      const resolvedParams = await ctx.params;
-      if (schemas.params && resolvedParams) {
-        if (typeof ctx.params !== "object" || ctx.params === null) {
-          return NextResponse.json(
-            { error: "params no es un objeto válido" },
-            { status: 400 }
-          );
-        }
-        const result = schemas.params.safeParse(resolvedParams);
+      const params = ctx.params;
+
+      // Validate params
+      if (schemas.params && params) {
+        const result = schemas.params.safeParse(params);
         if (!result.success) {
-          console.log("Errores de validación:", result.error.format());
           return NextResponse.json(
             { error: "Parámetros inválidos", issues: result.error.format() },
             { status: 400 }
           );
         }
-        ctx.params = result.data;
+        validated.params = result.data;
       }
 
+      // Validate query
       if (schemas.query) {
         const queryObj: Record<string, string> = {};
         req.nextUrl.searchParams.forEach((value, key) => {
           queryObj[key] = value;
         });
+
         const result = await schemas.query.safeParseAsync(queryObj);
         if (!result.success) {
           return NextResponse.json(
@@ -76,36 +71,31 @@ export function withValidation(
             { status: 400 }
           );
         }
-        ctx.validated = { ...(ctx.validated || {}), query: result.data };
+        validated.query = result.data;
       }
 
+      // Validate body
       if (schemas.body && method !== "GET") {
         const contentType = req.headers.get("content-type");
-        
-        if (contentType?.includes("multipart/form-data")) {
-          // Dejar que el handler lo maneje
-          return handler(req, ctx);
-        }
-      
-        const rawBody = await req.json(); // ← solo si NO es multipart
-        const dynamicSchema = typeof schemas.body === "function"
-          ? schemas.body({ query: ctx.validated?.query, params: ctx.params })
-          : schemas.body;
-      
-        if (!dynamicSchema) {
-          return NextResponse.json({ error: "No se pudo determinar el schema del body" }, { status: 400 });
-        }
-      
-        const result = await dynamicSchema.safeParseAsync(rawBody);
-        if (!result.success) {
-          return NextResponse.json({ error: "Body inválido", issues: result.error.format() }, { status: 400 });
-        }
-      
-        ctx.validated = { ...(ctx.validated || {}), body: result.data };
-      }
-      
 
-      return handler(req, ctx);
+        if (!contentType?.includes("multipart/form-data")) {
+          const rawBody = await req.json();
+          const dynamicSchema = typeof schemas.body === "function"
+            ? schemas.body({ query: validated.query, params: validated.params })
+            : schemas.body;
+
+          const result = await dynamicSchema?.safeParseAsync(rawBody);
+          if (!result?.success) {
+            return NextResponse.json(
+              { error: "Body inválido", issues: result?.error.format() },
+              { status: 400 }
+            );
+          }
+          validated.body = result.data;
+        }
+      }
+
+      return handler(req, { ...ctx, validated });
     } catch (err) {
       console.error("Error en validación:", err);
       return NextResponse.json(

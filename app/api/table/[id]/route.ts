@@ -10,7 +10,7 @@ import services from "@/backend/Services";
 export const GET = withValidation(
   async (req, { params }) => {
     const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
-    const data = await services.getDataByIdService(params.id, tipo);
+    const data = await services.getDataByIdService(Number(params.id), tipo);
     if (!data)
       return NextResponse.json({ error: "No encontrado" }, { status: 404 });
     return NextResponse.json(serializeData(data));
@@ -28,7 +28,7 @@ export const PATCH = withValidation(
   async (req, ctx) => {
     const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
     const body = ctx.validated?.body as object;
-    const updated = await services.updateDataService(params.id, body, tipo);
+    const updated = await services.updateDataService(Number(ctx.params.id), body, tipo);
     return NextResponse.json(serializeData(updated));
   },
   {
@@ -47,7 +47,7 @@ export const PATCH = withValidation(
 export const DELETE = withValidation(
   async (req, { params }) => {
     const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
-    const deleted = await services.deleteDataByIdService(params.id, tipo);
+    const deleted = await services.deleteDataByIdService(Number(params.id), tipo);
     if (!deleted)
       return NextResponse.json({ error: "No encontrado" }, { status: 404 });
     return NextResponse.json(serializeData(deleted));
