@@ -3,7 +3,12 @@ import repository from "../repository";
 import { v2 as cloudinary } from "cloudinary";
 
 async function getFileData(data: unknown) {
-  if (typeof data === "object" && data !== null && "image" in data && typeof data.image === "string") {
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "image" in data &&
+    typeof data.image === "string"
+  ) {
     if (data.image.split("/")[1] !== "uploads") {
       const url = cloudinary.url(data.image);
       data.image = url;
@@ -22,17 +27,24 @@ const getAllDataService = async (table: SchemaKeys) => {
           const response = await getFileData(elemento);
           dataUpdated?.push(response);
         })
-      );      
+      );
       return dataUpdated;
     }
   return data;
 };
 
-const getDataByIdService = async (id: number, table: SchemaKeys) => {
+const getDataByIdService = async (
+  id: number,
+  table: SchemaKeys,
+  getUrl: boolean = false
+) => {
   const data = await repository.getDataByIdRepository(id, table);
   if (Object.keys(data).some((d) => ["image", "file"].includes(d))) {
-    const response = await getFileData(data);
-    return response;
+    if (getUrl) {
+      const response = await getFileData(data);
+      return response;
+    }
+    return data;
   }
   return data;
 };

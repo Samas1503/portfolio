@@ -5,6 +5,23 @@ import { SchemaKeys, schemas } from "@/backend/data/schemas";
 import { serializeData } from "@/utils/serialize";
 import { withValidation } from "@/utils/withValidation";
 import services from "@/backend/Services";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_APY_KEY,
+  api_secret: process.env.CLOUDINARY_CLOUD_APY_SECRET,
+});
+
+async function deleteImageCloudinary(publicId: string) {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    return result;
+  } catch (error) {
+    console.error("Error deleting image from Cloudinary:", error);
+    throw error;
+  }
+}
 
 // GET
 export const GET = withValidation(
@@ -87,14 +104,28 @@ export const DELETE = withValidation(
     try {
       const params = await ctx.params;
       const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
+      const data = (await services.getDataByIdService(
+        Number(params.id),
+        tipo
+      )) as { image?: string };
+      if (!data)
+        return NextResponse.json({ error: "No encontrado" }, { status: 404 });
       const deleted = await services.deleteDataByIdService(
         Number(params.id),
         tipo
       );
+      if (tipo === "project") {
+        if (data?.image) {
+          await deleteImageCloudinary(data.image);
+        }
+      }
       if (!deleted)
-        return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+        return NextResponse.json(
+          { error: "Error al eliminar elemento" },
+          { status: 404 }
+        );
 
-      const origin = req.headers.get("origin");      
+      const origin = req.headers.get("origin");
 
       return NextResponse.json(serializeData(deleted), {
         status: 200,

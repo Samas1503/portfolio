@@ -9,7 +9,7 @@ const postDataService = async (
   try {
     const parsed = schemas[table].create.parse(data);
     const insertedId = await repository.postDataRepository(parsed, table);
-    const result = await service.getDataByIdService(Number(insertedId), table);
+    const result = await service.getDataByIdService(Number(insertedId), table, true);
     return result;
   } catch (error) {
     console.log("Error in post data service:", error);
