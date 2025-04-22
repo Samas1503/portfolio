@@ -8,6 +8,25 @@ import { commonParams, commonQuery } from "@/utils/schemasRequest";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_APY_KEY,
+  api_secret: process.env.CLOUDINARY_CLOUD_APY_SECRET,
+});
+
+async function uploadImageCloudinary(image: string, image_id: string) {
+  const data = await cloudinary.uploader
+    .upload(image, {
+      folder: "uploads",
+      public_id: image_id,
+    })
+    .catch((error) => {
+      console.log("ERROOOOOR", error);
+    });
+  return data;
+}
 
 // GET
 export const GET = withValidation(
@@ -16,7 +35,6 @@ export const GET = withValidation(
       const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
       const data = await services.getAllDataService(tipo);
       const origin = req.headers.get("origin");
-      console.log(origin);
       return NextResponse.json(serializeData(data), {
         status: 200,
         headers: new Headers({
@@ -69,25 +87,25 @@ export const POST = withValidation(
         if (file && file instanceof File) {
           const arrayBuffer = await file.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
+          const hexName = Buffer.from(file.name).toString('hex').slice(0, 16);
+          const uploadDir = path.join(process.cwd(), "tmp");
+          const uniqueName = `${hexName}-${Date.now()}`;
+          const filePath = path.join(uploadDir, uniqueName); 
 
-          const uploadDir = path.join(process.cwd(), "public/uploads");
           if (!existsSync(uploadDir)) {
             await mkdir(uploadDir, { recursive: true });
           }
-
-          const extension = path.extname(file.name);
-          const baseName = path.basename(file.name, extension);
-          const uniqueName = `${baseName}-${Date.now()}${extension}`;
-          const filePath = path.join(uploadDir, uniqueName);
-
           await writeFile(filePath, buffer);
 
+          const cloudinaryImage = await uploadImageCloudinary(filePath, uniqueName)
+
           uploadedFileInfo = {
-            name: file.name,
-            savedAs: uniqueName,
+            name: cloudinaryImage?.public_id || "",
             type: file.type,
-            size: file.size,
-            path: `/uploads/${uniqueName}`,
+            // name: file.name,
+            // savedAs: uniqueName,
+            // size: file.size,
+            // path: `/uploads/${uniqueName}`,
           };
         }
       }
@@ -96,7 +114,7 @@ export const POST = withValidation(
         ? {
             ...formFields,
             [String(uploadedFileInfo?.type.split("/")[0] || "")]:
-              uploadedFileInfo?.path,
+              uploadedFileInfo?.name,
           }
         : (ctx.validated?.body as object);
 

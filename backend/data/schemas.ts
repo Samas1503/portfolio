@@ -1,14 +1,14 @@
 import {
   contacto,
-  experiencia,
+  experience,
   mensajes,
-  proyectos,
+  project,
   servicios,
   skills,
 } from "@/backend/db/schemas/schemas";
 import {
   contactoInsertSchema,
-  experienciaInsertSchema,
+  experienceInsertSchema,
   mensajesInsertSchema,
   proyectosInsertSchema,
   serviciosInsertSchema,
@@ -18,14 +18,14 @@ import {
   proyectosUpdateSchema,
   skillsUpdateSchema,
   serviciosUpdateSchema,
-  experienciaUpdateSchema,
+  experienceUpdateSchema,
   contactoUpdateSchema,
   mensajesUpdateSchema,
 } from "@/backend/db/schemas/update-schemas";
 
 export const schemas = {
-  proyectos:{
-    schema: proyectos,
+  project:{
+    schema: project,
     create: proyectosInsertSchema,
     update: proyectosUpdateSchema,
   },
@@ -39,10 +39,10 @@ export const schemas = {
     create: serviciosInsertSchema,
     update: serviciosUpdateSchema,
   },
-  work:{
-    schema: experiencia,
-    create: experienciaInsertSchema,
-    update: experienciaUpdateSchema,
+  experience:{
+    schema: experience,
+    create: experienceInsertSchema,
+    update: experienceUpdateSchema,
   },
   contacto:{
     schema: contacto,

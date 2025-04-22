@@ -29,7 +29,7 @@ export const formsData = {
       },
     ],
   },
-  proyectos: {
+  project: {
     schema: z.object({
       id: z.number().optional(),
       titulo: z.string(),
@@ -110,7 +110,7 @@ export const formsData = {
       },
     ],
   },
-  work: {
+  experience: {
     schema: z.object({
       id: z.number().optional(),
       empresa: z.string(),
