@@ -1,14 +1,11 @@
-// app/api/table/route.ts
 import { NextResponse } from "next/server";
 import services from "@/backend/Services";
 import { SchemaKeys, schemas } from "@/backend/data/schemas";
 import { withValidation } from "@/utils/withValidation";
 import { serializeData } from "@/utils/serialize";
 import { commonParams, commonQuery } from "@/utils/schemasRequest";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import { existsSync } from "fs";
 import { v2 as cloudinary } from "cloudinary";
+import streamifier from "streamifier";
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -16,16 +13,29 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_CLOUD_APY_SECRET,
 });
 
-async function uploadImageCloudinary(image: string, image_id: string) {
-  const data = await cloudinary.uploader
-    .upload(image, {
-      folder: "uploads",
-      public_id: image_id,
-    })
-    .catch((error) => {
-      console.log("ERROOOOOR", error);
-    });
-  return data;
+async function uploadImageCloudinaryFromFile(file: File, image_id: string) {
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "uploads",
+        public_id: image_id,
+        filename_override: image_id,
+      },
+      (error, result) => {
+        if (error) {
+          console.error("Upload error", error);
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    );
+
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
 }
 
 // GET
@@ -70,14 +80,12 @@ export const POST = withValidation(
       if (contentType?.includes("multipart/form-data")) {
         const formData = await req.formData();
 
-        // Extraer archivo
         const file =
           formData.get("file") ||
           formData.get("image") ||
           formData.get("audio") ||
           formData.get("video");
 
-        // Extraer campos normales
         for (const [key, value] of formData.entries()) {
           if (typeof value === "string") {
             formFields[key] = value;
@@ -85,27 +93,14 @@ export const POST = withValidation(
         }
 
         if (file && file instanceof File) {
-          const hexName = Buffer.from(file.name).toString('hex').slice(0, 16);
-          const uploadDir = path.join("tmp");
+          const hexName = Buffer.from(file.name).toString("hex").slice(0, 16);
           const uniqueName = `${hexName}-${Date.now()}`;
-          const filePath = path.join(uploadDir, uniqueName); 
-          // const arrayBuffer = await file.arrayBuffer();
-          // const buffer = Buffer.from(arrayBuffer);
 
-          // if (!existsSync(uploadDir)) {
-          //   await mkdir(uploadDir, { recursive: true });
-          // }
-          // await writeFile(filePath, buffer);
-
-          const cloudinaryImage = await uploadImageCloudinary(filePath, uniqueName)
+          await uploadImageCloudinaryFromFile(file, uniqueName);
 
           uploadedFileInfo = {
-            name: cloudinaryImage?.public_id || "",
+            name: `uploads/${uniqueName}`,
             type: file.type,
-            // name: file.name,
-            // savedAs: uniqueName,
-            // size: file.size,
-            // path: `/uploads/${uniqueName}`,
           };
         }
       }
