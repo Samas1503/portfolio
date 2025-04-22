@@ -20,12 +20,12 @@ import { FormType } from "./forms/formsData";
 import { useEffect, useState } from "react";
 import { formsData } from "@/components/pages/forms/formsData";
 
-type Experiencia = typeof formsData.work.schema;
+type Experiencia = typeof formsData.experience.schema;
 type ArrayExperiencia = Array<z.infer<Experiencia>>;
 
-const Works = () => {
+const Experience = () => {
   const [dataExperience, setDataExperiencie] = useState<ArrayExperiencia>();
-  const resource = "work";
+  const resource = "experience";
   useEffect(() => {
     const fetchData = async () => {
       const data = await apiFetch({ resource });
@@ -53,7 +53,7 @@ const Works = () => {
   };
 
   return (
-    <div className="p-6 md:px-12 md:py-44 max-w-5xl mx-auto" id="work">
+    <div className="p-6 md:px-12 md:py-44 max-w-5xl mx-auto" id="project">
       <Title title="Trabajos" subtitle="Experiencia Laboral" />
       <div className="grid justify-center md:grid-cols-2 gap-8 mt-5">
         {dataExperience?.map((data) => (
@@ -102,7 +102,7 @@ const Works = () => {
       </div>
 
       <div className="flex justify-center items-center max-w-4xl mx-auto mt-10">
-        <ModalTriggerButton onSuccess={(result: unknown) => handleCreate(result as Experiencia)} tipoFormulario="work">
+        <ModalTriggerButton onSuccess={(result: unknown) => handleCreate(result as Experiencia)} tipoFormulario="experience">
           <Button type="button">Agregar Experiencia Laboral</Button>
         </ModalTriggerButton>
       </div>
@@ -110,4 +110,4 @@ const Works = () => {
   );
 };
 
-export default Works;
+export default Experience;

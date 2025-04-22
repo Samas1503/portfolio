@@ -35,7 +35,7 @@ export async function apiFetch<T = unknown, R = unknown>({
   };
 
   const res = await fetch(url, opts);
-
+  
   if (!res.ok) {
     const errorText = await res.text();
     throw new Error(`HTTP ${res.status}: ${errorText}`);

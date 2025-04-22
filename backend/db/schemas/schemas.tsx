@@ -1,6 +1,6 @@
 import { sqliteTable, integer, text, real } from "drizzle-orm/sqlite-core";
 
-export const proyectos = sqliteTable("Proyectos", {
+export const project = sqliteTable("Proyectos", {
   id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
   titulo: text("titulo"),
   image: text("image"),
@@ -26,7 +26,7 @@ export const servicios = sqliteTable("Servicios", {
   estado: integer({ mode: "boolean" }).default(false),
 });
 
-export const experiencia = sqliteTable("Experiencia", {
+export const experience = sqliteTable("Experiencia", {
   id: integer("id").primaryKey({ autoIncrement: true }).notNull(),
   empresa: text("empresa"),
   cargo: text("cargo"),
