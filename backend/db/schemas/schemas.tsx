@@ -1,7 +1,7 @@
 import { mysqlTable, int, text, boolean, float } from "drizzle-orm/mysql-core";
 // import { mysqlTable, integer, text, real } from "drizzle-orm/sqlite-core";
 
-export const proyectos = mysqlTable("Proyectos", {
+export const project = mysqlTable("Proyectos", {
   id: int().primaryKey().autoincrement().notNull(),
   titulo: text("titulo"),
   image: text("image"),
@@ -27,7 +27,7 @@ export const servicios = mysqlTable("Servicios", {
   estado: boolean().default(true),
 });
 
-export const experiencia = mysqlTable("Experiencia", {
+export const experience = mysqlTable("Experiencia", {
   id: int().primaryKey().autoincrement().notNull(),
   empresa: text("empresa"),
   cargo: text("cargo"),
