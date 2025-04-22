@@ -8,7 +8,7 @@ import Portfolio from "@/components/pages/portfolio";
 import Services from "@/components/pages/services";
 import Testimonials from "@/components/pages/testimonials";
 import InfoUsuario from "@/components/info-usuario";
-import Works from "@/components/pages/works";
+import Works from "@/components/pages/experience";
 
 export default function Home() {
   return (

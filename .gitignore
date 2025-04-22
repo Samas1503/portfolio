@@ -139,3 +139,7 @@ dist
 # Database
 drizzle/
 drizzle/*
+
+# archivos temporales
+tmp/
+tmp/*

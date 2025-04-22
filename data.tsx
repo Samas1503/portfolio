@@ -53,9 +53,9 @@ export const itemsNavbar = [
   },
   {
     id: 3,
-    title: "Work",
+    title: "Proyectos",
     icon: <LucideWorkflow size={20} />,
-    link: "#work",
+    link: "#project",
   },
   {
     id: 4,

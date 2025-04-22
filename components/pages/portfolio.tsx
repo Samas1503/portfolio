@@ -3,6 +3,7 @@
 import Title from "../shared/title";
 import Image from "next/image";
 import Link from "next/link";
+import { CldImage } from "next-cloudinary";
 import { Button, buttonVariants } from "../ui/button";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { apiFetch } from "./fetch/tech-all";
@@ -11,12 +12,12 @@ import { useEffect, useState } from "react";
 import DeleteButton from "../shared/delete-button";
 import { z } from "zod";
 
-type Portfolio = typeof formsData.proyectos.schema;
+type Portfolio = typeof formsData.project.schema;
 type ArrayPortfolio = Array<z.infer<Portfolio>>;
 
 const Portfolio = () => {
   const [dataPortfolio, setDataPortfolio] = useState<ArrayPortfolio>();
-  const resource = "proyectos";
+  const resource = "project";
   useEffect(() => {
     const fetchData = async () => {
       const data = await apiFetch({ resource });
@@ -61,17 +62,28 @@ const Portfolio = () => {
                 tipoElemento={""}
               />
             </div>
-            <Image
-              src={
-                "image" in data && data.image
-                  ? data.image
-                  : "/placeholder-image.png"
-              }
-              alt="Image"
-              width={300}
-              height={300}
-              className="rounded-2xl w-full"
-            />
+            {data.image.split("/")[1] === "uploads" ? (
+              <Image
+                src={
+                  "image" in data && data.image
+                    ? data.image
+                    : "/placeholder-image.png"
+                }
+                alt="Image"
+                width={300}
+                height={300}
+                className="rounded-2xl w-full"
+              />
+            ) : (
+              <CldImage
+                src={data.image}
+                width={300}
+                height={300}
+                crop="fit" 
+                alt={"Image"}
+                className="rounded-2xl w-full"
+              />
+            )}
             <div className="mt-5 flex gap-10">
               <Link
                 className={buttonVariants({ variant: "outline" })}
@@ -94,7 +106,10 @@ const Portfolio = () => {
         ))}
       </div>
       <div className="flex justify-center items-center max-w-4xl mx-auto mt-10">
-      <ModalTriggerButton onSuccess={(result: unknown) => handleCreate(result as Portfolio)} tipoFormulario="proyectos">
+        <ModalTriggerButton
+          onSuccess={(result: unknown) => handleCreate(result as Portfolio)}
+          tipoFormulario="project"
+        >
           <Button type="button">Agregar Proyecto</Button>
         </ModalTriggerButton>
       </div>
