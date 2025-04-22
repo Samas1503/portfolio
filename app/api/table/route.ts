@@ -88,7 +88,7 @@ export const POST = withValidation(
           const arrayBuffer = await file.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
           const hexName = Buffer.from(file.name).toString('hex').slice(0, 16);
-          const uploadDir = path.join(process.cwd(), "tmp");
+          const uploadDir = path.join("tmp");
           const uniqueName = `${hexName}-${Date.now()}`;
           const filePath = path.join(uploadDir, uniqueName); 
 
