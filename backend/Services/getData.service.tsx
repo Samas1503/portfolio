@@ -3,9 +3,11 @@ import repository from "../repository";
 import { v2 as cloudinary } from "cloudinary";
 
 async function getFileData(data: unknown) {
-  if (data.image.split("/")[1] !== "uploads") {
-    const url = cloudinary.url(data.image);
-    data.image = url;
+  if (typeof data === "object" && data !== null && "image" in data && typeof data.image === "string") {
+    if (data.image.split("/")[1] !== "uploads") {
+      const url = cloudinary.url(data.image);
+      data.image = url;
+    }
   }
   return await data;
 }

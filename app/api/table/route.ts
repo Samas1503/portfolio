@@ -87,17 +87,14 @@ export const POST = withValidation(
         if (file && file instanceof File) {
           const arrayBuffer = await file.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
-          
+          const hexName = Buffer.from(file.name).toString('hex').slice(0, 16);
           const uploadDir = path.join(process.cwd(), "tmp");
-          
+          const uniqueName = `${hexName}-${Date.now()}`;
+          const filePath = path.join(uploadDir, uniqueName); 
+
           if (!existsSync(uploadDir)) {
             await mkdir(uploadDir, { recursive: true });
           }
-
-          const extension = path.extname(file.name);
-          const baseName = path.basename(file.name, extension);
-          const uniqueName = `${baseName}-${Date.now()}`;
-          const filePath = path.join(uploadDir, uniqueName);
           await writeFile(filePath, buffer);
 
           const cloudinaryImage = await uploadImageCloudinary(filePath, uniqueName)
