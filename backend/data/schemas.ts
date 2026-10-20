@@ -52,6 +52,9 @@ export const schemas = {
       urlDemo: text,
       categoria: text,
       tags: textArray,
+      descripcion: text,
+      rol: text,
+      periodo: text,
       estado: bool,
     },
     { urlGithub: "url_github", urlDemo: "url_demo" }

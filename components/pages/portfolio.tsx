@@ -4,7 +4,7 @@ import Image from "next/image";
 import { CldImage } from "next-cloudinary";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
-import { ExternalLink, Github, Pencil } from "lucide-react";
+import { BriefcaseBusiness, ExternalLink, Github, Lock, Pencil } from "lucide-react";
 import { parseTags } from "@/utils/tags";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
@@ -52,7 +52,17 @@ const INITIAL_VISIBLE = 6;
 const ProjectImage = ({ src, alt }: { src?: string | null; alt: string }) => {
   const className =
     "aspect-video w-full rounded-lg border border-border object-cover transition duration-500 group-hover:scale-[1.03]";
-  if (!src) return <div className={`${className} bg-muted`} />;
+  if (!src)
+    return (
+      <div
+        className={`${className} flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-primary/15 via-muted to-muted text-primary`}
+      >
+        <BriefcaseBusiness className="size-10" aria-hidden />
+        <span className="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
+          <Lock className="size-3" aria-hidden /> Proyecto interno
+        </span>
+      </div>
+    );
   if (/^https?:\/\//.test(src))
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={src} alt={alt} loading="lazy" className={className} />;
@@ -72,7 +82,13 @@ const Portfolio = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await apiFetch({ resource });
-      setDataPortfolio(data as ArrayPortfolio);
+      setDataPortfolio(
+        [...(data as ArrayPortfolio)].sort(
+          (a, b) =>
+            Number(!a.periodo) - Number(!b.periodo) ||
+            Number(a.id) - Number(b.id)
+        )
+      );
     };
     fetchData();
   }, []);
@@ -184,6 +200,14 @@ const Portfolio = () => {
                 />
               </div>
             </div>
+            {(data.rol || data.periodo) && (
+              <p className="mt-1 px-1 font-mono text-xs text-muted-foreground">
+                {[data.rol, data.periodo].filter(Boolean).join(" · ")}
+              </p>
+            )}
+            {data.descripcion && (
+              <p className="mt-2 px-1 text-sm text-muted-foreground">{data.descripcion}</p>
+            )}
             {(data.categoria || toTags(data.tags).length > 0) && (
               <ul className="mt-3 flex flex-wrap gap-1.5 px-1" aria-label="Tecnologías">
                 {data.categoria && (

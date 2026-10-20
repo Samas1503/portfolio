@@ -116,9 +116,12 @@ export type Database = {
       Proyectos: {
         Row: {
           categoria: string | null
+          descripcion: string | null
           estado: boolean | null
           id: number
           image: string | null
+          periodo: string | null
+          rol: string | null
           tags: string[]
           titulo: string | null
           url_demo: string | null
@@ -126,9 +129,12 @@ export type Database = {
         }
         Insert: {
           categoria?: string | null
+          descripcion?: string | null
           estado?: boolean | null
           id?: number
           image?: string | null
+          periodo?: string | null
+          rol?: string | null
           tags?: string[]
           titulo?: string | null
           url_demo?: string | null
@@ -136,9 +142,12 @@ export type Database = {
         }
         Update: {
           categoria?: string | null
+          descripcion?: string | null
           estado?: boolean | null
           id?: number
           image?: string | null
+          periodo?: string | null
+          rol?: string | null
           tags?: string[]
           titulo?: string | null
           url_demo?: string | null

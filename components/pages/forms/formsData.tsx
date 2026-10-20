@@ -58,6 +58,9 @@ export const formsData = {
       urlDemo: z.string(),
       categoria: z.string().optional(),
       tags: z.string().optional(),
+      descripcion: z.string().optional(),
+      rol: z.string().optional(),
+      periodo: z.string().optional(),
     }),
     fields: [
       { label: "Titulo", name: "titulo", placeholder: "Titulo del Proyecto" },
@@ -93,6 +96,14 @@ export const formsData = {
         placeholder: "Next.js, Supabase, Tailwind",
         type: "text" as const,
       },
+      {
+        label: "Descripción",
+        name: "descripcion",
+        placeholder: "Qué hace el proyecto",
+        type: "textarea" as const,
+      },
+      { label: "Rol", name: "rol", placeholder: "Ej: Backend Developer", type: "text" as const },
+      { label: "Período", name: "periodo", placeholder: "Ej: 2023 - 2024", type: "text" as const },
     ],
   },
   servicios: {
