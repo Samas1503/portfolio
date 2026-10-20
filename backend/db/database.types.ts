@@ -113,6 +113,48 @@ export type Database = {
         }
         Relationships: []
       }
+      Perfil: {
+        Row: {
+          alias: string | null
+          clientes: string | null
+          cv_url: string | null
+          descripcion: string | null
+          experiencia: string | null
+          id: number
+          nombre: string | null
+          proyectos: string | null
+          resumen: string | null
+          rol: string | null
+          telefono: string | null
+        }
+        Insert: {
+          alias?: string | null
+          clientes?: string | null
+          cv_url?: string | null
+          descripcion?: string | null
+          experiencia?: string | null
+          id?: number
+          nombre?: string | null
+          proyectos?: string | null
+          resumen?: string | null
+          rol?: string | null
+          telefono?: string | null
+        }
+        Update: {
+          alias?: string | null
+          clientes?: string | null
+          cv_url?: string | null
+          descripcion?: string | null
+          experiencia?: string | null
+          id?: number
+          nombre?: string | null
+          proyectos?: string | null
+          resumen?: string | null
+          rol?: string | null
+          telefono?: string | null
+        }
+        Relationships: []
+      }
       Proyectos: {
         Row: {
           categoria: string | null

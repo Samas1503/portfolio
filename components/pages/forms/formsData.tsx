@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CONTACT_ICONS } from "@/components/shared/contact-icon";
 
 export const PROJECT_CATEGORIES = [
   "Frontend",
@@ -21,32 +22,47 @@ export const SERVICE_ICONS = [
   "BellPlus",
 ];
 
+export const PERFIL_HEADER_FIELDS = ["nombre", "rol", "alias", "resumen", "cvUrl"];
+export const PERFIL_ABOUT_FIELDS = [
+  "descripcion",
+  "experiencia",
+  "clientes",
+  "proyectos",
+  "telefono",
+];
+
+export const toFormValues = (row: object) =>
+  Object.fromEntries(Object.entries(row).map(([k, v]) => [k, v ?? ""]));
+
 export const formsData = {
   contacto: {
     schema: z.object({
       id: z.number().optional(),
-      username: z.string().min(2),
-      email: z.string().email(),
-      message: z.string(),
+      nombre: z.string().min(1),
+      titulo: z.string(),
+      link: z.string().min(1),
+      icono: z.string(),
     }),
     fields: [
+      { label: "Nombre", name: "nombre", placeholder: "Ej: LinkedIn", type: "text" as const },
       {
-        label: "Username",
-        name: "username",
-        placeholder: "Tu nombre",
-        type: "text",
+        label: "Texto visible",
+        name: "titulo",
+        placeholder: "Ej: linkedin.com/in/usuario",
+        type: "text" as const,
       },
       {
-        label: "Email",
-        name: "email",
-        placeholder: "Tu correo",
-        type: "email" as const,
+        label: "Link (https://…, mailto:… o tel:…)",
+        name: "link",
+        placeholder: "https://linkedin.com/in/usuario",
+        type: "text" as const,
       },
       {
-        label: "Mensaje",
-        name: "message",
-        placeholder: "Tu mensaje",
-        type: "textarea" as const,
+        label: "Ícono",
+        name: "icono",
+        placeholder: "Elegí un ícono",
+        type: "dropdown" as const,
+        values: Object.keys(CONTACT_ICONS),
       },
     ],
   },
@@ -105,6 +121,68 @@ export const formsData = {
       },
       { label: "Rol", name: "rol", placeholder: "Ej: Backend Developer", type: "text" as const },
       { label: "Período", name: "periodo", placeholder: "Ej: 2023 - 2024", type: "text" as const },
+    ],
+  },
+  perfil: {
+    schema: z.object({
+      id: z.number().optional(),
+      nombre: z.string().min(1),
+      rol: z.string(),
+      alias: z.string(),
+      resumen: z.string(),
+      cvUrl: z.string(),
+      descripcion: z.string().min(1),
+      experiencia: z.string(),
+      clientes: z.string(),
+      proyectos: z.string(),
+      telefono: z.string(),
+    }),
+    fields: [
+      { label: "Nombre", name: "nombre", placeholder: "Tu nombre", type: "text" as const },
+      { label: "Rol", name: "rol", placeholder: "Ej: Backend Developer", type: "text" as const },
+      { label: "Alias", name: "alias", placeholder: "Ej: Samas1503", type: "text" as const },
+      {
+        label: "Resumen",
+        name: "resumen",
+        placeholder: "Una o dos líneas sobre vos",
+        type: "textarea" as const,
+      },
+      {
+        label: "Link del CV (o subí un PDF con el botón del CV)",
+        name: "cvUrl",
+        placeholder: "https://…",
+        type: "text" as const,
+      },
+      {
+        label: "Descripción (párrafos separados por una línea en blanco, **texto** para resaltar)",
+        name: "descripcion",
+        placeholder: "Contá quién sos",
+        type: "textarea" as const,
+      },
+      {
+        label: "Experiencia",
+        name: "experiencia",
+        placeholder: "Ej: +2 años de experiencia",
+        type: "text" as const,
+      },
+      {
+        label: "Clientes",
+        name: "clientes",
+        placeholder: "Ej: +20 clientes satisfechos",
+        type: "text" as const,
+      },
+      {
+        label: "Proyectos",
+        name: "proyectos",
+        placeholder: "Ej: +5 completados",
+        type: "text" as const,
+      },
+      {
+        label: "Teléfono",
+        name: "telefono",
+        placeholder: "Ej: 3884558285",
+        type: "text" as const,
+      },
     ],
   },
   servicios: {
