@@ -6,7 +6,9 @@ type ApiParams<T> = {
 };
 
 function getBase() {
-  return process.env.NEXT_PUBLIC_BACKEND_URL;
+  // In the browser use same-origin requests so the session cookie is sent.
+  if (typeof window !== "undefined") return "";
+  return process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
 }
 
 export async function apiFetch<T = unknown, R = unknown>({

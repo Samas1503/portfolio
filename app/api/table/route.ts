@@ -6,6 +6,7 @@ import { serializeData } from "@/utils/serialize";
 import { commonParams, commonQuery } from "@/utils/schemasRequest";
 import { v2 as cloudinary } from "cloudinary";
 import streamifier from "streamifier";
+import { parseTags } from "@/utils/tags";
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -90,6 +91,9 @@ export const POST = withValidation(
           if (typeof value === "string") {
             formFields[key] = value;
           }
+        }
+        if (typeof formFields.tags === "string") {
+          formFields.tags = parseTags(formFields.tags);
         }
 
         if (file && file instanceof File) {

@@ -7,7 +7,8 @@ import { Button } from "../ui/button";
 import { apiFetch } from "./fetch/tech-all";
 import DeleteButton from "../shared/delete-button";
 import { formsData, FormType } from "./forms/formsData";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useUsuario } from "@/context/UserContext";
 import { z } from "zod";
 
 type Skill = z.infer<typeof formsData.skills.schema>;
@@ -16,6 +17,25 @@ type ArraySkill = Skill[];
 const Skills = () => {
   const [dataSkills, setDataSkills] = useState<Record<string, ArraySkill>>({});
   const resource = "skills";
+  const { usuario } = useUsuario();
+  const saveTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
+
+  const handleValueChange = (item: Skill, valor: number) => {
+    setDataSkills((prev) => ({
+      ...prev,
+      [item.tipo]: prev[item.tipo].map((s) =>
+        s.id === item.id ? { ...s, valor } : s
+      ),
+    }));
+    const id = item.id!;
+    clearTimeout(saveTimers.current[id]);
+    saveTimers.current[id] = setTimeout(() => {
+      apiFetch({ resource, method: "PATCH", id, data: { valor } }).catch(
+        (error) => console.error("No se pudo guardar la skill", error)
+      );
+    }, 500);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const response = (await apiFetch({ resource })) as Skill[];
@@ -102,19 +122,39 @@ const Skills = () => {
                       />
                     </div>
                   </div>
-                  <div
-                    className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"
-                    role="progressbar"
-                    aria-label={item.nombre}
-                    aria-valuenow={item.valor}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                  >
+                  {usuario ? (
+                    <div className="mt-2 flex items-center gap-3">
+                      <input
+                        type="range"
+                        min={0}
+                        max={100}
+                        step={1}
+                        value={item.valor}
+                        aria-label={`Nivel de ${item.nombre}`}
+                        onChange={(e) =>
+                          handleValueChange(item, Number(e.target.value))
+                        }
+                        className="h-1.5 w-full cursor-pointer accent-primary"
+                      />
+                      <span className="w-9 text-right font-mono text-xs text-muted-foreground">
+                        {item.valor}%
+                      </span>
+                    </div>
+                  ) : (
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-primary/60 to-primary"
-                      style={{ width: `${item.valor}%` }}
-                    />
-                  </div>
+                      className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"
+                      role="progressbar"
+                      aria-label={item.nombre}
+                      aria-valuenow={item.valor}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                    >
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-primary/60 to-primary"
+                        style={{ width: `${item.valor}%` }}
+                      />
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

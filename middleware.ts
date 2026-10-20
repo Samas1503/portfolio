@@ -14,6 +14,12 @@ export default async function middleware(req: NextRequest) {
 
   const cookie = (await cookies()).get("session")?.value;
   const session = cookie ? await decrypt(cookie) : null;
+  const isMutatingApi =
+    path.startsWith("/api/table") && req.method !== "GET" && req.method !== "OPTIONS";
+  if (isMutatingApi && !session?.userId) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
   if (isProtectedRoute && !session?.userId) {
     return NextResponse.redirect(new URL("/login", req.url));
   }

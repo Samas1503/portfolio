@@ -1,5 +1,26 @@
 import { z } from "zod";
 
+export const PROJECT_CATEGORIES = [
+  "Frontend",
+  "Frontend Demo",
+  "Backend",
+  "Fullstack",
+  "Web3",
+  "Mobile",
+  "Desktop",
+  "Otro",
+];
+
+export const SERVICE_ICONS = [
+  "PanelsTopLeft",
+  "Server",
+  "Database",
+  "Blocks",
+  "Code",
+  "Brush",
+  "BellPlus",
+];
+
 export const formsData = {
   contacto: {
     schema: z.object({
@@ -36,6 +57,11 @@ export const formsData = {
       image: z.string(),
       urlGithub: z.string(),
       urlDemo: z.string(),
+      categoria: z.string().optional(),
+      tags: z.string().optional(),
+      descripcion: z.string().optional(),
+      rol: z.string().optional(),
+      periodo: z.string().optional(),
     }),
     fields: [
       { label: "Titulo", name: "titulo", placeholder: "Titulo del Proyecto" },
@@ -56,6 +82,56 @@ export const formsData = {
         label: "URL de la Demo  ",
         name: "urlDemo",
         placeholder: "URL de la demo",
+        type: "text" as const,
+      },
+      {
+        label: "Categoría",
+        name: "categoria",
+        placeholder: "Categoría del proyecto",
+        type: "dropdown" as const,
+        values: PROJECT_CATEGORIES,
+      },
+      {
+        label: "Tecnologías (separadas por coma)",
+        name: "tags",
+        placeholder: "Next.js, Supabase, Tailwind",
+        type: "text" as const,
+      },
+      {
+        label: "Descripción",
+        name: "descripcion",
+        placeholder: "Qué hace el proyecto",
+        type: "textarea" as const,
+      },
+      { label: "Rol", name: "rol", placeholder: "Ej: Backend Developer", type: "text" as const },
+      { label: "Período", name: "periodo", placeholder: "Ej: 2023 - 2024", type: "text" as const },
+    ],
+  },
+  servicios: {
+    schema: z.object({
+      id: z.number().optional(),
+      tipo: z.string().min(1),
+      icono: z.string().optional(),
+      nombre: z.string().min(1),
+    }),
+    fields: [
+      {
+        label: "Categoría",
+        name: "tipo",
+        placeholder: "Ej: Desarrollo Web",
+        type: "text" as const,
+      },
+      {
+        label: "Ícono",
+        name: "icono",
+        placeholder: "Ícono de la categoría",
+        type: "dropdown" as const,
+        values: SERVICE_ICONS,
+      },
+      {
+        label: "Servicio",
+        name: "nombre",
+        placeholder: "Ej: Desarrollo de APIs REST",
         type: "text" as const,
       },
     ],

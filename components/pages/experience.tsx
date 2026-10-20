@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { MapPin, Phone } from "lucide-react";
+import { MapPin, Pencil, Phone } from "lucide-react";
 import { Button, buttonVariants } from "../ui/button";
 import {
   Dialog,
@@ -88,6 +88,14 @@ const Experience = () => {
     ]);
   };
 
+  const handleUpdate = (data: Experiencia) => {
+    const updated = data as unknown as z.infer<Experiencia>;
+    setDataExperiencie((prev) =>
+      prev?.map((item) =>
+        Number(item.id) === Number(updated.id) ? { ...item, ...updated } : item
+      )
+    );
+  };
   return (
     <Section id="experience" number="02" title="Experiencia">
       <ol className="group/list space-y-4">
@@ -103,13 +111,33 @@ const Experience = () => {
                     {data.cargo}{" "}
                     <span className="text-primary">· {data.empresa}</span>
                   </h3>
-                  <DeleteButton
-                    tipoSchema={resource as FormType}
-                    id={Number(data.id)}
-                    onSuccess={handleDelete}
-                    className="size-8 shrink-0"
-                    tipoElemento={""}
-                  />
+                  <div className="flex shrink-0 gap-2">
+                    <ModalTriggerButton
+                      tipoFormulario="experience"
+                      id={Number(data.id)}
+                      defaultValues={data}
+                      title={`Editar: ${data.empresa}`}
+                      onSuccess={(result: unknown) =>
+                        handleUpdate(result as Experiencia)
+                      }
+                    >
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="size-8"
+                        aria-label={`Editar ${data.empresa}`}
+                      >
+                        <Pencil />
+                      </Button>
+                    </ModalTriggerButton>
+                    <DeleteButton
+                      tipoSchema={resource as FormType}
+                      id={Number(data.id)}
+                      onSuccess={handleDelete}
+                      className="size-8 shrink-0"
+                      tipoElemento={""}
+                    />
+                  </div>
                 </div>
                 {data.nombreReferencia && (
                   <p className="mt-2 text-sm text-muted-foreground">
