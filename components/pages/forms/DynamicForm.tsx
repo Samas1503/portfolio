@@ -25,6 +25,8 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { useRef, useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import GoogleMaps from "../google-maps";
 
 export function DynamicForm<T extends z.ZodTypeAny>({
@@ -108,11 +110,19 @@ export function DynamicForm<T extends z.ZodTypeAny>({
                     ) : field.type === "dropdown" ? (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="outline">
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "h-9 w-full justify-between border-input bg-transparent font-normal shadow-xs",
+                              !dropdownValues[field.name] &&
+                                "text-muted-foreground"
+                            )}
+                          >
                             {dropdownValues[field.name] || field.placeholder}
+                            <ChevronDown className="size-4 shrink-0 opacity-50" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-full dark:bg-slate-800 py-3 px-6 rounded border">
+                        <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] rounded-md">
                           <DropdownMenuLabel>
                             {field.placeholder}
                           </DropdownMenuLabel>
@@ -132,7 +142,6 @@ export function DynamicForm<T extends z.ZodTypeAny>({
                           >
                             {field?.values?.map((value, index) => (
                               <DropdownMenuRadioItem
-                                className=""
                                 key={index}
                                 value={value}
                               >
