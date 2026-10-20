@@ -1,9 +1,9 @@
 import { defineConfig } from "drizzle-kit";
-import { dbConfig } from "./backend/db/config"; // Ruta al archivo de configuración
+import { databaseUrl } from "./backend/db/config";
 
 export default defineConfig({
-  dialect: "mysql",
+  dialect: "postgresql",
   schema: "./backend/db/schemas/schemas.tsx",
   out: "./drizzle",
-  dbCredentials: dbConfig,
+  dbCredentials: { url: databaseUrl },
 });
