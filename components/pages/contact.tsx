@@ -16,7 +16,7 @@ const Contact = ({ contactos }: { contactos: Contacto[] }) => {
   const refresh = () => router.refresh();
 
   return (
-    <Section id="contact" number="06" title="Contacto">
+    <Section id="contact" number="07" title="Contacto">
       <p className="mb-8 max-w-md leading-relaxed text-muted-foreground">
         ¿Tenés un proyecto o una propuesta? Escribime por cualquiera de estos
         medios o dejame un mensaje con el formulario.

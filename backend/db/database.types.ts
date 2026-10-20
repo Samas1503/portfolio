@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      Academia: {
+        Row: {
+          descripcion: string | null
+          estado: boolean | null
+          id: number
+          institucion: string | null
+          periodo: string | null
+          tipo: string | null
+          titulo: string | null
+        }
+        Insert: {
+          descripcion?: string | null
+          estado?: boolean | null
+          id?: number
+          institucion?: string | null
+          periodo?: string | null
+          tipo?: string | null
+          titulo?: string | null
+        }
+        Update: {
+          descripcion?: string | null
+          estado?: boolean | null
+          id?: number
+          institucion?: string | null
+          periodo?: string | null
+          tipo?: string | null
+          titulo?: string | null
+        }
+        Relationships: []
+      }
       Contacto: {
         Row: {
           estado: boolean | null

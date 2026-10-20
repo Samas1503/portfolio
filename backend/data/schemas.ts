@@ -111,6 +111,14 @@ export const schemas = {
     icono: text,
     estado: bool,
   }),
+  academia: defineTable("Academia", {
+    tipo: text,
+    institucion: text,
+    titulo: text,
+    periodo: text,
+    descripcion: text,
+    estado: bool,
+  }),
   mensajes: defineTable("Mensajes", {
     id_mensaje: text,
     origen: text,

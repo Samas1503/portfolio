@@ -1,4 +1,5 @@
 import AboutMe from "@/components/pages/about-me";
+import Academia from "@/components/pages/academia";
 import Contact from "@/components/pages/contact";
 import Skills from "@/components/pages/skils";
 import Footer from "@/components/pages/footer";
@@ -26,6 +27,7 @@ export default async function Home() {
           <Skills />
           <Services />
           <Portfolio />
+          <Academia />
           <Contact contactos={contactos} />
           <Footer />
         </main>

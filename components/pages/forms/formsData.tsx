@@ -343,6 +343,23 @@ export const formsData = {
       },
     ],
   },
+  academia: {
+    schema: z.object({
+      id: z.number().optional(),
+      tipo: z.enum(["Carrera", "Curso"]),
+      institucion: z.string(),
+      titulo: z.string(),
+      periodo: z.string(),
+      descripcion: z.string(),
+    }),
+    fields: [
+      { label: "Tipo", name: "tipo", placeholder: "Tipo", type: "dropdown" as const, values: ["Carrera", "Curso"] },
+      { label: "Institución", name: "institucion", placeholder: "Ej: UNJu", type: "text" as const },
+      { label: "Título / Curso", name: "titulo", placeholder: "Ej: Ingeniería Informática", type: "text" as const },
+      { label: "Período", name: "periodo", placeholder: "Ej: 2020 - 2024", type: "text" as const },
+      { label: "Descripción", name: "descripcion", placeholder: "Opcional", type: "textarea" as const },
+    ],
+  },
   mensajes: {
     schema: z.object({
       id: z.number().optional(),
