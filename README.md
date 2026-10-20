@@ -37,11 +37,13 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 
 
-## Migrate database
+## Base de datos (Supabase)
+El backend usa `@supabase/supabase-js` desde el servidor (`backend/db/supabase.ts`) con
+`SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` (Vercel las inyecta desde la integración de Supabase).
+Todas las tablas tienen RLS activado y sin políticas, así que solo se accede con la service role key.
+
 ```bash
-# Guarda los cambios realizados en los schemas
-npx drizzle-kit generate
-# Actualiza la bd los cambios de lo schemas
-npx drizzle-kit push
-# Obtiene los cambios realizados en la bd
-npm drizzle-kit pull
+# Schema inicial: supabase/migrations/
+# Regenerar los tipos después de cambiar tablas
+npx supabase gen types typescript --project-id ahjufrjambuzlxraavky > backend/db/database.types.ts
+```

@@ -39,6 +39,7 @@ const getDataByIdService = async (
   getUrl: boolean = false
 ) => {
   const data = await repository.getDataByIdRepository(id, table);
+  if (!data) return data;
   if (Object.keys(data).some((d) => ["image", "file"].includes(d))) {
     if (getUrl) {
       const response = await getFileData(data);
