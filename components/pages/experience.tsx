@@ -141,7 +141,7 @@ const Experience = () => {
   return (
     <Section id="experience" number="02" title="Experiencia">
       <ol className="group/list relative ml-2 space-y-4 border-l border-border/70 sm:ml-4">
-        {sorted.map((data) => {
+        {sorted.map((data, idx) => {
           const isCurrent = !data.fecha_fin;
           return (
             <li key={data.id} className="relative pl-6 sm:pl-8">
@@ -153,8 +153,11 @@ const Experience = () => {
                   <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary/60 motion-reduce:hidden" />
                 )}
                 <span
+                  style={{
+                    animationDelay: `${(sorted.length - 1 - idx) * 0.5}s`,
+                  }}
                   className={cn(
-                    "relative inline-flex size-3 rounded-full ring-4 ring-background",
+                    "timeline-breathe relative inline-flex size-3 rounded-full ring-4 ring-background",
                     isCurrent ? "bg-primary" : "bg-muted-foreground/40"
                   )}
                 />

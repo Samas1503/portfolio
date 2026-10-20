@@ -76,12 +76,15 @@ const Academia = () => {
   return (
     <Section id="academia" number="06" title="Formación Académica">
       <ol className="relative ml-2 space-y-8 border-l border-border/60 pl-6">
-        {carreras.map((c) => {
+        {carreras.map((c, idx) => {
           const ongoing = isOngoing(c.periodo);
           return (
             <li key={c.id} className="relative">
               <span
-                className={`absolute -left-[31px] top-1.5 h-2.5 w-2.5 rounded-full ${
+                style={{
+                  animationDelay: `${(carreras.length - 1 - idx) * 0.5}s`,
+                }}
+                className={`timeline-breathe absolute -left-[31px] top-1.5 h-2.5 w-2.5 rounded-full ${
                   ongoing ? "bg-primary" : "bg-muted-foreground/40"
                 }`}
               />
