@@ -11,8 +11,8 @@ html, body {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -81,6 +81,7 @@ html, body {
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.637 0.237 25.331);
+  --spotlight: rgba(239, 68, 68, 0.06);
 }
 
 .dark {
@@ -115,4 +116,24 @@ html, body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.637 0.237 25.331);
+  --spotlight: rgba(239, 68, 68, 0.08);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  ::selection {
+    @apply bg-primary/30 text-foreground;
+  }
+}
+
+.spotlight {
+  background: radial-gradient(600px at var(--x, 50%) var(--y, 30%), var(--spotlight), transparent 80%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html, body {
+    scroll-behavior: auto;
+  }
 }

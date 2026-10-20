@@ -1,22 +1,36 @@
 "use client";
 
-import Title from "../shared/title";
 import Image from "next/image";
-import Link from "next/link";
 import { CldImage } from "next-cloudinary";
-import { Button, buttonVariants } from "../ui/button";
+import { useEffect, useState } from "react";
+import { z } from "zod";
+import { ExternalLink, Github } from "lucide-react";
+import { Button } from "../ui/button";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { apiFetch } from "./fetch/tech-all";
 import { formsData, FormType } from "./forms/formsData";
-import { useEffect, useState } from "react";
 import DeleteButton from "../shared/delete-button";
-import { z } from "zod";
+import Section from "../shared/section";
 
 type Portfolio = typeof formsData.project.schema;
 type ArrayPortfolio = Array<z.infer<Portfolio>>;
 
+const INITIAL_VISIBLE = 6;
+
+const ProjectImage = ({ src, alt }: { src?: string | null; alt: string }) => {
+  const className =
+    "aspect-video w-full rounded-lg border border-border object-cover transition duration-500 group-hover:scale-[1.03]";
+  if (!src) return <div className={`${className} bg-muted`} />;
+  return src.split("/")[1] === "uploads" ? (
+    <Image src={src} alt={alt} width={600} height={338} className={className} />
+  ) : (
+    <CldImage src={src} width={600} height={338} crop="fill" alt={alt} className={className} />
+  );
+};
+
 const Portfolio = () => {
   const [dataPortfolio, setDataPortfolio] = useState<ArrayPortfolio>();
+  const [showAll, setShowAll] = useState(false);
   const resource = "project";
   useEffect(() => {
     const fetchData = async () => {
@@ -27,85 +41,76 @@ const Portfolio = () => {
   }, []);
 
   const handleDelete = (id: number) => {
-    setDataPortfolio((prev) => {
-      if (!prev) return [];
-      const newData = prev
-        .map((item) => (Number(item.id) !== id ? item : null))
-        .filter(Boolean) as ArrayPortfolio;
-      return newData;
-    });
-  };
-
-  const handleCreate = (data: Portfolio) => {
     setDataPortfolio((prev) =>
-      prev && prev.length > 0
-        ? [...prev, data as unknown as z.infer<Portfolio>]
-        : [data as unknown as z.infer<Portfolio>]
+      prev ? prev.filter((item) => Number(item.id) !== id) : []
     );
   };
 
+  const handleCreate = (data: Portfolio) => {
+    setDataPortfolio((prev) => [
+      ...(prev ?? []),
+      data as unknown as z.infer<Portfolio>,
+    ]);
+  };
+
+  const total = dataPortfolio?.length ?? 0;
+  const visible = showAll ? dataPortfolio : dataPortfolio?.slice(0, INITIAL_VISIBLE);
+
   return (
-    <div className="p-4 max-w-7xl md:py-24 mx-auto" id="portfolio">
-      <Title title="Portfolio" subtitle="Trabajos recientes" />
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-14 mt-4">
-        {dataPortfolio?.map((data) => (
-          <div key={data.id}>
-            <div className="flex justify-between">
-              {"titulo" in data && (
-                <h3 className="text-xl mb-4">{String(data.titulo)}</h3>
-              )}
+    <Section id="projects" number="05" title="Proyectos">
+      <ul className="grid gap-6 sm:grid-cols-2">
+        {visible?.map((data) => (
+          <li
+            key={data.id}
+            className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card/50 p-3 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl motion-reduce:transition-none"
+          >
+            <div className="overflow-hidden rounded-lg">
+              <ProjectImage src={data.image} alt={String(data.titulo)} />
+            </div>
+            <div className="flex flex-1 items-start justify-between gap-2 px-1 pt-4">
+              <h3 className="font-semibold leading-snug text-card-foreground group-hover:text-primary">
+                {String(data.titulo)}
+              </h3>
               <DeleteButton
                 tipoSchema={resource as FormType}
                 id={Number(data.id)}
                 onSuccess={handleDelete}
-                className="relative top-0 left-0"
+                className="size-7 shrink-0"
                 tipoElemento={""}
               />
             </div>
-            {data.image.split("/")[1] === "uploads" ? (
-              <Image
-                src={
-                  "image" in data && data.image
-                    ? data.image
-                    : "/placeholder-image.png"
-                }
-                alt="Image"
-                width={300}
-                height={300}
-                className="rounded-2xl w-full"
-              />
-            ) : (
-              <CldImage
-                src={data.image}
-                width={300}
-                height={300}
-                crop="fit" 
-                alt={"Image"}
-                className="rounded-2xl w-full"
-              />
-            )}
-            <div className="mt-5 flex gap-10">
-              <Link
-                className={buttonVariants({ variant: "outline" })}
-                href={
-                  "urlGithub" in data && data.urlGithub ? data.urlGithub : "#!"
-                }
-                target="_blank"
-              >
-                GitHub
-              </Link>
-              <Link
-                className={buttonVariants()}
-                href={"urlDemo" in data && data.urlDemo ? data.urlDemo : "#!"}
-                target="_blank"
-              >
-                Live demo
-              </Link>
+            <div className="mt-3 flex gap-2 px-1 pb-1">
+              {data.urlGithub && (
+                <a
+                  href={data.urlGithub}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground transition hover:bg-primary hover:text-primary-foreground"
+                >
+                  <Github className="size-3.5" /> GitHub
+                </a>
+              )}
+              {data.urlDemo && (
+                <a
+                  href={data.urlDemo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground transition hover:bg-primary hover:text-primary-foreground"
+                >
+                  <ExternalLink className="size-3.5" /> Live demo
+                </a>
+              )}
             </div>
-          </div>
+          </li>
         ))}
-      </div>
-      <div className="flex justify-center items-center max-w-4xl mx-auto mt-10">
+      </ul>
+
+      <div className="mt-8 flex flex-wrap justify-center gap-3">
+        {total > INITIAL_VISIBLE && (
+          <Button type="button" variant="outline" onClick={() => setShowAll((v) => !v)}>
+            {showAll ? "Ver menos" : `Ver los ${total} proyectos`}
+          </Button>
+        )}
         <ModalTriggerButton
           onSuccess={(result: unknown) => handleCreate(result as Portfolio)}
           tipoFormulario="project"
@@ -113,7 +118,7 @@ const Portfolio = () => {
           <Button type="button">Agregar Proyecto</Button>
         </ModalTriggerButton>
       </div>
-    </div>
+    </Section>
   );
 };
 

@@ -1,8 +1,7 @@
 "use client";
 
-import Title from "../shared/title";
+import Section from "../shared/section";
 import { BadgeCheck } from "lucide-react";
-import { Progress } from "../ui/progress";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { Button } from "../ui/button";
 import { apiFetch } from "./fetch/tech-all";
@@ -72,36 +71,58 @@ const Skills = () => {
   };
 
   return (
-    <div className="p-6 md:px-12 md:py-44 max-w-5xl mx-auto" id="skills">
-      <Title title="Habilidades" subtitle="Habilidades que tengo" />
-      <div className="grid md:grid-cols-2 gap-8 mt-5">
+    <Section id="skills" number="03" title="Habilidades">
+      <div className="grid gap-6 sm:grid-cols-2">
         {Object.entries(dataSkills).map(([key, items]) => (
-          <div key={key} className="p-6 rounded-xl border border-gray-400">
-            <h3 className="text-center text-xl">{key}</h3>
-            <div className="grid md:grid-cols-2 gap-4">
+          <div
+            key={key}
+            className="rounded-xl border border-border bg-card/50 p-5"
+          >
+            <h3 className="mb-4 font-mono text-sm uppercase tracking-widest text-primary">
+              {key}
+            </h3>
+            <ul className="space-y-4">
               {items.map((item) => (
-                <div key={item.id} className="my-4 relative">
-                  <DeleteButton
-                    tipoSchema={resource as FormType}
-                    tipoElemento={item.tipo}
-                    id={item.id!}
-                    onSuccess={handleDelete}
-                    className="absolute top-0 right-2"
-                  />
-                  <p className="flex gap-2">
-                    <BadgeCheck />
-                    {item.nombre}
-                  </p>
-                  <div className="text-gray-400 mb-2">{item.nivel}</div>
-                  <Progress value={item.valor} className="w-[60%]" />
-                </div>
+                <li key={item.id}>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="flex items-center gap-2 text-sm font-medium text-card-foreground">
+                      <BadgeCheck className="size-4 text-primary" />
+                      {item.nombre}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">
+                        {item.nivel}
+                      </span>
+                      <DeleteButton
+                        tipoSchema={resource as FormType}
+                        tipoElemento={item.tipo}
+                        id={item.id!}
+                        onSuccess={handleDelete}
+                        className="size-7"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"
+                    role="progressbar"
+                    aria-label={item.nombre}
+                    aria-valuenow={item.valor}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                  >
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-primary/60 to-primary"
+                      style={{ width: `${item.valor}%` }}
+                    />
+                  </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         ))}
       </div>
 
-      <div className="flex justify-center items-center max-w-4xl mx-auto mt-10">
+      <div className="mt-8 flex justify-center">
         <ModalTriggerButton
           onSuccess={(result) => {
             handleCreate(result as Skill);
@@ -111,7 +132,7 @@ const Skills = () => {
           <Button type="button">Agregar una Skill</Button>
         </ModalTriggerButton>
       </div>
-    </div>
+    </Section>
   );
 };
 
