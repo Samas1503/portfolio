@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Mail, Paperclip, Pencil, Upload } from "lucide-react";
-import { dataContact } from "@/data";
 import { Button, buttonVariants } from "../ui/button";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { PERFIL_ABOUT_FIELDS, toFormValues } from "./forms/formsData";
 import { useUsuario } from "@/context/UserContext";
 import type { Perfil } from "@/backend/data/perfil";
+import type { Contacto } from "@/backend/data/contactos";
+import ContactIcon from "../shared/contact-icon";
 import { ToggleTheme } from "../theme/toogle-theme";
 import LogOutButton from "@/app/logout/page";
 import Hero3D from "../three/hero-3d";
@@ -23,7 +24,13 @@ export const sections = [
   { id: "contact", label: "Contacto" },
 ];
 
-const Sidebar = ({ perfil: initialPerfil }: { perfil: Perfil | null }) => {
+const Sidebar = ({
+  perfil: initialPerfil,
+  contactos,
+}: {
+  perfil: Perfil | null;
+  contactos: Contacto[];
+}) => {
   const [active, setActive] = useState("about");
   const [perfil, setPerfil] = useState(initialPerfil);
   const [uploading, setUploading] = useState(false);
@@ -178,20 +185,32 @@ const Sidebar = ({ perfil: initialPerfil }: { perfil: Perfil | null }) => {
 
       <div className="flex items-center gap-4">
         <ul className="flex items-center gap-2" aria-label="Redes y contacto">
-          {dataContact.map((item) => (
+          {contactos.map((item) => (
             <li key={item.id}>
               <a
-                href={item.link}
+                href={item.link ?? undefined}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={item.title}
-                title={item.subtitle}
+                aria-label={item.nombre ?? undefined}
+                title={item.titulo ?? undefined}
                 className="block rounded-full p-2 text-muted-foreground transition hover:bg-accent hover:text-primary"
               >
-                {item.icon}
+                <ContactIcon name={item.icono} />
               </a>
             </li>
           ))}
+          {usuario && (
+            <li>
+              <a
+                href="#contact"
+                aria-label="Editar redes"
+                title="Editar redes"
+                className="block rounded-full p-2 text-muted-foreground transition hover:bg-accent hover:text-primary"
+              >
+                <Pencil size={18} />
+              </a>
+            </li>
+          )}
         </ul>
         <div className="ml-auto hidden items-center gap-2 lg:flex">
           <ToggleTheme />

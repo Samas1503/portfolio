@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CONTACT_ICONS } from "@/components/shared/contact-icon";
 
 export const PROJECT_CATEGORIES = [
   "Frontend",
@@ -37,28 +38,31 @@ export const formsData = {
   contacto: {
     schema: z.object({
       id: z.number().optional(),
-      username: z.string().min(2),
-      email: z.string().email(),
-      message: z.string(),
+      nombre: z.string().min(1),
+      titulo: z.string(),
+      link: z.string().min(1),
+      icono: z.string(),
     }),
     fields: [
+      { label: "Nombre", name: "nombre", placeholder: "Ej: LinkedIn", type: "text" as const },
       {
-        label: "Username",
-        name: "username",
-        placeholder: "Tu nombre",
-        type: "text",
+        label: "Texto visible",
+        name: "titulo",
+        placeholder: "Ej: linkedin.com/in/usuario",
+        type: "text" as const,
       },
       {
-        label: "Email",
-        name: "email",
-        placeholder: "Tu correo",
-        type: "email" as const,
+        label: "Link (https://…, mailto:… o tel:…)",
+        name: "link",
+        placeholder: "https://linkedin.com/in/usuario",
+        type: "text" as const,
       },
       {
-        label: "Mensaje",
-        name: "message",
-        placeholder: "Tu mensaje",
-        type: "textarea" as const,
+        label: "Ícono",
+        name: "icono",
+        placeholder: "Elegí un ícono",
+        type: "dropdown" as const,
+        values: Object.keys(CONTACT_ICONS),
       },
     ],
   },

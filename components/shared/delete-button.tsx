@@ -24,8 +24,8 @@ const DeleteButton = ({ id, tipoSchema, tipoElemento, onSuccess, className }: Pr
   return ( usuario &&
     <Button
       className={className}
-      onClick={() => {
-        deleteElement(id, tipoSchema);
+      onClick={async () => {
+        await deleteElement(id, tipoSchema);
         onSuccess?.(id, tipoElemento as FormType);
       }}
       type="button"

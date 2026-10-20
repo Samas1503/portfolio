@@ -9,23 +9,24 @@ import Works from "@/components/pages/experience";
 import Sidebar from "@/components/pages/sidebar";
 import Spotlight from "@/components/shared/spotlight";
 import { getPerfil } from "@/backend/data/perfil";
+import { getContactos } from "@/backend/data/contactos";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const perfil = await getPerfil();
+  const [perfil, contactos] = await Promise.all([getPerfil(), getContactos()]);
   return (
     <div className="relative">
       <Spotlight />
       <div className="relative z-10 mx-auto min-h-screen max-w-screen-xl px-6 py-12 md:px-12 md:py-20 lg:flex lg:justify-between lg:gap-8 lg:px-24 lg:py-0">
-        <Sidebar perfil={perfil} />
+        <Sidebar perfil={perfil} contactos={contactos} />
         <main className="pt-16 lg:w-[52%] lg:py-24">
           <AboutMe perfil={perfil} />
           <Works />
           <Skills />
           <Services />
           <Portfolio />
-          <Contact />
+          <Contact contactos={contactos} />
           <Footer />
         </main>
       </div>
