@@ -1,49 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portfolio — Samuel Paredes
 
-## Getting Started
+Personal portfolio with a built-in admin dashboard to manage its content (projects, skills, experience, services, testimonials) without redeploying.
 
-First, run the development server:
+**Live:** https://cv.samas-server.com
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Features
+
+- **Dynamic content** — every section is read from Supabase (Postgres) through a small service/repository layer.
+- **Admin CRUD** — after logging in, `DynamicForm` renders create/edit forms directly from the Zod schemas in `backend/data/schemas.ts`.
+- **Generic, validated API** — `/api/table?tipo=<table>` and `/api/table/[id]` handle all tables; `withValidation` validates request bodies with Zod.
+- **Auth** — JWT session cookie (`jose`) checked in `middleware.ts`; `/api` routes require a session.
+- **Media** — image uploads to Cloudinary.
+- **Contact form** — emails sent with Resend + React Email (`/api/send`).
+- **UI** — Tailwind CSS v4, Radix UI / shadcn-style components, dark mode (`next-themes`), Embla carousel, Google Maps.
+
+## Tech stack
+
+Next.js 15 (App Router) · React 19 · TypeScript · Supabase (`@supabase/supabase-js`) · Zod · React Hook Form · Tailwind CSS · Radix UI · Cloudinary · Resend · Vercel
+
+## Project structure
+
+```
+app/                 # App Router pages, login/logout, API routes (api/table, api/send)
+backend/
+  Services/          # business logic per operation (get/post/update/delete)
+  repository/        # Supabase queries
+  data/schemas.ts    # Zod schemas per table (drive validation and forms)
+  db/                # Supabase client + generated database types
+components/pages/    # page sections and forms (DynamicForm, ModalTriggerButton)
+utils/               # withValidation, response helpers, serialization
+supabase/migrations/ # database schema
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-
-
-## Base de datos (Supabase)
-El backend usa `@supabase/supabase-js` desde el servidor (`backend/db/supabase.ts`) con
-`SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` (Vercel las inyecta desde la integración de Supabase).
-Todas las tablas tienen RLS activado y sin políticas, así que solo se accede con la service role key.
+## Getting started
 
 ```bash
-# Schema inicial: supabase/migrations/
-# Regenerar los tipos después de cambiar tablas
+npm install
+npm run dev     # http://localhost:3000
+npm run lint
+npm run build
+```
+
+### Environment variables
+
+Create `.env.local` with:
+
+| Variable | Purpose |
+| --- | --- |
+| `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | Server-side Supabase access (injected by the Vercel Supabase integration) |
+| `SESSION_SECRET` | Key used to sign the session JWT |
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`, `NEXT_PUBLIC_CLOUDINARY_CLOUD_APY_KEY`, `CLOUDINARY_CLOUD_APY_SECRET` | Cloudinary uploads |
+| `RESEND_API_KEY` | Contact form emails |
+| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Map in the contact section |
+| `NEXT_PUBLIC_BACKEND_URL`, `NEXT_PUBLIC_FRONTEND_URL` | Base URLs used by the client |
+
+## Database (Supabase)
+
+The backend uses `@supabase/supabase-js` on the server only (`backend/db/supabase.ts`). All tables have RLS enabled with no policies, so they are only reachable with the service role key.
+
+```bash
+# Initial schema: supabase/migrations/
+# Regenerate types after changing tables
 npx supabase gen types typescript --project-id ahjufrjambuzlxraavky > backend/db/database.types.ts
 ```
+
+## Deployment
+
+Deployed on Vercel (project `portfolio-paredes-samuel`), with the custom domain `cv.samas-server.com`.
