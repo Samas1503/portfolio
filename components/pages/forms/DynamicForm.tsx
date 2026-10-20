@@ -113,7 +113,7 @@ export function DynamicForm<T extends z.ZodTypeAny>({
                           <Button
                             variant="outline"
                             className={cn(
-                              "h-9 w-full justify-between border-input bg-transparent font-normal shadow-xs",
+                              "h-9 w-full justify-between border-input bg-transparent font-normal shadow-xs dark:bg-input/30",
                               !dropdownValues[field.name] &&
                                 "text-muted-foreground"
                             )}
@@ -122,7 +122,7 @@ export function DynamicForm<T extends z.ZodTypeAny>({
                             <ChevronDown className="size-4 shrink-0 opacity-50" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] rounded-md">
+                        <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] bg-card shadow-xl">
                           <DropdownMenuLabel>
                             {field.placeholder}
                           </DropdownMenuLabel>
