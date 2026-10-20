@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { BookOpen, ChevronDown, GraduationCap, Pencil } from "lucide-react";
+import { BookOpen, ChevronDown, ExternalLink, GraduationCap, Pencil } from "lucide-react";
 import { Button } from "../ui/button";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { apiFetch } from "./fetch/tech-all";
@@ -84,6 +84,16 @@ const Academia = () => {
             {c.descripcion && (
               <p className="mt-2 text-sm text-muted-foreground">{c.descripcion}</p>
             )}
+            {c.diploma && (
+              <a
+                href={c.diploma}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground transition hover:bg-primary hover:text-primary-foreground"
+              >
+                <ExternalLink className="size-3.5" /> Ver diploma
+              </a>
+            )}
           </li>
         ))}
       </ul>
@@ -114,10 +124,22 @@ const Academia = () => {
                     <ChevronDown className="size-4 text-muted-foreground transition group-open:rotate-180" />
                   </div>
                 </summary>
-                {c.descripcion && (
-                  <p className="border-t border-border/60 px-4 py-3 text-sm text-muted-foreground">
-                    {c.descripcion}
-                  </p>
+                {(c.descripcion || c.diploma) && (
+                  <div className="border-t border-border/60 px-4 py-3">
+                    {c.descripcion && (
+                      <p className="text-sm text-muted-foreground">{c.descripcion}</p>
+                    )}
+                    {c.diploma && (
+                      <a
+                        href={c.diploma}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground transition hover:bg-primary hover:text-primary-foreground"
+                      >
+                        <ExternalLink className="size-3.5" /> Ver diploma
+                      </a>
+                    )}
+                  </div>
                 )}
               </details>
             ))}

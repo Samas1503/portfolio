@@ -117,6 +117,7 @@ export const schemas = {
     titulo: text,
     periodo: text,
     descripcion: text,
+    diploma: text,
     estado: bool,
   }),
   mensajes: defineTable("Mensajes", {

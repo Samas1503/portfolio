@@ -17,6 +17,7 @@ export type Database = {
       Academia: {
         Row: {
           descripcion: string | null
+          diploma: string | null
           estado: boolean | null
           id: number
           institucion: string | null
@@ -26,6 +27,7 @@ export type Database = {
         }
         Insert: {
           descripcion?: string | null
+          diploma?: string | null
           estado?: boolean | null
           id?: number
           institucion?: string | null
@@ -35,6 +37,7 @@ export type Database = {
         }
         Update: {
           descripcion?: string | null
+          diploma?: string | null
           estado?: boolean | null
           id?: number
           institucion?: string | null

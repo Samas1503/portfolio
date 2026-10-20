@@ -351,6 +351,7 @@ export const formsData = {
       titulo: z.string(),
       periodo: z.string(),
       descripcion: z.string(),
+      diploma: z.string().optional(),
     }),
     fields: [
       { label: "Tipo", name: "tipo", placeholder: "Tipo", type: "dropdown" as const, values: ["Carrera", "Curso"] },
@@ -358,6 +359,7 @@ export const formsData = {
       { label: "Título / Curso", name: "titulo", placeholder: "Ej: Ingeniería Informática", type: "text" as const },
       { label: "Período", name: "periodo", placeholder: "Ej: 2020 - 2024", type: "text" as const },
       { label: "Descripción", name: "descripcion", placeholder: "Opcional", type: "textarea" as const },
+      { label: "Diploma (link)", name: "diploma", placeholder: "https://...", type: "text" as const },
     ],
   },
   mensajes: {
