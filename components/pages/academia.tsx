@@ -1,17 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
-import { BookOpen, ChevronDown, ExternalLink, GraduationCap, Pencil } from "lucide-react";
+import { BookOpen, ChevronDown, ExternalLink, Pencil } from "lucide-react";
 import { Button } from "../ui/button";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { apiFetch } from "./fetch/tech-all";
 import DeleteButton from "../shared/delete-button";
 import Section from "../shared/section";
 import { formsData, FormType } from "./forms/formsData";
+import MiniIcon3D from "@/components/three/mini-icon-3d";
 
 type Academia = typeof formsData.academia.schema;
 type Item = z.infer<Academia>;
+
+const yearOf = (p?: string | null) => {
+  const m = (p || "").match(/\d{4}/g);
+  return m ? Math.max(...m.map(Number)) : 0;
+};
+const isOngoing = (p?: string | null) => /actualidad|actual/i.test(p || "");
+const byRecent = (a: Item, b: Item) =>
+  Number(isOngoing(b.periodo)) - Number(isOngoing(a.periodo)) ||
+  yearOf(b.periodo) - yearOf(a.periodo) ||
+  Number(b.id) - Number(a.id);
 
 const Academia = () => {
   const [items, setItems] = useState<Item[]>();
@@ -53,53 +64,75 @@ const Academia = () => {
     </div>
   );
 
-  const carreras = (items ?? []).filter((i) => i.tipo === "Carrera");
-  const cursos = (items ?? []).filter((i) => i.tipo === "Curso");
+  const carreras = useMemo(
+    () => (items ?? []).filter((i) => i.tipo === "Carrera").sort(byRecent),
+    [items]
+  );
+  const cursos = useMemo(
+    () => (items ?? []).filter((i) => i.tipo === "Curso").sort(byRecent),
+    [items]
+  );
 
   return (
     <Section id="academia" number="06" title="Formación Académica">
-      <ul className="grid gap-4 sm:grid-cols-2">
-        {carreras.map((c) => (
-          <li
-            key={c.id}
-            className="rounded-xl border border-border bg-card/50 p-5 transition hover:border-primary/40"
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-start gap-3">
-                <GraduationCap className="mt-0.5 size-5 shrink-0 text-primary" />
-                <div>
-                  <h3 className="font-semibold leading-snug text-card-foreground">
-                    {c.titulo}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">{c.institucion}</p>
+      <ol className="relative ml-2 space-y-8 border-l border-border/60 pl-6">
+        {carreras.map((c) => {
+          const ongoing = isOngoing(c.periodo);
+          return (
+            <li key={c.id} className="relative">
+              <span
+                className={`absolute -left-[31px] top-1.5 h-2.5 w-2.5 rounded-full ${
+                  ongoing ? "bg-primary" : "bg-muted-foreground/40"
+                }`}
+              />
+              {ongoing && (
+                <span className="absolute -left-[31px] top-1.5 h-2.5 w-2.5 animate-ping rounded-full bg-primary/60 motion-reduce:hidden" />
+              )}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-4">
+                  <MiniIcon3D shape="carrera" className="size-14 shrink-0" />
+                  <div className="min-w-0">
+                    <h3 className="font-semibold leading-snug text-card-foreground">
+                      {c.titulo}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">{c.institucion}</p>
+                    {c.periodo && (
+                      <p
+                        className={`mt-2 inline-flex rounded-full px-3 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wider ${
+                          ongoing
+                            ? "bg-primary text-primary-foreground"
+                            : "border border-primary/40 bg-primary/10 text-primary"
+                        }`}
+                      >
+                        {c.periodo}
+                      </p>
+                    )}
+                    {c.descripcion && (
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        {c.descripcion}
+                      </p>
+                    )}
+                    {c.diploma && (
+                      <a
+                        href={c.diploma}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground transition hover:bg-primary hover:text-primary-foreground"
+                      >
+                        <ExternalLink className="size-3.5" /> Ver diploma
+                      </a>
+                    )}
+                  </div>
                 </div>
+                {adminBtns(c)}
               </div>
-              {adminBtns(c)}
-            </div>
-            {c.periodo && (
-              <p className="mt-3 inline-flex rounded-full border border-primary/40 bg-primary/10 px-3 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-primary">
-                {c.periodo}
-              </p>
-            )}
-            {c.descripcion && (
-              <p className="mt-2 text-sm text-muted-foreground">{c.descripcion}</p>
-            )}
-            {c.diploma && (
-              <a
-                href={c.diploma}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground transition hover:bg-primary hover:text-primary-foreground"
-              >
-                <ExternalLink className="size-3.5" /> Ver diploma
-              </a>
-            )}
-          </li>
-        ))}
-      </ul>
+            </li>
+          );
+        })}
+      </ol>
 
       {cursos.length > 0 && (
-        <div className="mt-8">
+        <div className="mt-10">
           <h3 className="mb-3 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground">
             <BookOpen className="size-4 text-primary" /> Cursos y diplomaturas
           </h3>
@@ -107,17 +140,20 @@ const Academia = () => {
             {cursos.map((c) => (
               <details
                 key={c.id}
-                className="group rounded-lg border border-border bg-card/50 open:border-primary/40"
+                className="group rounded-xl border border-border bg-card/50 open:border-primary/40"
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 [&::-webkit-details-marker]:hidden">
-                  <div className="min-w-0">
-                    <p className="truncate font-medium text-card-foreground">
-                      {c.titulo}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {c.institucion}
-                      {c.periodo ? ` · ${c.periodo}` : ""}
-                    </p>
+                  <div className="flex min-w-0 items-center gap-3">
+                    <MiniIcon3D shape="curso" className="size-10 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-card-foreground">
+                        {c.titulo}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {c.institucion}
+                        {c.periodo ? ` · ${c.periodo}` : ""}
+                      </p>
+                    </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
                     {adminBtns(c)}
