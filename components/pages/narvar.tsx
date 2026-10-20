@@ -1,19 +1,23 @@
 import { itemsNavbar } from "@/data";
-import Link from "next/link";
 import { ToggleTheme } from "../theme/toogle-theme";
 import LogOutButton from "@/app/logout/page";
 
 const Navbar = () => {
   return (
-    <nav className="fixed z-20 flex flex-col items-center w-full mt-auto justify-center h-max bottom-20">
-      <div className="flex items-center gap-2 justify-center px-4 py-1 dark:bg-white/10 bg-slate-800/10 gackdrop-blur-sm rounded-full">
+    <nav
+      aria-label="Navegación"
+      className="fixed inset-x-0 bottom-5 z-30 flex justify-center px-3 lg:hidden"
+    >
+      <div className="flex items-center gap-1 rounded-full border border-border bg-card/80 px-2 py-1.5 shadow-lg backdrop-blur-md">
         {itemsNavbar.map((item) => (
-          <div
+          <a
             key={item.id}
-            className="cursor-pointer hover:dark-bg-slate-800 hover:bg-slate-400 px-3 py-2 rounded-full duration-150"
+            href={item.link}
+            aria-label={item.title}
+            className="rounded-full p-2 text-muted-foreground transition hover:bg-accent hover:text-primary"
           >
-            <Link href={item.link}>{item.icon}</Link>
-          </div>
+            {item.icon}
+          </a>
         ))}
         <ToggleTheme />
         <LogOutButton />

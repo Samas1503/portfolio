@@ -8,7 +8,6 @@ import {
   Home,
   Inbox,
   Lightbulb,
-  LucideWorkflow,
   Mail,
   PanelsTopLeft,
   Phone,
@@ -39,67 +38,13 @@ export const dataAboutMe = [
 ];
 
 export const itemsNavbar = [
-  {
-    id: 1,
-    title: "Home",
-    icon: <Home size={20} />,
-    link: "#home",
-  },
-  {
-    id: 2,
-    title: "User",
-    icon: <UserRound size={20} />,
-    link: "#about-me",
-  },
-  {
-    id: 3,
-    title: "Proyectos",
-    icon: <LucideWorkflow size={20} />,
-    link: "#project",
-  },
-  {
-    id: 4,
-    title: "skills",
-    icon: <Lightbulb size={20} />,
-    link: "#skills",
-  },
-  {
-    id: 5,
-    title: "Book",
-    icon: <BookText size={20} />,
-    link: "#services",
-  },
-  {
-    id: 6,
-    title: "Target",
-    icon: <CodeSquare size={20} />,
-    link: "#portfolio",
-  },
-  {
-    id: 7,
-    title: "Home",
-    icon: <Mail size={20} />,
-    link: "#contact",
-  },
-];
-
-export const dataSlider = [
-  {
-    id: 1,
-    url: "/slider-1.jpg",
-  },
-  {
-    id: 2,
-    url: "/slider-2.jpg",
-  },
-  {
-    id: 3,
-    url: "/slider-3.jpg",
-  },
-  {
-    id: 4,
-    url: "/slider-4.jpg",
-  },
+  { id: 1, title: "Inicio", icon: <Home size={20} />, link: "#home" },
+  { id: 2, title: "Sobre mí", icon: <UserRound size={20} />, link: "#about" },
+  { id: 3, title: "Experiencia", icon: <Briefcase size={20} />, link: "#experience" },
+  { id: 4, title: "Habilidades", icon: <Lightbulb size={20} />, link: "#skills" },
+  { id: 5, title: "Servicios", icon: <BookText size={20} />, link: "#services" },
+  { id: 6, title: "Proyectos", icon: <CodeSquare size={20} />, link: "#projects" },
+  { id: 7, title: "Contacto", icon: <Mail size={20} />, link: "#contact" },
 ];
 
 export const dataServices = [
@@ -210,50 +155,5 @@ export const dataContact = [
     subtitle: "samueleliasparedes.10@gmail.com",
     link: "mailto:samueleliasparedes.10@gmail.com",
     icon: <Inbox />,
-  },
-];
-
-export const dataTestimonials = [
-  {
-    id: 1,
-    name: "George Snow",
-    description:
-      "¡Increíble plataforma! Los testimonios aquí son genuinos y me han ayudado a tomar decisiones informadas. ¡Altamente recomendado!",
-    imageUrl: "/profile-1.jpeg",
-  },
-  {
-    id: 2,
-    name: "Juan Pérez",
-    description:
-      "Me encanta la variedad de testimonios disponibles en esta página. Es inspirador ver cómo otras personas han superado desafíos similares a los míos. ¡Gracias por esta invaluable fuente de motivación!",
-    imageUrl: "/profile-2.jpeg",
-  },
-  {
-    id: 3,
-    name: "María García",
-    description:
-      "Excelente recurso para obtener opiniones auténticas sobre diferentes productos y servicios. Me ha ayudado mucho en mis compras en línea. ¡Bravo por este sitio!",
-    imageUrl: "/profile-3.jpeg",
-  },
-  {
-    id: 4,
-    name: "Laura Snow",
-    description:
-      "¡Qué descubrimiento tan fantástico! Los testimonios aquí son honestos y detallados. Me siento más seguro al tomar decisiones después de leer las experiencias compartidas por otros usuarios.",
-    imageUrl: "/profile-3.jpeg",
-  },
-  {
-    id: 5,
-    name: "Carlos Sánchez",
-    description:
-      "Una joya en la web. Los testimonios son fáciles de encontrar y están bien organizados. ¡Definitivamente mi destino número uno cuando necesito referencias confiables!",
-    imageUrl: "/profile-2.jpeg",
-  },
-  {
-    id: 6,
-    name: "Antonio Martínez",
-    description:
-      "¡Fantástico recurso para aquellos que buscan validación antes de tomar decisiones importantes! Los testimonios aquí son veraces y realmente útiles. ¡Gracias por simplificar mi proceso de toma de decisiones!",
-    imageUrl: "/profile-3.jpeg",
   },
 ];

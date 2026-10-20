@@ -1,86 +1,68 @@
 import { Phone } from "lucide-react";
-import { Button } from "../ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "../ui/carousel";
-import { dataAboutMe, dataSlider } from "@/data";
-import Title from "../shared/title";
 import Image from "next/image";
 import Link from "next/link";
+import { dataAboutMe } from "@/data";
+import { buttonVariants } from "../ui/button";
+import Section from "../shared/section";
 
 const AboutMe = () => {
   return (
-    <div className="p-6 md:px-12 md:py-30 max-w-5xl mx-auto" id="about-me">
-      <Title title="Sobre Mi" subtitle="Conoceme" />
-
-      <div className="grid md:grid-cols-2">
-        <div className="py-12 md:py-0 flex items-center justify-center">
-          <Carousel
-            opts={{
-              align: "start",
-            }}
-            orientation="vertical"
-            className="w-full max-w-xs h-fit"
-          >
-            <CarouselContent className="-mt-1 h-[200px]">
-              {dataSlider.map((data) => (
-                <CarouselItem key={data.id}>
-                  <div className="flex items-center justify-center">
-                    <Image
-                      src={data.url}
-                      alt="image"
-                      width={250}
-                      height={400}
-                      className="w-full h-auto rounded-lg"
-                    />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </div>
-        <div>
-          <div className="grid md:grid-cols-3 mt-7 gap-4">
-            {dataAboutMe.map((data) => (
-              <div
-                key={data.id}
-                className="border border-white-10 rounded-xl p-4 shadow-md shadow-slate-100 dark:bg-salte-800"
-              >
-                {data.icon}
-                <p className="my-2">{data.name}</p>
-                <p className="text-gray-400">{data.description}</p>
-              </div>
-            ))}
-          </div>
-
-          <p className="my-8">
-            Soy estudiante de la UNJu, culmine la carrera de Analista
-            Programador Universitario y actualmente curso la carrera de
-            Ingeniería Informática en la Facultad de Ingeniería. Adquirí
-            conocimientos en Diseño y Desarrollo de Aplicaciones Web y Móviles,
-            y en desarrollo de Páginas Web; mediante tecnologías modernas. Tengo
-            gran capacidad para adaptarme a múltiples entornos disciplinarios.
-            Me caracterizo por mi facilidad para trabajar en equipo y compromiso
-            en el desarrollo y culminación de las actividades que se me designen
-            en tiempo y forma. Me entusiasma seguir aprendiendo y mejorando mis
-            aptitudes, conocimientos y habilidades.
+    <Section id="about" number="01" title="Sobre mí">
+      <div className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-start">
+        <div className="space-y-4 leading-relaxed text-muted-foreground">
+          <p>
+            Soy estudiante de la <span className="text-card-foreground">UNJu</span>,
+            culminé la carrera de{" "}
+            <span className="text-card-foreground">Analista Programador Universitario</span>{" "}
+            y actualmente curso la carrera de{" "}
+            <span className="text-card-foreground">Ingeniería Informática</span> en la
+            Facultad de Ingeniería.
           </p>
-
-          <Button>
-            <Link href="tel:3884558285" className="flex">
-              <Phone size={20} className="mr-2" />
-              Hablemos
-            </Link>
-          </Button>
+          <p>
+            Adquirí conocimientos en Diseño y Desarrollo de Aplicaciones Web y
+            Móviles, y en desarrollo de Páginas Web, mediante tecnologías
+            modernas. Tengo gran capacidad para adaptarme a múltiples entornos
+            disciplinarios.
+          </p>
+          <p>
+            Me caracterizo por mi facilidad para trabajar en equipo y mi
+            compromiso en el desarrollo y culminación de las actividades que se
+            me designen en tiempo y forma. Me entusiasma seguir aprendiendo y
+            mejorando mis aptitudes, conocimientos y habilidades.
+          </p>
+        </div>
+        <div className="group relative mx-auto w-48 sm:w-44">
+          <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-xl border-2 border-primary transition group-hover:translate-x-2 group-hover:translate-y-2" />
+          <Image
+            src="/profile.jpg"
+            alt="Foto de Samuel Elias Paredes"
+            width={300}
+            height={300}
+            className="relative aspect-square rounded-xl object-cover grayscale-[30%] transition group-hover:grayscale-0"
+          />
         </div>
       </div>
-    </div>
+
+      <div className="mt-10 grid gap-4 sm:grid-cols-3">
+        {dataAboutMe.map((data) => (
+          <div
+            key={data.id}
+            className="rounded-xl border border-border bg-card/50 p-4 transition hover:border-primary/40"
+          >
+            <span className="text-primary">{data.icon}</span>
+            <p className="mt-3 text-sm font-semibold text-card-foreground">{data.name}</p>
+            <p className="text-sm text-muted-foreground">{data.description}</p>
+          </div>
+        ))}
+      </div>
+
+      <Link
+        href="tel:3884558285"
+        className={buttonVariants({ variant: "outline", className: "mt-8" })}
+      >
+        <Phone /> Hablemos
+      </Link>
+    </Section>
   );
 };
 

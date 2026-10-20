@@ -1,36 +1,35 @@
 import { dataContact } from "@/data";
-import Title from "../shared/title";
-import Link from "next/link";
 import ContactForm from "./forms/contact-form";
-// import { DynamicForm } from "./forms/DynamicForm";
+import Section from "../shared/section";
 
 const Contact = () => {
   return (
-    <div className="p-6 md:p-12 md:py-44 max-w-5xl mx-auto" id="contact">
-      <Title title="Contacto" subtitle="Ponte en contacto conmigo" />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 md:gap-7 mt-8">
-        <div>
-          {dataContact.map((data) => (
-            <div
-              key={data.id}
-              className="flex flex-col items-center dark:bg-slate-800 rounded-lg mb-5 p-4"
-            >
-              {data.icon}
-              <p>{data.title}</p>
-              <p>{data.subtitle}</p>
-              <Link href={data.link} target="_blank">
-                Escribe tu mensaje
-              </Link>
-            </div>
-          ))}
-        </div>
-        <div className="col-span-2">
-          <ContactForm/>
-          {/* <DynamicForm formType="contacto" /> */}
-        </div>
+    <Section id="contact" number="06" title="Contacto">
+      <p className="mb-8 max-w-md leading-relaxed text-muted-foreground">
+        ¿Tenés un proyecto o una propuesta? Escribime por cualquiera de estos
+        medios o dejame un mensaje con el formulario.
+      </p>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {dataContact.map((data) => (
+          <a
+            key={data.id}
+            href={data.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group rounded-xl border border-border bg-card/50 p-4 transition hover:border-primary/40"
+          >
+            <span className="text-primary">{data.icon}</span>
+            <p className="mt-3 text-sm font-semibold text-card-foreground">{data.title}</p>
+            <p className="break-all text-xs text-muted-foreground group-hover:text-primary">
+              {data.subtitle}
+            </p>
+          </a>
+        ))}
       </div>
-    </div>
+      <div className="mt-8 rounded-xl border border-border bg-card/50 p-5">
+        <ContactForm />
+      </div>
+    </Section>
   );
 };
 

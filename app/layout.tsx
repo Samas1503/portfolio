@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
-import { Urbanist } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/theme-providers";
 import "./globals.css";
 import { UserProvider } from "@/context/UserContext";
 
-const urbanist = Urbanist({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+});
 
 export const metadata: Metadata = {
-  title: "Samuel Paredes",
+  title: "Samuel Elias Paredes | Backend Developer",
   description: "Portfolio personal de Samuel Paredes",
 };
 
@@ -18,11 +22,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={urbanist.className}>
+      <body className={`${inter.variable} ${jetbrains.variable} font-sans`}>
         <UserProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >

@@ -2,28 +2,30 @@ import AboutMe from "@/components/pages/about-me";
 import Contact from "@/components/pages/contact";
 import Skills from "@/components/pages/skils";
 import Footer from "@/components/pages/footer";
-import Introduction from "@/components/pages/introduction";
 import Navbar from "@/components/pages/narvar";
 import Portfolio from "@/components/pages/portfolio";
 import Services from "@/components/pages/services";
-import Testimonials from "@/components/pages/testimonials";
-import InfoUsuario from "@/components/info-usuario";
 import Works from "@/components/pages/experience";
+import Sidebar from "@/components/pages/sidebar";
+import Spotlight from "@/components/shared/spotlight";
 
 export default function Home() {
   return (
-    <main className="pb-40">
-      <InfoUsuario />
+    <div className="relative">
+      <Spotlight />
+      <div className="relative z-10 mx-auto min-h-screen max-w-screen-xl px-6 py-12 md:px-12 md:py-20 lg:flex lg:justify-between lg:gap-8 lg:px-24 lg:py-0">
+        <Sidebar />
+        <main className="pt-16 lg:w-[52%] lg:py-24">
+          <AboutMe />
+          <Works />
+          <Skills />
+          <Services />
+          <Portfolio />
+          <Contact />
+          <Footer />
+        </main>
+      </div>
       <Navbar />
-      <Introduction />
-      <AboutMe />
-      <Works />
-      <Skills />
-      <Services />
-      <Portfolio />
-      <Testimonials />
-      <Contact />
-      <Footer />
-    </main>
+    </div>
   );
 }
