@@ -1,9 +1,12 @@
-import { db } from "@/backend/db";
-import { eq } from "drizzle-orm";
+import { getSupabase } from "@/backend/db/supabase";
 import { SchemaKeys, schemas } from "../data/schemas";
 
 const deleteDataByIdRepository = async (id: number, table: SchemaKeys) => {
-  await db.delete(schemas[table].schema).where(eq(schemas[table].schema.id, id));
+  const { error } = await getSupabase()
+    .from(schemas[table].table)
+    .delete()
+    .eq("id", id);
+  if (error) throw error;
   return id;
 };
 

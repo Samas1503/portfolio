@@ -1,6 +1,5 @@
-import { db } from "@/backend/db";
+import { getSupabase } from "@/backend/db/supabase";
 import { SchemaKeys, schemas } from "../data/schemas";
-import { eq } from "drizzle-orm";
 
 const updateDataRepository = async (
   id: number,
@@ -8,10 +7,12 @@ const updateDataRepository = async (
   table: SchemaKeys
 ) => {
   try {
-    await db
-      .update(schemas[table].schema)
-      .set(data)
-      .where(eq(schemas[table].schema.id, id));
+    const { table: tableName, toColumns } = schemas[table];
+    const { error } = await getSupabase()
+      .from(tableName)
+      .update(toColumns(data) as never)
+      .eq("id", id);
+    if (error) throw error;
     return id;
   } catch (error) {
     console.log("Error updating data repository", error);
