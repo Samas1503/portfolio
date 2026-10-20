@@ -14,6 +14,9 @@ import { z } from "zod";
 type Skill = z.infer<typeof formsData.skills.schema>;
 type ArraySkill = Skill[];
 
+const nivelFromValor = (valor: number): Skill["nivel"] =>
+  valor >= 75 ? "Experimentado" : valor >= 45 ? "Intermedio" : "Básico";
+
 const Skills = () => {
   const [dataSkills, setDataSkills] = useState<Record<string, ArraySkill>>({});
   const resource = "skills";
@@ -21,16 +24,17 @@ const Skills = () => {
   const saveTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
 
   const handleValueChange = (item: Skill, valor: number) => {
+    const nivel = nivelFromValor(valor);
     setDataSkills((prev) => ({
       ...prev,
       [item.tipo]: prev[item.tipo].map((s) =>
-        s.id === item.id ? { ...s, valor } : s
+        s.id === item.id ? { ...s, valor, nivel } : s
       ),
     }));
     const id = item.id!;
     clearTimeout(saveTimers.current[id]);
     saveTimers.current[id] = setTimeout(() => {
-      apiFetch({ resource, method: "PATCH", id, data: { valor } }).catch(
+      apiFetch({ resource, method: "PATCH", id, data: { valor, nivel } }).catch(
         (error) => console.error("No se pudo guardar la skill", error)
       );
     }, 500);
