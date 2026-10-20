@@ -4,7 +4,8 @@ import type { Database } from "@/backend/db/database.types";
 type TableName = keyof Database["public"]["Tables"];
 
 const text = z.string().nullable();
-const int = z.number().int().min(-2147483648).max(2147483647).nullable();
+const int4 = z.number().int().min(-2147483648).max(2147483647);
+const int = int4.nullable();
 const bigint = z
   .number()
   .int()
@@ -33,7 +34,7 @@ function defineTable<T extends z.ZodRawShape>(
     );
 
   const create = z
-    .object({ id: z.number().int().optional() })
+    .object({ id: int4.optional() })
     .extend(fields)
     .partial();
 
