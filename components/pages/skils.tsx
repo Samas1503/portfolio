@@ -191,7 +191,7 @@ const Skills = () => {
           </div>
         )}
       </div>
-      <div className="grid gap-6 sm:grid-cols-2">
+      <div className="grid gap-6">
         {Object.entries(dataSkills).map(([key, items]) => (
           <div
             key={key}
@@ -204,11 +204,11 @@ const Skills = () => {
               {items.map((item) => (
                 <li key={item.id}>
                   <div className="flex items-center justify-between gap-2">
-                    <p className="flex items-center gap-2 text-sm font-medium text-card-foreground">
-                      <BadgeCheck className="size-4 text-primary" />
-                      {item.nombre}
+                    <p className="flex min-w-0 items-center gap-2 text-sm font-medium text-card-foreground">
+                      <BadgeCheck className="size-4 shrink-0 text-primary" />
+                      <span className="truncate">{item.nombre}</span>
                     </p>
-                    <div className="flex items-center gap-2">
+                    <div className="flex shrink-0 items-center gap-2">
                       <span className="rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">
                         {excluded.has(Number(item.id)) ? "Manual" : item.nivel}
                       </span>
