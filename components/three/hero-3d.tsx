@@ -21,7 +21,7 @@ const Hero3D = ({ className }: { className?: string }) => {
   return (
     <div className={className} aria-hidden="true">
       <HeroScene
-        color={resolvedTheme === "light" ? "#0d9488" : "#5eead4"}
+        color={resolvedTheme === "light" ? "#e7000b" : "#fb2c36"}
         animate={animate}
       />
     </div>
