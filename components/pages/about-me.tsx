@@ -1,25 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Briefcase, Pencil, Phone, UsersRound, Wrench } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button, buttonVariants } from "../ui/button";
 import Section from "../shared/section";
-import { apiFetch } from "./fetch/tech-all";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
+import { PERFIL_HEADER_FIELDS, toFormValues } from "./forms/formsData";
+import type { Perfil } from "@/backend/data/perfil";
 import { useUsuario } from "@/context/UserContext";
-
-type SobreMi = {
-  id: number;
-  descripcion: string | null;
-  experiencia: string | null;
-  clientes: string | null;
-  proyectos: string | null;
-  telefono: string | null;
-};
-
-const resource = "sobremi";
 
 const METRICS = [
   { key: "experiencia", name: "Experiencia", icon: <Briefcase /> },
@@ -39,13 +29,10 @@ const renderParagraph = (text: string) =>
     )
   );
 
-const AboutMe = () => {
-  const [data, setData] = useState<SobreMi | null>(null);
+const AboutMe = ({ perfil }: { perfil: Perfil | null }) => {
+  const [data, setData] = useState(perfil);
   const { usuario } = useUsuario();
 
-  useEffect(() => {
-    apiFetch({ resource }).then((rows) => setData((rows as SobreMi[])[0] ?? null));
-  }, []);
 
   const paragraphs = (data?.descripcion ?? "")
     .split(/\n\s*\n/)
@@ -57,11 +44,12 @@ const AboutMe = () => {
       {usuario && data && (
         <div className="-mt-4 mb-4 flex justify-end">
           <ModalTriggerButton
-            tipoFormulario="sobremi"
+            tipoFormulario="perfil"
             id={data.id}
-            defaultValues={data}
+            defaultValues={toFormValues(data)}
+            omitFields={PERFIL_HEADER_FIELDS}
             title="Editar: Sobre mí"
-            onSuccess={(result) => setData({ ...data, ...(result as Partial<SobreMi>) })}
+            onSuccess={(result) => setData({ ...data, ...(result as Partial<Perfil>) })}
           >
             <Button type="button" variant="outline" size="sm">
               <Pencil /> Editar

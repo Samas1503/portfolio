@@ -21,6 +21,18 @@ export const SERVICE_ICONS = [
   "BellPlus",
 ];
 
+export const PERFIL_HEADER_FIELDS = ["nombre", "rol", "alias", "resumen", "cvUrl"];
+export const PERFIL_ABOUT_FIELDS = [
+  "descripcion",
+  "experiencia",
+  "clientes",
+  "proyectos",
+  "telefono",
+];
+
+export const toFormValues = (row: object) =>
+  Object.fromEntries(Object.entries(row).map(([k, v]) => [k, v ?? ""]));
+
 export const formsData = {
   contacto: {
     schema: z.object({
@@ -107,9 +119,14 @@ export const formsData = {
       { label: "Período", name: "periodo", placeholder: "Ej: 2023 - 2024", type: "text" as const },
     ],
   },
-  sobremi: {
+  perfil: {
     schema: z.object({
       id: z.number().optional(),
+      nombre: z.string().min(1),
+      rol: z.string(),
+      alias: z.string(),
+      resumen: z.string(),
+      cvUrl: z.string(),
       descripcion: z.string().min(1),
       experiencia: z.string(),
       clientes: z.string(),
@@ -117,6 +134,21 @@ export const formsData = {
       telefono: z.string(),
     }),
     fields: [
+      { label: "Nombre", name: "nombre", placeholder: "Tu nombre", type: "text" as const },
+      { label: "Rol", name: "rol", placeholder: "Ej: Backend Developer", type: "text" as const },
+      { label: "Alias", name: "alias", placeholder: "Ej: Samas1503", type: "text" as const },
+      {
+        label: "Resumen",
+        name: "resumen",
+        placeholder: "Una o dos líneas sobre vos",
+        type: "textarea" as const,
+      },
+      {
+        label: "Link del CV (o subí un PDF con el botón del CV)",
+        name: "cvUrl",
+        placeholder: "https://…",
+        type: "text" as const,
+      },
       {
         label: "Descripción (párrafos separados por una línea en blanco, **texto** para resaltar)",
         name: "descripcion",
