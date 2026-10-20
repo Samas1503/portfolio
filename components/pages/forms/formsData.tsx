@@ -107,6 +107,48 @@ export const formsData = {
       { label: "Período", name: "periodo", placeholder: "Ej: 2023 - 2024", type: "text" as const },
     ],
   },
+  sobremi: {
+    schema: z.object({
+      id: z.number().optional(),
+      descripcion: z.string().min(1),
+      experiencia: z.string(),
+      clientes: z.string(),
+      proyectos: z.string(),
+      telefono: z.string(),
+    }),
+    fields: [
+      {
+        label: "Descripción (párrafos separados por una línea en blanco, **texto** para resaltar)",
+        name: "descripcion",
+        placeholder: "Contá quién sos",
+        type: "textarea" as const,
+      },
+      {
+        label: "Experiencia",
+        name: "experiencia",
+        placeholder: "Ej: +2 años de experiencia",
+        type: "text" as const,
+      },
+      {
+        label: "Clientes",
+        name: "clientes",
+        placeholder: "Ej: +20 clientes satisfechos",
+        type: "text" as const,
+      },
+      {
+        label: "Proyectos",
+        name: "proyectos",
+        placeholder: "Ej: +5 completados",
+        type: "text" as const,
+      },
+      {
+        label: "Teléfono",
+        name: "telefono",
+        placeholder: "Ej: 3884558285",
+        type: "text" as const,
+      },
+    ],
+  },
   servicios: {
     schema: z.object({
       id: z.number().optional(),

@@ -9,30 +9,7 @@ import {
   Mail,
   Phone,
   UserRound,
-  UsersRound,
-  Wrench,
 } from "lucide-react";
-
-export const dataAboutMe = [
-  {
-    id: 1,
-    name: "Experiencia",
-    icon: <Briefcase />,
-    description: "+2 años de experiencia",
-  },
-  {
-    id: 2,
-    name: "Clientes",
-    icon: <UsersRound />,
-    description: "+20 clientes satisfechos",
-  },
-  {
-    id: 3,
-    name: "Proyectos",
-    icon: <Wrench />,
-    description: "+5 completados",
-  },
-];
 
 export const itemsNavbar = [
   { id: 1, title: "Inicio", icon: <Home size={20} />, link: "#home" },

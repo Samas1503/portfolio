@@ -88,6 +88,13 @@ export const schemas = {
     },
     { nombreReferencia: "nombre_referencia", nroReferencia: "nro_referencia" }
   ),
+  sobremi: defineTable("SobreMi", {
+    descripcion: text,
+    experiencia: text,
+    clientes: text,
+    proyectos: text,
+    telefono: text,
+  }),
   contacto: defineTable("Contacto", {
     nombre: text,
     titulo: text,

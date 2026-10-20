@@ -155,6 +155,33 @@ export type Database = {
         }
         Relationships: []
       }
+      SobreMi: {
+        Row: {
+          clientes: string | null
+          descripcion: string | null
+          experiencia: string | null
+          id: number
+          proyectos: string | null
+          telefono: string | null
+        }
+        Insert: {
+          clientes?: string | null
+          descripcion?: string | null
+          experiencia?: string | null
+          id?: number
+          proyectos?: string | null
+          telefono?: string | null
+        }
+        Update: {
+          clientes?: string | null
+          descripcion?: string | null
+          experiencia?: string | null
+          id?: number
+          proyectos?: string | null
+          telefono?: string | null
+        }
+        Relationships: []
+      }
       Servicios: {
         Row: {
           estado: boolean | null
