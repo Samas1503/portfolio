@@ -3,8 +3,12 @@ import { SchemaKeys, schemas } from "../data/schemas";
 
 const postDataRepository = async (data: object, table: SchemaKeys) => {
   try {
-    const result = (await db.insert(schemas[table].schema).values(data));
-    return result[0].insertId;
+    const tableSchema = schemas[table].schema;
+    const [result] = await db
+      .insert(tableSchema)
+      .values(data)
+      .returning({ id: tableSchema.id });
+    return result.id;
   } catch (error) {
     console.log("Error inserting data into database:", error);
     
