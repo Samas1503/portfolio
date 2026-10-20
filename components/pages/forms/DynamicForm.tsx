@@ -31,10 +31,18 @@ export function DynamicForm<T extends z.ZodTypeAny>({
   schema,
   fields,
   onSubmit,
+  defaultValues,
+  submitLabel = "Enviar",
 }: DynamicFormProps<T>) {
   const [dropdownValues, setDropdownValues] = useState<
     Record<string, string | undefined>
-  >({});
+  >(() =>
+    Object.fromEntries(
+      fields
+        .filter((f) => f.type === "dropdown" && defaultValues?.[f.name] != null)
+        .map((f) => [f.name, String(defaultValues?.[f.name])])
+    )
+  );
   
   const fileRefs = useRef<Record<string, File | null>>({});
 
@@ -47,6 +55,8 @@ export function DynamicForm<T extends z.ZodTypeAny>({
           f.type === "hidden" ||
           f.name === "longitud" ||
           f.name === "latitud";
+        const initial = defaultValues?.[f.name];
+        if (initial !== undefined && initial !== null) return [f.name, initial];
         return [f.name, isNumber ? 0 : ""];
       })
     ) as z.infer<T>,
@@ -138,7 +148,15 @@ export function DynamicForm<T extends z.ZodTypeAny>({
                       </p>
                     ) : field.type === "geolocalization" ? (
                       <GoogleMaps
-                        value={form.getValues(field.name as Path<z.infer<T>>)}
+                        value={
+                          defaultValues?.latitud != null &&
+                          defaultValues?.longitud != null
+                            ? {
+                                lat: Number(defaultValues.latitud),
+                                lng: Number(defaultValues.longitud),
+                              }
+                            : form.getValues(field.name as Path<z.infer<T>>)
+                        }
                         onLocationChange={(coords) => {
                           const lat = Number(coords.lat);
                           const lng = Number(coords.lng);
@@ -178,7 +196,7 @@ export function DynamicForm<T extends z.ZodTypeAny>({
             />
           );
         })}
-        <Button type="submit">Enviar</Button>
+        <Button type="submit">{submitLabel}</Button>
       </form>
     </Form>
   );

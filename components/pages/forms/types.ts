@@ -28,5 +28,7 @@ export type DynamicFormProps<T extends z.ZodTypeAny> = {
   values?: Array<string>;
   max?: number,
   min?: number,
+  defaultValues?: Record<string, unknown>;
+  submitLabel?: string;
   onSubmit: (data: z.infer<T>) => Promise<void>;
 };

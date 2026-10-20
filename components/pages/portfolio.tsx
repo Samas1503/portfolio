@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import { CldImage } from "next-cloudinary";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink, Github, Pencil } from "lucide-react";
+import { parseTags } from "@/utils/tags";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { apiFetch } from "./fetch/tech-all";
@@ -13,7 +15,37 @@ import DeleteButton from "../shared/delete-button";
 import Section from "../shared/section";
 
 type Portfolio = typeof formsData.project.schema;
-type ArrayPortfolio = Array<z.infer<Portfolio>>;
+type Project = Omit<z.infer<Portfolio>, "tags"> & {
+  tags?: string[] | string | null;
+  categoria?: string | null;
+};
+type ArrayPortfolio = Project[];
+
+const toTags = (tags: Project["tags"]) => parseTags(tags ?? []);
+
+const Chip = ({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    aria-pressed={active}
+    className={cn(
+      "rounded-full border px-3 py-1 text-xs font-medium transition",
+      active
+        ? "border-primary bg-primary text-primary-foreground"
+        : "border-border text-muted-foreground hover:border-primary/50 hover:text-card-foreground"
+    )}
+  >
+    {children}
+  </button>
+);
 
 const INITIAL_VISIBLE = 6;
 
@@ -21,6 +53,9 @@ const ProjectImage = ({ src, alt }: { src?: string | null; alt: string }) => {
   const className =
     "aspect-video w-full rounded-lg border border-border object-cover transition duration-500 group-hover:scale-[1.03]";
   if (!src) return <div className={`${className} bg-muted`} />;
+  if (/^https?:\/\//.test(src))
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={src} alt={alt} loading="lazy" className={className} />;
   return src.split("/")[1] === "uploads" ? (
     <Image src={src} alt={alt} width={600} height={338} className={className} />
   ) : (
@@ -31,6 +66,8 @@ const ProjectImage = ({ src, alt }: { src?: string | null; alt: string }) => {
 const Portfolio = () => {
   const [dataPortfolio, setDataPortfolio] = useState<ArrayPortfolio>();
   const [showAll, setShowAll] = useState(false);
+  const [categoria, setCategoria] = useState<string | null>(null);
+  const [tag, setTag] = useState<string | null>(null);
   const resource = "project";
   useEffect(() => {
     const fetchData = async () => {
@@ -46,18 +83,71 @@ const Portfolio = () => {
     );
   };
 
-  const handleCreate = (data: Portfolio) => {
-    setDataPortfolio((prev) => [
-      ...(prev ?? []),
-      data as unknown as z.infer<Portfolio>,
-    ]);
+  const handleCreate = (data: Project) => {
+    setDataPortfolio((prev) => [...(prev ?? []), data]);
   };
 
-  const total = dataPortfolio?.length ?? 0;
-  const visible = showAll ? dataPortfolio : dataPortfolio?.slice(0, INITIAL_VISIBLE);
+  const handleUpdate = (data: Project) => {
+    setDataPortfolio((prev) =>
+      prev?.map((item) =>
+        Number(item.id) === Number(data.id) ? { ...item, ...data } : item
+      )
+    );
+  };
+
+  const categorias = useMemo(
+    () =>
+      Array.from(
+        new Set((dataPortfolio ?? []).map((p) => p.categoria).filter(Boolean))
+      ) as string[],
+    [dataPortfolio]
+  );
+  const tags = useMemo(
+    () =>
+      Array.from(
+        new Set((dataPortfolio ?? []).flatMap((p) => toTags(p.tags)))
+      ).sort((a, b) => a.localeCompare(b)),
+    [dataPortfolio]
+  );
+
+  const filtered = (dataPortfolio ?? []).filter(
+    (p) =>
+      (!categoria || p.categoria === categoria) &&
+      (!tag || toTags(p.tags).includes(tag))
+  );
+  const total = filtered.length;
+  const visible = showAll ? filtered : filtered.slice(0, INITIAL_VISIBLE);
 
   return (
     <Section id="projects" number="05" title="Proyectos">
+      {(categorias.length > 0 || tags.length > 0) && (
+        <div className="mb-8 space-y-3">
+          {categorias.length > 0 && (
+            <div className="flex flex-wrap gap-2" aria-label="Filtrar por categoría">
+              <Chip active={!categoria} onClick={() => setCategoria(null)}>
+                Todos
+              </Chip>
+              {categorias.map((c) => (
+                <Chip key={c} active={categoria === c} onClick={() => setCategoria(c === categoria ? null : c)}>
+                  {c}
+                </Chip>
+              ))}
+            </div>
+          )}
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-2" aria-label="Filtrar por tecnología">
+              {tags.map((t) => (
+                <Chip key={t} active={tag === t} onClick={() => setTag(t === tag ? null : t)}>
+                  {t}
+                </Chip>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      {total === 0 && dataPortfolio && (
+        <p className="text-sm text-muted-foreground">No hay proyectos con ese filtro.</p>
+      )}
       <ul className="grid gap-6 sm:grid-cols-2">
         {visible?.map((data) => (
           <li
@@ -71,14 +161,43 @@ const Portfolio = () => {
               <h3 className="font-semibold leading-snug text-card-foreground group-hover:text-primary">
                 {String(data.titulo)}
               </h3>
-              <DeleteButton
-                tipoSchema={resource as FormType}
-                id={Number(data.id)}
-                onSuccess={handleDelete}
-                className="size-7 shrink-0"
-                tipoElemento={""}
-              />
+              <div className="flex shrink-0 gap-2">
+                <ModalTriggerButton
+                  tipoFormulario="project"
+                  id={Number(data.id)}
+                  omitFields={["image"]}
+                  title={`Editar: ${data.titulo}`}
+                  defaultValues={{ ...data, tags: toTags(data.tags).join(", ") }}
+                  transform={(values) => ({ ...values, tags: parseTags(values.tags) })}
+                  onSuccess={(result: unknown) => handleUpdate(result as Project)}
+                >
+                  <Button type="button" variant="outline" className="size-7" aria-label={`Editar ${data.titulo}`}>
+                    <Pencil />
+                  </Button>
+                </ModalTriggerButton>
+                <DeleteButton
+                  tipoSchema={resource as FormType}
+                  id={Number(data.id)}
+                  onSuccess={handleDelete}
+                  className="size-7 shrink-0"
+                  tipoElemento={""}
+                />
+              </div>
             </div>
+            {(data.categoria || toTags(data.tags).length > 0) && (
+              <ul className="mt-3 flex flex-wrap gap-1.5 px-1" aria-label="Tecnologías">
+                {data.categoria && (
+                  <li className="rounded-full border border-primary/40 px-2 py-0.5 font-mono text-[11px] text-primary">
+                    {data.categoria}
+                  </li>
+                )}
+                {toTags(data.tags).map((t) => (
+                  <li key={t} className="rounded-full bg-muted px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            )}
             <div className="mt-3 flex gap-2 px-1 pb-1">
               {data.urlGithub && (
                 <a
@@ -112,7 +231,7 @@ const Portfolio = () => {
           </Button>
         )}
         <ModalTriggerButton
-          onSuccess={(result: unknown) => handleCreate(result as Portfolio)}
+          onSuccess={(result: unknown) => handleCreate(result as Project)}
           tipoFormulario="project"
         >
           <Button type="button">Agregar Proyecto</Button>

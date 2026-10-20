@@ -14,6 +14,7 @@ const bigint = z
   .nullable();
 const double = z.number().nullable();
 const bool = z.boolean().nullable();
+const textArray = z.array(z.string()).nullable();
 
 // API keys are camelCase; `columns` maps the ones that differ from the DB column name.
 function defineTable<T extends z.ZodRawShape>(
@@ -44,7 +45,15 @@ function defineTable<T extends z.ZodRawShape>(
 export const schemas = {
   project: defineTable(
     "Proyectos",
-    { titulo: text, image: text, urlGithub: text, urlDemo: text, estado: bool },
+    {
+      titulo: text,
+      image: text,
+      urlGithub: text,
+      urlDemo: text,
+      categoria: text,
+      tags: textArray,
+      estado: bool,
+    },
     { urlGithub: "url_github", urlDemo: "url_demo" }
   ),
   skills: defineTable("Skills", {

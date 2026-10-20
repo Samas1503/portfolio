@@ -115,25 +115,31 @@ export type Database = {
       }
       Proyectos: {
         Row: {
+          categoria: string | null
           estado: boolean | null
           id: number
           image: string | null
+          tags: string[]
           titulo: string | null
           url_demo: string | null
           url_github: string | null
         }
         Insert: {
+          categoria?: string | null
           estado?: boolean | null
           id?: number
           image?: string | null
+          tags?: string[]
           titulo?: string | null
           url_demo?: string | null
           url_github?: string | null
         }
         Update: {
+          categoria?: string | null
           estado?: boolean | null
           id?: number
           image?: string | null
+          tags?: string[]
           titulo?: string | null
           url_demo?: string | null
           url_github?: string | null
