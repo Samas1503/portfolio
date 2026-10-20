@@ -9,7 +9,11 @@ const encodeKey = new TextEncoder().encode(secretKey);
 export async function createSession(userId: string) {
   const expiresAt = new Date(Date.now() + 60 * 60 * 1000); //1 hora
   const session = await encript({ userId, expiresAt });
-  (await cookies()).set("usuario", "true", { path: "/", httpOnly: false });
+  (await cookies()).set("usuario", "true", {
+    path: "/",
+    httpOnly: false,
+    expires: expiresAt,
+  });
   (await cookies()).set("session", session, {
     httpOnly: true,
     secure: true,

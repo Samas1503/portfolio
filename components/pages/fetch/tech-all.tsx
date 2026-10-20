@@ -37,7 +37,13 @@ export async function apiFetch<T = unknown, R = unknown>({
   };
 
   const res = await fetch(url, opts);
-  
+
+  if (res.status === 401 && typeof window !== "undefined") {
+    // The admin session expired: drop the UI flag and ask to log in again.
+    document.cookie = "usuario=; Max-Age=0; path=/";
+    window.location.assign("/login");
+  }
+
   if (!res.ok) {
     const errorText = await res.text();
     throw new Error(`HTTP ${res.status}: ${errorText}`);
