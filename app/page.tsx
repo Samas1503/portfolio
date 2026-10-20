@@ -23,9 +23,9 @@ export default async function Home() {
         <Sidebar perfil={perfil} contactos={contactos} />
         <main className="pt-16 lg:w-[52%] lg:py-24">
           <AboutMe perfil={perfil} />
+          <Services />
           <Works />
           <Skills />
-          <Services />
           <Portfolio />
           <Academia />
           <Contact contactos={contactos} />

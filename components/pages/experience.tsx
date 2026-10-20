@@ -36,25 +36,41 @@ type ArrayExperiencia = Array<z.infer<Experiencia>>;
 const isValidCoord = (value: unknown): value is number =>
   typeof value === "number" && !isNaN(value);
 
-const MONTHS_SHORT = [
-  "ene",
-  "feb",
-  "mar",
-  "abr",
-  "may",
-  "jun",
-  "jul",
-  "ago",
-  "sep",
-  "oct",
-  "nov",
-  "dic",
+const MONTHS_LONG = [
+  "enero",
+  "febrero",
+  "marzo",
+  "abril",
+  "mayo",
+  "junio",
+  "julio",
+  "agosto",
+  "septiembre",
+  "octubre",
+  "noviembre",
+  "diciembre",
 ];
 
 const formatFecha = (fecha?: string | null) => {
   if (!fecha) return "";
   const [y, m] = fecha.split("-").map(Number);
-  return y && m >= 1 && m <= 12 ? `${MONTHS_SHORT[m - 1]} ${y}` : fecha;
+  return y && m >= 1 && m <= 12 ? `${MONTHS_LONG[m - 1]} ${y}` : fecha;
+};
+
+const duracion = (inicio?: string | null, fin?: string | null) => {
+  const [y1, m1] = (inicio || "").split("-").map(Number);
+  const end = fin || new Date().toISOString().slice(0, 10);
+  const [y2, m2] = end.split("-").map(Number);
+  if (!y1 || !m1 || !y2 || !m2) return "";
+  const total = (y2 - y1) * 12 + (m2 - m1);
+  if (total < 1) return "menos de 1 mes";
+  const anios = Math.floor(total / 12);
+  const meses = total % 12;
+  const partes = [
+    anios ? `${anios} ${anios === 1 ? "año" : "años"}` : "",
+    meses ? `${meses} ${meses === 1 ? "mes" : "meses"}` : "",
+  ].filter(Boolean);
+  return partes.join(" ");
 };
 
 const timeOf = (fecha?: string | null) => {
@@ -139,7 +155,7 @@ const Experience = () => {
   );
 
   return (
-    <Section id="experience" number="02" title="Experiencia">
+    <Section id="experience" number="03" title="Experiencia">
       <ol className="group/list relative ml-2 space-y-4 border-l border-border/70 sm:ml-4">
         {sorted.map((data, idx) => {
           const isCurrent = !data.fecha_fin;
@@ -174,7 +190,8 @@ const Experience = () => {
                   >
                     <CalendarRange className="size-3.5 shrink-0" aria-hidden />
                     {formatFecha(data.fecha_inicio)} —{" "}
-                    {data.fecha_fin ? formatFecha(data.fecha_fin) : "Actualidad"}
+                    {data.fecha_fin ? formatFecha(data.fecha_fin) : "Actualidad"}{" "}
+                    · {duracion(data.fecha_inicio, data.fecha_fin)}
                   </p>
                 </div>
                 <div className="sm:col-span-5">

@@ -74,7 +74,7 @@ const Services = () => {
   }, [servicios, usuario]);
 
   return (
-    <Section id="services" number="04" title="Servicios">
+    <Section id="services" number="02" title="Servicios">
       {usuario && (
         <p className="mb-4 text-sm text-muted-foreground">
           Tildá los servicios que querés mostrar. Los destildados solo los ves vos.

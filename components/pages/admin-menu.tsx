@@ -22,9 +22,9 @@ import { logout } from "@/app/login/actions";
 
 const ADMIN_SECTIONS = [
   { id: "about", label: "Sobre mí" },
+  { id: "services", label: "Servicios" },
   { id: "experience", label: "Experiencia" },
   { id: "skills", label: "Habilidades" },
-  { id: "services", label: "Servicios" },
   { id: "projects", label: "Proyectos" },
   { id: "academia", label: "Formación" },
   { id: "contact", label: "Contacto" },
