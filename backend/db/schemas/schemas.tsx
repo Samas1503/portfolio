@@ -1,6 +1,7 @@
 import {
   pgTable,
   integer,
+  bigint,
   text,
   boolean,
   doublePrecision,
@@ -42,7 +43,7 @@ export const experience = pgTable("Experiencia", {
   latitud: doublePrecision("latitud"),
   longitud: doublePrecision("longitud"),
   nombreReferencia: text("nombre_referencia"),
-  nroReferencia: integer("nro_referencia"),
+  nroReferencia: bigint("nro_referencia", { mode: "number" }),
   estado: boolean().default(true),
 }).enableRLS();
 
