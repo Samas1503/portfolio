@@ -1,7 +1,12 @@
 "use client";
 
 import Section from "../shared/section";
-import { BadgeCheck } from "lucide-react";
+import {
+  BadgeCheck,
+  Calculator,
+  Lock,
+  RefreshCw,
+} from "lucide-react";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { Button } from "../ui/button";
 import { apiFetch } from "./fetch/tech-all";
@@ -19,6 +24,8 @@ const nivelFromValor = (valor: number): Skill["nivel"] =>
 
 const Skills = () => {
   const [dataSkills, setDataSkills] = useState<Record<string, ArraySkill>>({});
+  const [excluded, setExcluded] = useState<Set<number>>(new Set());
+  const [syncing, setSyncing] = useState(false);
   const resource = "skills";
   const { usuario } = useUsuario();
   const saveTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
@@ -40,32 +47,96 @@ const Skills = () => {
     }, 500);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = (await apiFetch({ resource })) as Skill[];
+  const fetchData = async () => {
+    const response = (await apiFetch({ resource })) as Skill[];
 
-      const map = new Map<string, Skill[]>();
+    const map = new Map<string, Skill[]>();
 
-      response.forEach((data) => {
-        if (!map.has(data.tipo)) {
-          map.set(data.tipo, []);
-        }
-        map.get(data.tipo)!.push({
-          ...data,
-          resource,
-          id: data.id,
-        });
+    response.forEach((data) => {
+      if (!map.has(data.tipo)) {
+        map.set(data.tipo, []);
+      }
+      map.get(data.tipo)!.push({
+        ...data,
+        resource,
+        id: data.id,
       });
+    });
 
-      setDataSkills(
-        Object.fromEntries(
-          Array.from(map.entries()).map(([key, value]) => [key, value])
-        )
-      );
-    };
+    setDataSkills(
+      Object.fromEntries(
+        Array.from(map.entries()).map(([key, value]) => [key, value])
+      )
+    );
+  };
 
+  const fetchExclusions = async () => {
+    try {
+      const res = await fetch("/api/skills/exclusions");
+      if (res.ok) setExcluded(new Set((await res.json()) as number[]));
+    } catch {
+      // La columna Skills.excluida puede no existir todavía.
+    }
+  };
+
+  useEffect(() => {
     fetchData();
+    fetchExclusions();
   }, []);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch("/api/skills/sync", { method: "POST" });
+      const data = (await res.json().catch(() => ({}))) as {
+        updated?: number;
+        added?: string[];
+        excluded?: number;
+        aborted?: string;
+        error?: string;
+      };
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      if (data.aborted === "rate_limit") {
+        alert(
+          "GitHub alcanzó el límite de peticiones. Probá más tarde o configurá GITHUB_TOKEN para más cuota."
+        );
+        return;
+      }
+      await fetchData();
+      alert(
+        `Habilidades actualizadas: ${data.updated ?? 0}` +
+          (data.added?.length ? ` · nuevas: ${data.added.join(", ")}` : "") +
+          (data.excluded ? ` · excluidas del cálculo: ${data.excluded}` : "")
+      );
+    } catch (error) {
+      alert(`No se pudo recalcular: ${(error as Error).message}`);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const toggleExcluida = async (item: Skill) => {
+    const id = Number(item.id);
+    const next = !excluded.has(id);
+    try {
+      const res = await fetch("/api/skills/exclusions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, excluida: next }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setExcluded((prev) => {
+        const s = new Set(prev);
+        if (next) s.add(id);
+        else s.delete(id);
+        return s;
+      });
+    } catch {
+      alert(
+        "No se pudo guardar la exclusión. ¿Aplicaste la migración de Skills.excluida en Supabase?"
+      );
+    }
+  };
 
   const handleDelete = (id: number, tipoElemento: string) => {
     setDataSkills((prev) => {
@@ -96,6 +167,30 @@ const Skills = () => {
 
   return (
     <Section id="skills" number="03" title="Habilidades">
+      <div className="-mt-2 mb-6 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs text-muted-foreground">
+          Los porcentajes reflejan el uso real de cada tecnología en los
+          repositorios de mis proyectos, no mi nivel de conocimiento.
+        </p>
+        {usuario && (
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleSync}
+              disabled={syncing}
+            >
+              <RefreshCw className={syncing ? "animate-spin" : ""} />
+              {syncing ? "Recalculando…" : "Actualizar desde repositorios"}
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              Tocá <Calculator className="inline size-3.5 align-text-bottom" />{" "}
+              para excluir una skill del cálculo.
+            </span>
+          </div>
+        )}
+      </div>
       <div className="grid gap-6 sm:grid-cols-2">
         {Object.entries(dataSkills).map(([key, items]) => (
           <div
@@ -115,8 +210,31 @@ const Skills = () => {
                     </p>
                     <div className="flex items-center gap-2">
                       <span className="rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">
-                        {item.nivel}
+                        {excluded.has(Number(item.id)) ? "Manual" : item.nivel}
                       </span>
+                      {usuario && (
+                        <button
+                          type="button"
+                          onClick={() => toggleExcluida(item)}
+                          title={
+                            excluded.has(Number(item.id))
+                              ? "Incluir en el cálculo automático"
+                              : "Excluir del cálculo automático (queda manual)"
+                          }
+                          aria-pressed={excluded.has(Number(item.id))}
+                          className={
+                            excluded.has(Number(item.id))
+                              ? "grid size-7 place-items-center rounded-md border border-primary bg-primary/10 text-primary transition"
+                              : "grid size-7 place-items-center rounded-md border border-border text-muted-foreground transition hover:border-primary/60 hover:text-primary"
+                          }
+                        >
+                          {excluded.has(Number(item.id)) ? (
+                            <Lock className="size-4" />
+                          ) : (
+                            <Calculator className="size-4" />
+                          )}
+                        </button>
+                      )}
                       <DeleteButton
                         tipoSchema={resource as FormType}
                         tipoElemento={item.tipo}
@@ -126,7 +244,7 @@ const Skills = () => {
                       />
                     </div>
                   </div>
-                  {usuario ? (
+                  {usuario && excluded.has(Number(item.id)) ? (
                     <div className="mt-2 flex items-center gap-3">
                       <input
                         type="range"
@@ -145,18 +263,28 @@ const Skills = () => {
                       </span>
                     </div>
                   ) : (
-                    <div
-                      className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"
-                      role="progressbar"
-                      aria-label={item.nombre}
-                      aria-valuenow={item.valor}
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                    >
+                    <div className="mt-2 flex items-center gap-3">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-primary/60 to-primary"
-                        style={{ width: `${item.valor}%` }}
-                      />
+                        className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
+                        role="progressbar"
+                        aria-label={item.nombre}
+                        aria-valuenow={item.valor}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                      >
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-primary/60 to-primary"
+                          style={{ width: `${item.valor}%` }}
+                        />
+                      </div>
+                      {usuario && (
+                        <span
+                          className="w-9 text-right font-mono text-xs text-muted-foreground"
+                          title="Valor calculado automáticamente desde los repositorios"
+                        >
+                          {item.valor}%
+                        </span>
+                      )}
                     </div>
                   )}
                 </li>

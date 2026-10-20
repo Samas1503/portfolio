@@ -83,6 +83,30 @@ export type Database = {
         }
         Relationships: []
       }
+      Interacciones: {
+        Row: {
+          created_at: string | null
+          detalle: string | null
+          id: number
+          path: string | null
+          tipo: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          detalle?: string | null
+          id?: never
+          path?: string | null
+          tipo?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          detalle?: string | null
+          id?: never
+          path?: string | null
+          tipo?: string | null
+        }
+        Relationships: []
+      }
       Mensajes: {
         Row: {
           destino: string | null
@@ -224,6 +248,7 @@ export type Database = {
       Skills: {
         Row: {
           estado: boolean | null
+          excluida: boolean | null
           id: number
           nivel: string | null
           nombre: string | null
@@ -232,6 +257,7 @@ export type Database = {
         }
         Insert: {
           estado?: boolean | null
+          excluida?: boolean | null
           id?: number
           nivel?: string | null
           nombre?: string | null
@@ -240,11 +266,57 @@ export type Database = {
         }
         Update: {
           estado?: boolean | null
+          excluida?: boolean | null
           id?: number
           nivel?: string | null
           nombre?: string | null
           tipo?: string | null
           valor?: number | null
+        }
+        Relationships: []
+      }
+      Usuarios: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: number
+          nombre: string | null
+          password_hash: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id?: number
+          nombre?: string | null
+          password_hash?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: number
+          nombre?: string | null
+          password_hash?: string | null
+        }
+        Relationships: []
+      }
+      Visitas: {
+        Row: {
+          created_at: string | null
+          id: number
+          path: string | null
+          referrer: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          path?: string | null
+          referrer?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          path?: string | null
+          referrer?: string | null
         }
         Relationships: []
       }

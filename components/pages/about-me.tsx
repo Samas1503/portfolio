@@ -59,7 +59,7 @@ const AboutMe = ({ perfil }: { perfil: Perfil | null }) => {
       )}
 
       <div className="grid gap-8 sm:grid-cols-[1fr_auto] sm:items-start">
-        <div className="space-y-4 leading-relaxed text-muted-foreground">
+        <div className="space-y-4 text-justify leading-relaxed text-muted-foreground hyphens-auto">
           {paragraphs.map((p, i) => (
             <p key={i}>{renderParagraph(p)}</p>
           ))}

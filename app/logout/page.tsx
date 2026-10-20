@@ -12,7 +12,10 @@ const LogOutButton = () => {
         setUsuario(false);
     }
     return ( usuario &&
-        <Button type="button" className="px-3" onClick={loggedOut}><LogOut /> </Button>
+        <Button type="button" variant="outline" className="px-3" onClick={loggedOut} aria-label="Cerrar sesión" title="Cerrar sesión">
+            <LogOut />
+            <span className="hidden lg:inline">Cerrar sesión</span>
+        </Button>
      );
 }
  

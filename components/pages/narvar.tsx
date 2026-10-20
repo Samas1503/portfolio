@@ -1,6 +1,7 @@
 import { itemsNavbar } from "@/data";
 import { ToggleTheme } from "../theme/toogle-theme";
 import LogOutButton from "@/app/logout/page";
+import AdminMenu from "./admin-menu";
 
 const Navbar = () => {
   return (
@@ -20,6 +21,7 @@ const Navbar = () => {
           </a>
         ))}
         <ToggleTheme />
+        <AdminMenu iconOnly />
         <LogOutButton />
       </div>
     </nav>

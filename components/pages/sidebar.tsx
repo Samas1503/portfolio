@@ -12,6 +12,7 @@ import type { Contacto } from "@/backend/data/contactos";
 import ContactIcon from "../shared/contact-icon";
 import { ToggleTheme } from "../theme/toogle-theme";
 import LogOutButton from "@/app/logout/page";
+import AdminMenu from "./admin-menu";
 import Hero3D from "../three/hero-3d";
 import { cn } from "@/lib/utils";
 
@@ -83,6 +84,10 @@ const Sidebar = ({
       className="lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-[48%] lg:flex-col lg:justify-between lg:py-20"
     >
       <div>
+        <div className="mb-6 hidden justify-end gap-2 lg:flex">
+          <AdminMenu />
+          <LogOutButton />
+        </div>
         <p className="font-mono text-sm text-primary">Hola, mi nombre es</p>
         <h1 className="mt-3 text-4xl font-bold tracking-tight text-card-foreground sm:text-5xl">
           {perfil?.nombre}
@@ -214,7 +219,6 @@ const Sidebar = ({
         </ul>
         <div className="ml-auto hidden items-center gap-2 lg:flex">
           <ToggleTheme />
-          <LogOutButton />
         </div>
       </div>
     </header>

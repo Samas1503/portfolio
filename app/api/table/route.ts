@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import services from "@/backend/Services";
+import { syncSkillsFromProjects } from "@/backend/Services/skillsSync.service";
 import { SchemaKeys, schemas } from "@/backend/data/schemas";
 import { withValidation } from "@/utils/withValidation";
 import { serializeData } from "@/utils/serialize";
@@ -118,6 +119,10 @@ export const POST = withValidation(
         : (ctx.validated?.body as object);
 
       const data = await services.postDataService(body, tipo);
+
+      if (tipo === "project") {
+        after(() => syncSkillsFromProjects());
+      }
 
       const origin = req.headers.get("origin");
       return NextResponse.json(serializeData(data), {

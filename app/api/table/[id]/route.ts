@@ -1,10 +1,11 @@
 // app/api/table/[id]/route.ts
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { commonParams, commonQuery } from "@/utils/schemasRequest";
 import { SchemaKeys, schemas } from "@/backend/data/schemas";
 import { serializeData } from "@/utils/serialize";
 import { withValidation } from "@/utils/withValidation";
 import services from "@/backend/Services";
+import { syncSkillsFromProjects } from "@/backend/Services/skillsSync.service";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
@@ -70,6 +71,10 @@ export const PATCH = withValidation(
         tipo
       );
 
+      if (tipo === "project") {
+        after(() => syncSkillsFromProjects());
+      }
+
       const origin = req.headers.get("origin");
 
       return NextResponse.json(serializeData(updated), {
@@ -124,6 +129,10 @@ export const DELETE = withValidation(
           { error: "Error al eliminar elemento" },
           { status: 404 }
         );
+
+      if (tipo === "project") {
+        after(() => syncSkillsFromProjects());
+      }
 
       const origin = req.headers.get("origin");
 

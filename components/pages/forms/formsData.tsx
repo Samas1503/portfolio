@@ -226,6 +226,7 @@ export const formsData = {
       nombre: z.string(),
       nivel: z.enum(["Básico", "Intermedio", "Experimentado"]),
       valor: z.coerce.number(),
+      excluida: z.boolean().nullish(),
       resource: z.string().optional(),
     }),
     fields: [
@@ -239,6 +240,8 @@ export const formsData = {
           "Backend Development",
           "Database Management",
           "DevOps",
+          "Herramientas",
+          "Web3",
         ],
       },
       {

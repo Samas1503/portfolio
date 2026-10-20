@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "@/app/lib/session";
 
-const protectedRoutes: string[] = ["/api"];
+const protectedRoutes: string[] = ["/api", "/dashboard"];
 const publicRoutes = ["/login"];
 
 export default async function middleware(req: NextRequest) {
@@ -15,7 +15,9 @@ export default async function middleware(req: NextRequest) {
   const cookie = (await cookies()).get("session")?.value;
   const session = cookie ? await decrypt(cookie) : null;
   const isMutatingApi =
-    (path.startsWith("/api/table") || path.startsWith("/api/cv")) &&
+    (path.startsWith("/api/table") ||
+      path.startsWith("/api/cv") ||
+      path.startsWith("/api/skills")) &&
     req.method !== "GET" && req.method !== "OPTIONS";
   if (isMutatingApi && !session?.userId) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });

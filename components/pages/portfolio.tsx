@@ -4,10 +4,27 @@ import Image from "next/image";
 import { CldImage } from "next-cloudinary";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
-import { BriefcaseBusiness, ExternalLink, Github, Lock, Pencil } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  ChevronDown,
+  ExternalLink,
+  Github,
+  ListFilter,
+  Lock,
+  Pencil,
+  X,
+} from "lucide-react";
 import { parseTags } from "@/utils/tags";
-import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { apiFetch } from "./fetch/tech-all";
 import { formsData, FormType } from "./forms/formsData";
@@ -23,31 +40,36 @@ type ArrayPortfolio = Project[];
 
 const toTags = (tags: Project["tags"]) => parseTags(tags ?? []);
 
-const Chip = ({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) => (
-  <button
-    type="button"
-    onClick={onClick}
-    aria-pressed={active}
-    className={cn(
-      "rounded-full border px-3 py-1 text-xs font-medium transition",
-      active
-        ? "border-primary bg-primary text-primary-foreground"
-        : "border-border text-muted-foreground hover:border-primary/50 hover:text-card-foreground"
-    )}
-  >
-    {children}
-  </button>
-);
+const periodoRange = (periodo?: string | null) => {
+  if (!periodo) return { start: 0, end: 0 };
+  const years = (periodo.match(/\d{4}/g) ?? []).map(Number);
+  const ongoing = /actual/i.test(periodo);
+  return {
+    start: years[0] ?? 0,
+    end: ongoing
+      ? Number.MAX_SAFE_INTEGER
+      : years.length
+        ? Math.max(...years)
+        : 0,
+  };
+};
+
+const byMostRecent = (a: Project, b: Project) => {
+  const pa = periodoRange(a.periodo);
+  const pb = periodoRange(b.periodo);
+  return pb.end - pa.end || pb.start - pa.start || Number(b.id) - Number(a.id);
+};
 
 const INITIAL_VISIBLE = 6;
+
+const trackClick = (detalle: string) => {
+  const body = JSON.stringify({
+    tipo: "click",
+    detalle,
+    path: window.location.pathname,
+  });
+  navigator.sendBeacon?.("/api/track", new Blob([body], { type: "application/json" }));
+};
 
 const ProjectImage = ({ src, alt }: { src?: string | null; alt: string }) => {
   const className =
@@ -82,13 +104,7 @@ const Portfolio = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await apiFetch({ resource });
-      setDataPortfolio(
-        [...(data as ArrayPortfolio)].sort(
-          (a, b) =>
-            Number(!a.periodo) - Number(!b.periodo) ||
-            Number(a.id) - Number(b.id)
-        )
-      );
+      setDataPortfolio(data as ArrayPortfolio);
     };
     fetchData();
   }, []);
@@ -126,38 +142,104 @@ const Portfolio = () => {
     [dataPortfolio]
   );
 
-  const filtered = (dataPortfolio ?? []).filter(
+  const sorted = useMemo(
+    () => [...(dataPortfolio ?? [])].sort(byMostRecent),
+    [dataPortfolio]
+  );
+
+  const filtered = sorted.filter(
     (p) =>
       (!categoria || p.categoria === categoria) &&
       (!tag || toTags(p.tags).includes(tag))
   );
+  const activeFilters = (categoria ? 1 : 0) + (tag ? 1 : 0);
   const total = filtered.length;
   const visible = showAll ? filtered : filtered.slice(0, INITIAL_VISIBLE);
 
   return (
     <Section id="projects" number="05" title="Proyectos">
       {(categorias.length > 0 || tags.length > 0) && (
-        <div className="mb-8 space-y-3">
-          {categorias.length > 0 && (
-            <div className="flex flex-wrap gap-2" aria-label="Filtrar por categoría">
-              <Chip active={!categoria} onClick={() => setCategoria(null)}>
-                Todos
-              </Chip>
-              {categorias.map((c) => (
-                <Chip key={c} active={categoria === c} onClick={() => setCategoria(c === categoria ? null : c)}>
-                  {c}
-                </Chip>
-              ))}
-            </div>
+        <div className="mb-8 flex flex-wrap items-center gap-3">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                aria-label="Filtrar proyectos"
+              >
+                <ListFilter />
+                Filtros
+                {activeFilters > 0 && (
+                  <span className="grid size-5 place-items-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                    {activeFilters}
+                  </span>
+                )}
+                <ChevronDown className="opacity-60" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-64">
+              {categorias.length > 0 && (
+                <>
+                  <DropdownMenuLabel>Categoría</DropdownMenuLabel>
+                  <DropdownMenuRadioGroup
+                    value={categoria ?? ""}
+                    onValueChange={(v) => setCategoria(v || null)}
+                  >
+                    <DropdownMenuRadioItem value="">
+                      Todas
+                    </DropdownMenuRadioItem>
+                    {categorias.map((c) => (
+                      <DropdownMenuRadioItem key={c} value={c}>
+                        {c}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </>
+              )}
+              {categorias.length > 0 && tags.length > 0 && (
+                <DropdownMenuSeparator />
+              )}
+              {tags.length > 0 && (
+                <>
+                  <DropdownMenuLabel>Tecnología</DropdownMenuLabel>
+                  <DropdownMenuRadioGroup
+                    value={tag ?? ""}
+                    onValueChange={(v) => setTag(v || null)}
+                  >
+                    <DropdownMenuRadioItem value="">
+                      Todas
+                    </DropdownMenuRadioItem>
+                    {tags.map((t) => (
+                      <DropdownMenuRadioItem key={t} value={t}>
+                        {t}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {categoria && (
+            <button
+              type="button"
+              onClick={() => setCategoria(null)}
+              title="Quitar filtro"
+              className="inline-flex items-center gap-1 rounded-full border border-primary bg-primary px-3 py-1 text-xs font-medium text-primary-foreground transition hover:bg-primary/80"
+            >
+              {categoria}
+              <X className="size-3" aria-hidden />
+            </button>
           )}
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2" aria-label="Filtrar por tecnología">
-              {tags.map((t) => (
-                <Chip key={t} active={tag === t} onClick={() => setTag(t === tag ? null : t)}>
-                  {t}
-                </Chip>
-              ))}
-            </div>
+          {tag && (
+            <button
+              type="button"
+              onClick={() => setTag(null)}
+              title="Quitar filtro"
+              className="inline-flex items-center gap-1 rounded-full border border-primary bg-primary px-3 py-1 text-xs font-medium text-primary-foreground transition hover:bg-primary/80"
+            >
+              {tag}
+              <X className="size-3" aria-hidden />
+            </button>
           )}
         </div>
       )}
@@ -226,6 +308,7 @@ const Portfolio = () => {
               {data.urlGithub && (
                 <a
                   href={data.urlGithub}
+                  onClick={() => trackClick(`github:${data.titulo}`)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground transition hover:bg-primary hover:text-primary-foreground"
@@ -236,6 +319,7 @@ const Portfolio = () => {
               {data.urlDemo && (
                 <a
                   href={data.urlDemo}
+                  onClick={() => trackClick(`demo:${data.titulo}`)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground transition hover:bg-primary hover:text-primary-foreground"

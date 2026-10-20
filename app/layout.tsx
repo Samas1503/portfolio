@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/theme-providers";
 import "./globals.css";
 import { UserProvider } from "@/context/UserContext";
+import Tracker from "@/components/shared/tracker";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const jetbrains = JetBrains_Mono({
@@ -30,6 +31,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <Tracker />
             {children}
           </ThemeProvider>
         </UserProvider>
