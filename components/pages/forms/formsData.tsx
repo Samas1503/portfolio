@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const PROJECT_CATEGORIES = [
   "Frontend",
+  "Frontend Demo",
   "Backend",
   "Fullstack",
   "Web3",
