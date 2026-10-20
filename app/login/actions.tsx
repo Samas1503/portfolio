@@ -4,11 +4,6 @@ import { createSession, deleteSession } from "@/app/lib/session";
 import { redirect } from "next/navigation";
 import loginSchema from "./schema";
 
-const testUser = {
-  id: "1",
-  email: "samueleliasparedes.10@gmail.com",
-  password: "Sampar.10",
-};
 
 export async function login(prevState: unknown, formData: FormData) {
   const result = loginSchema.safeParse(Object.fromEntries(formData));
@@ -21,7 +16,14 @@ export async function login(prevState: unknown, formData: FormData) {
   
   const { email, password } = result.data;
 
-  if (email !== testUser.email || password !== testUser.password) {
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (
+    !adminEmail ||
+    !adminPassword ||
+    email !== adminEmail ||
+    password !== adminPassword
+  ) {
     return {
       errors: {
         email: ["Invalid email or password"],
@@ -29,7 +31,7 @@ export async function login(prevState: unknown, formData: FormData) {
     };
   }
   
-  await createSession(testUser.id);
+  await createSession("1");
 
   redirect("/");
 }
