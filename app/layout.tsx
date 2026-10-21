@@ -4,6 +4,8 @@ import { ThemeProvider } from "@/components/theme/theme-providers";
 import "./globals.css";
 import { UserProvider } from "@/context/UserContext";
 import Tracker from "@/components/shared/tracker";
+import VgpuFluid from "@/components/three/vgpu-fluid";
+import VgpuThemeWipe from "@/components/three/vgpu-theme-wipe";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const jetbrains = JetBrains_Mono({
@@ -41,6 +43,8 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Tracker />
+            <VgpuFluid className="pointer-events-none fixed inset-0 z-40 h-full w-full" />
+            <VgpuThemeWipe />
             {children}
           </ThemeProvider>
         </UserProvider>

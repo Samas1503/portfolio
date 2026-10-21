@@ -195,7 +195,7 @@ const Skills = () => {
         {Object.entries(dataSkills).map(([key, items]) => (
           <div
             key={key}
-            className="rounded-xl border border-border bg-card/50 p-5"
+            className="rounded-xl border border-border bg-card/50 backdrop-blur-sm p-5"
           >
             <h3 className="mb-4 font-mono text-sm uppercase tracking-widest text-primary">
               {key}

@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { startTransition, useActionState, useEffect } from "react";
+import { startTransition, useActionState, useEffect, type BaseSyntheticEvent } from "react";
 import { z } from "zod";
 
 import {
@@ -35,7 +35,18 @@ export function LoginForm() {
     },
   });
 
-  const clientSubmit = (data: z.infer<typeof loginSchema>) => {
+  const clientSubmit = (
+    data: z.infer<typeof loginSchema>,
+    event?: BaseSyntheticEvent
+  ) => {
+    // Los gestores de contraseñas/autofill disparan submit sin botón
+    // (requestSubmit() sin submitter): pedir confirmación antes de entrar.
+    if (
+      !(event?.nativeEvent as SubmitEvent | undefined)?.submitter &&
+      !window.confirm("¿Ingresar con las credenciales autocompletadas?")
+    )
+      return;
+
     const formData = new FormData();
     formData.append("email", data.email);
     formData.append("password", data.password);
@@ -49,15 +60,14 @@ export function LoginForm() {
 
   useEffect(() => {
     if (usuario) {
-      router.push("/");
+      router.push("/dashboard");
     }
   }, [router, usuario]);
   
   return (
     <Form {...form}>
       <form
-        action={formAction}
-        onClick={form.handleSubmit(clientSubmit)}
+        onSubmit={form.handleSubmit(clientSubmit)}
         className="space-y-6"
       >
         <FormField

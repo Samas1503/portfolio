@@ -81,7 +81,7 @@ const AboutMe = ({ perfil }: { perfil: Perfil | null }) => {
           {METRICS.filter((m) => data[m.key]).map((m) => (
             <div
               key={m.key}
-              className="rounded-xl border border-border bg-card/50 p-4 transition hover:border-primary/40"
+              className="rounded-xl border border-border bg-card/50 backdrop-blur-sm p-4 transition hover:border-primary/40"
             >
               <span className="text-primary">{m.icon}</span>
               <p className="mt-3 text-sm font-semibold text-card-foreground">{m.name}</p>

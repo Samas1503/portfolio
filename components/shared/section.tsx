@@ -10,7 +10,7 @@ const Section = ({ id, number, title, children }: SectionProps) => {
     <section
       id={id}
       aria-labelledby={`${id}-title`}
-      className="mb-24 scroll-mt-16 md:mb-32 lg:scroll-mt-24"
+      className="reveal mb-24 scroll-mt-16 md:mb-32 lg:scroll-mt-24"
     >
       <div className="sticky top-0 z-20 -mx-6 mb-6 bg-background/80 px-6 py-4 backdrop-blur md:-mx-12 md:px-12 lg:static lg:mx-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-none">
         <h2

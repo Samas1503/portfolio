@@ -25,7 +25,7 @@ const Contact = ({ contactos }: { contactos: Contacto[] }) => {
         {contactos.map((contacto) => (
           <div
             key={contacto.id}
-            className="group relative rounded-xl border border-border bg-card/50 p-4 transition hover:border-primary/40"
+            className="group relative rounded-xl border border-border bg-card/50 backdrop-blur-sm p-4 transition hover:border-primary/40"
           >
             <a
               href={contacto.link ?? undefined}
@@ -84,7 +84,7 @@ const Contact = ({ contactos }: { contactos: Contacto[] }) => {
           </Button>
         </ModalTriggerButton>
       </div>
-      <div className="mt-8 rounded-xl border border-border bg-card/50 p-5">
+      <div className="mt-8 rounded-xl border border-border bg-card/50 backdrop-blur-sm p-5">
         <ContactForm />
       </div>
     </Section>

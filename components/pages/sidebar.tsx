@@ -15,6 +15,7 @@ import LogOutButton from "@/app/logout/page";
 import AdminMenu from "./admin-menu";
 import Hero3D from "../three/hero-3d";
 import VgpuParticles from "../three/vgpu-particles";
+import VgpuRaymarched from "../three/vgpu-raymarched";
 import { cn } from "@/lib/utils";
 
 export const sections = [
@@ -93,7 +94,7 @@ const Sidebar = ({
   return (
     <header
       id="home"
-      className="relative lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-[48%] lg:flex-col lg:justify-between lg:py-20"
+      className="relative lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-[48%] lg:flex-col lg:justify-between lg:overflow-y-auto lg:py-10 lg:[@media(max-height:800px)]:py-5 lg:[scrollbar-width:none]"
     >
       <VgpuParticles className="pointer-events-none absolute inset-0 -z-10 h-full w-full" />
       <div>
@@ -111,11 +112,11 @@ const Sidebar = ({
             <span className="text-muted-foreground">· {perfil.alias}</span>
           )}
         </h2>
-        <p className="mt-4 max-w-xs leading-relaxed text-muted-foreground">
+        <p className="mt-4 max-w-xs leading-relaxed text-muted-foreground lg:[@media(max-height:800px)]:mt-2">
           {perfil?.resumen}
         </p>
 
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-wrap gap-3 lg:[@media(max-height:800px)]:mt-5">
           <Link className={buttonVariants()} href="#contact">
             <Mail /> Contactame
           </Link>
@@ -169,13 +170,13 @@ const Sidebar = ({
           </div>
         )}
 
-        <nav className="mt-10 hidden lg:block" aria-label="Secciones">
+        <nav className="mt-10 hidden lg:block lg:[@media(max-height:800px)]:mt-5" aria-label="Secciones">
           <ul className="w-max">
             {sections.map(({ id, label }) => (
               <li key={id}>
                 <a
                   href={`#${id}`}
-                  className="group flex items-center py-2.5"
+                  className="group flex items-center py-2.5 lg:[@media(max-height:800px)]:py-1.5"
                   aria-current={active === id ? "true" : undefined}
                 >
                   <span
@@ -199,7 +200,7 @@ const Sidebar = ({
         </nav>
       </div>
 
-      <Hero3D className="pointer-events-none mx-auto my-8 h-56 w-full max-w-sm lg:pointer-events-auto lg:my-4 lg:h-auto lg:max-h-64 lg:min-h-28 lg:flex-1" />
+      <Hero3D className="pointer-events-none mx-auto my-8 h-64 w-full max-w-md lg:pointer-events-auto lg:my-4 lg:h-auto lg:max-h-80 lg:min-h-20 lg:flex-1 lg:[@media(max-height:800px)]:my-2 lg:[@media(max-height:800px)]:min-h-16" />
 
       <div className="flex items-center gap-4">
         <ul className="flex items-center gap-2" aria-label="Redes y contacto">

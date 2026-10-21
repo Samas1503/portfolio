@@ -178,7 +178,7 @@ const Experience = () => {
                   )}
                 />
               </span>
-              <article className="relative grid gap-3 rounded-xl border border-transparent p-4 transition hover:border-border hover:bg-card/60 hover:shadow-lg sm:grid-cols-8 sm:gap-6 lg:group-hover/list:opacity-60 lg:hover:!opacity-100">
+              <article className="relative grid gap-3 rounded-xl border border-transparent p-4 transition hover:border-border hover:bg-card/60 hover:backdrop-blur-sm hover:shadow-lg sm:grid-cols-8 sm:gap-6 lg:group-hover/list:opacity-60 lg:hover:!opacity-100">
                 <div className="sm:col-span-3">
                   <p
                     className={cn(

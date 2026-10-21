@@ -86,7 +86,7 @@ const Services = () => {
           return (
             <div
               key={tipo}
-              className="rounded-xl border border-border bg-card/50 p-5 transition hover:border-primary/40"
+              className="rounded-xl border border-border bg-card/50 backdrop-blur-sm p-5 transition hover:border-primary/40"
             >
               <h3 className="mb-4 flex items-center gap-3 font-semibold text-card-foreground">
                 <span className="rounded-lg bg-accent p-2 text-primary">

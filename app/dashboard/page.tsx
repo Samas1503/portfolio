@@ -118,7 +118,7 @@ export default function Dashboard() {
         {CARDS.map((c) => (
           <div
             key={c.label}
-            className="rounded-xl border border-border bg-card/50 p-4"
+            className="rounded-xl border border-border bg-card/50 backdrop-blur-sm p-4"
           >
             <span className="text-primary">{c.icon}</span>
             <p className="mt-3 text-2xl font-bold text-card-foreground">
@@ -129,7 +129,7 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <section className="mt-10 rounded-xl border border-border bg-card/50 p-5">
+      <section className="mt-10 rounded-xl border border-border bg-card/50 backdrop-blur-sm p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-mono text-sm uppercase tracking-widest text-primary">
             Visitas por día
@@ -205,7 +205,7 @@ export default function Dashboard() {
       </section>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-2">
-        <section className="rounded-xl border border-border bg-card/50 p-5">
+        <section className="rounded-xl border border-border bg-card/50 backdrop-blur-sm p-5">
           <h2 className="mb-4 font-mono text-sm uppercase tracking-widest text-primary">
             Mensajes recibidos
           </h2>
@@ -230,7 +230,7 @@ export default function Dashboard() {
           </ul>
         </section>
 
-        <section className="rounded-xl border border-border bg-card/50 p-5">
+        <section className="rounded-xl border border-border bg-card/50 backdrop-blur-sm p-5">
           <h2 className="mb-4 font-mono text-sm uppercase tracking-widest text-primary">
             Interacciones recientes
           </h2>
@@ -260,7 +260,7 @@ export default function Dashboard() {
         </section>
       </div>
 
-      <section className="mt-10 max-w-md rounded-xl border border-border bg-card/50 p-5">
+      <section className="mt-10 max-w-md rounded-xl border border-border bg-card/50 backdrop-blur-sm p-5">
         <h2 className="mb-4 flex items-center gap-2 font-mono text-sm uppercase tracking-widest text-primary">
           <KeyRound className="size-4" /> Cambiar contraseña
         </h2>

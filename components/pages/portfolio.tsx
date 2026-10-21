@@ -73,7 +73,7 @@ const trackClick = (detalle: string) => {
 
 const ProjectImage = ({ src, alt }: { src?: string | null; alt: string }) => {
   const className =
-    "aspect-video w-full rounded-lg border border-border object-cover transition duration-500 group-hover:scale-[1.03]";
+    "aspect-video w-full rounded-lg border border-border object-cover transition duration-500 group-hover:scale-[1.06] group-hover:brightness-110";
   if (!src)
     return (
       <div
@@ -250,11 +250,24 @@ const Portfolio = () => {
         {visible?.map((data) => (
           <li
             key={data.id}
-            className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card/50 p-3 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl motion-reduce:transition-none"
+            className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card/50 backdrop-blur-sm p-3 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl motion-reduce:transition-none"
           >
-            <div className="overflow-hidden rounded-lg">
-              <ProjectImage src={data.image} alt={String(data.titulo)} />
-            </div>
+            {data.urlDemo ? (
+              <a
+                href={data.urlDemo}
+                onClick={() => trackClick(`demo:${data.titulo}`)}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Ver demo de ${String(data.titulo)}`}
+                className="block overflow-hidden rounded-lg"
+              >
+                <ProjectImage src={data.image} alt={String(data.titulo)} />
+              </a>
+            ) : (
+              <div className="overflow-hidden rounded-lg">
+                <ProjectImage src={data.image} alt={String(data.titulo)} />
+              </div>
+            )}
             <div className="flex flex-1 items-start justify-between gap-2 px-1 pt-4">
               <h3 className="font-semibold leading-snug text-card-foreground group-hover:text-primary">
                 {String(data.titulo)}

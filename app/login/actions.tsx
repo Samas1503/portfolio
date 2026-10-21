@@ -60,7 +60,7 @@ export async function login(prevState: unknown, formData: FormData) {
 
   await createSession(String(userId));
 
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function logout() {
