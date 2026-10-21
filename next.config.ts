@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+import { wgslTurbopackRule } from "@vgpu/wgsl/next";
+
+type WebpackConfig = { module?: { rules?: unknown[] } };
 
 const nextConfig: NextConfig = {
   eslint: {
@@ -9,6 +12,21 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "5mb",
       allowedOrigins: ["*"],
     },
+  },
+  turbopack: {
+    rules: {
+      "*.wgsl": wgslTurbopackRule({ minify: true }),
+    },
+  },
+  webpack(config: WebpackConfig) {
+    config.module ??= {};
+    config.module.rules ??= [];
+    config.module.rules.push({
+      test: /\.wgsl$/,
+      loader: "@vgpu/wgsl/loader-webpack",
+      options: { minify: true },
+    });
+    return config;
   },
 };
 
