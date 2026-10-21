@@ -14,8 +14,6 @@ import { ToggleTheme } from "../theme/toogle-theme";
 import LogOutButton from "@/app/logout/page";
 import AdminMenu from "./admin-menu";
 import Hero3D from "../three/hero-3d";
-import VgpuParticles from "../three/vgpu-particles";
-import VgpuRaymarched from "../three/vgpu-raymarched";
 import { cn } from "@/lib/utils";
 
 export const sections = [
@@ -96,7 +94,6 @@ const Sidebar = ({
       id="home"
       className="relative lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-[48%] lg:flex-col lg:justify-between lg:overflow-y-auto lg:py-10 lg:[@media(max-height:800px)]:py-5 lg:[scrollbar-width:none]"
     >
-      <VgpuParticles className="pointer-events-none absolute inset-0 -z-10 h-full w-full" />
       <div>
         <div className="mb-6 hidden justify-end gap-2 lg:flex">
           <AdminMenu />

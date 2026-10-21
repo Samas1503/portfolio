@@ -10,8 +10,6 @@ import DeleteButton from "../shared/delete-button";
 import Section from "../shared/section";
 import { formsData, FormType } from "./forms/formsData";
 import MiniIcon3D from "@/components/three/mini-icon-3d";
-import VgpuBoids from "@/components/three/vgpu-boids";
-
 type Academia = typeof formsData.academia.schema;
 type Item = z.infer<Academia>;
 
@@ -76,9 +74,6 @@ const Academia = () => {
 
   return (
     <Section id="academia" number="06" title="Formación Académica">
-      <div className="relative">
-        <VgpuBoids className="pointer-events-none absolute -inset-x-6 -inset-y-4 -z-10 opacity-70" />
-      </div>
       <ol className="relative ml-2 space-y-8 border-l border-border/60 pl-6">
         {carreras.map((c, idx) => {
           const ongoing = isOngoing(c.periodo);
