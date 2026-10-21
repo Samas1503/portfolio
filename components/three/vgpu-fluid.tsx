@@ -27,6 +27,13 @@ const VgpuFluid = ({ className }: { className?: string }) => {
     let loop: FrameLoopHandle | undefined;
     const canvas = canvasRef.current;
 
+    // Skip on touch devices: finger drags leave an unwanted smoke trail.
+    if (window.matchMedia("(pointer: coarse), (hover: none)").matches) {
+      setFailed(true);
+      return;
+    }
+
+
     // Pointer state in top-origin uv space (matches vgpu effect uv).
     const pointer = {
       x: 0.5,

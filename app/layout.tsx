@@ -25,6 +25,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: ["/api/og"],
   },
+  other: {
+    "darkreader-lock": "1",
+    "color-scheme": "light dark",
+  },
 };
 
 export default function RootLayout({
