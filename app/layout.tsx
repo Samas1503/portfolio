@@ -14,6 +14,15 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Samuel Elias Paredes | Backend Developer",
   description: "Portfolio personal de Samuel Paredes",
+  openGraph: {
+    title: "Samuel Elias Paredes | Backend Developer",
+    description: "Portfolio personal de Samuel Paredes",
+    images: [{ url: "/api/og", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/api/og"],
+  },
 };
 
 export default function RootLayout({

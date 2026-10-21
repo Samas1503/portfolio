@@ -14,6 +14,7 @@ import { ToggleTheme } from "../theme/toogle-theme";
 import LogOutButton from "@/app/logout/page";
 import AdminMenu from "./admin-menu";
 import Hero3D from "../three/hero-3d";
+import VgpuParticles from "../three/vgpu-particles";
 import { cn } from "@/lib/utils";
 
 export const sections = [
@@ -67,7 +68,17 @@ const Sidebar = ({
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(entry.target.id);
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+            const idx = sections.findIndex((s) => s.id === entry.target.id);
+            if (idx >= 0) {
+              window.dispatchEvent(
+                new CustomEvent("section-mood", {
+                  detail: idx / (sections.length - 1),
+                })
+              );
+            }
+          }
         });
       },
       { rootMargin: "-35% 0px -60% 0px" }
@@ -82,8 +93,9 @@ const Sidebar = ({
   return (
     <header
       id="home"
-      className="lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-[48%] lg:flex-col lg:justify-between lg:py-20"
+      className="relative lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-[48%] lg:flex-col lg:justify-between lg:py-20"
     >
+      <VgpuParticles className="pointer-events-none absolute inset-0 -z-10 h-full w-full" />
       <div>
         <div className="mb-6 hidden justify-end gap-2 lg:flex">
           <AdminMenu />
