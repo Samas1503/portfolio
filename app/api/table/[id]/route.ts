@@ -6,13 +6,10 @@ import { serializeData } from "@/utils/serialize";
 import { withValidation } from "@/utils/withValidation";
 import services from "@/backend/Services";
 import { syncSkillsFromProjects } from "@/backend/Services/skillsSync.service";
-import { v2 as cloudinary } from "cloudinary";
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_APY_KEY,
-  api_secret: process.env.CLOUDINARY_CLOUD_APY_SECRET,
-});
+import cloudinary, {
+  uploadImageCloudinaryFromFile,
+} from "@/backend/cloudinary";
+import { parseTags } from "@/utils/tags";
 
 async function deleteImageCloudinary(publicId: string) {
   try {
@@ -64,7 +61,48 @@ export const PATCH = withValidation(
     try {
       const params = await ctx.params;
       const tipo = req.nextUrl.searchParams.get("tipo") as SchemaKeys;
-      const body = ctx.validated?.body as object;
+      const contentType = req.headers.get("content-type");
+
+      let body = ctx.validated?.body as object;
+
+      if (contentType?.includes("multipart/form-data")) {
+        const formData = await req.formData();
+
+        const file =
+          formData.get("file") ||
+          formData.get("image") ||
+          formData.get("audio") ||
+          formData.get("video");
+
+        const formFields: Record<string, unknown> = {};
+        for (const [key, value] of formData.entries()) {
+          if (typeof value === "string") formFields[key] = value;
+        }
+        if (typeof formFields.tags === "string") {
+          formFields.tags = parseTags(formFields.tags as string);
+        }
+
+        let uploadedFileInfo: { name: string; type: string } | null = null;
+        if (file && file instanceof File) {
+          const hexName = Buffer.from(file.name).toString("hex").slice(0, 16);
+          const uniqueName = `${hexName}-${Date.now()}`;
+          await uploadImageCloudinaryFromFile(file, uniqueName);
+          uploadedFileInfo = {
+            name: `uploads/${uniqueName}`,
+            type: file.type,
+          };
+        }
+
+        body = {
+          ...formFields,
+          ...(uploadedFileInfo
+            ? {
+                [uploadedFileInfo.type.split("/")[0]]: uploadedFileInfo.name,
+              }
+            : {}),
+        };
+      }
+
       const updated = await services.updateDataService(
         Number(params.id),
         body,

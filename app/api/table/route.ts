@@ -5,34 +5,8 @@ import { SchemaKeys, schemas } from "@/backend/data/schemas";
 import { withValidation } from "@/utils/withValidation";
 import { serializeData } from "@/utils/serialize";
 import { commonParams, commonQuery } from "@/utils/schemasRequest";
-import cloudinary from "@/backend/cloudinary";
-import streamifier from "streamifier";
+import { uploadImageCloudinaryFromFile } from "@/backend/cloudinary";
 import { parseTags } from "@/utils/tags";
-
-async function uploadImageCloudinaryFromFile(file: File, image_id: string) {
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      {
-        folder: "uploads",
-        public_id: image_id,
-        filename_override: image_id,
-      },
-      (error, result) => {
-        if (error) {
-          console.error("Upload error", error);
-          reject(error);
-        } else {
-          resolve(result);
-        }
-      }
-    );
-
-    streamifier.createReadStream(buffer).pipe(stream);
-  });
-}
 
 // GET
 export const GET = withValidation(
