@@ -5,15 +5,9 @@ import { SchemaKeys, schemas } from "@/backend/data/schemas";
 import { withValidation } from "@/utils/withValidation";
 import { serializeData } from "@/utils/serialize";
 import { commonParams, commonQuery } from "@/utils/schemasRequest";
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary from "@/backend/cloudinary";
 import streamifier from "streamifier";
 import { parseTags } from "@/utils/tags";
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_APY_KEY,
-  api_secret: process.env.CLOUDINARY_CLOUD_APY_SECRET,
-});
 
 async function uploadImageCloudinaryFromFile(file: File, image_id: string) {
   const arrayBuffer = await file.arrayBuffer();

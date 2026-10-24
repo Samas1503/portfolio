@@ -1,6 +1,6 @@
 import { SchemaKeys } from "../data/schemas";
 import repository from "../repository";
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary from "../cloudinary";
 
 async function getFileData(data: unknown) {
   if (
