@@ -27,9 +27,9 @@ export default async function Home() {
           <AboutMe perfil={perfil} />
           <Services />
           <Works />
-          <Skills />
-          <Portfolio />
           <Academia />
+          <Portfolio />
+          <Skills />
           <Contact contactos={contactos} />
           <Footer />
         </main>

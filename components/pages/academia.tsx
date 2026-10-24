@@ -73,7 +73,7 @@ const Academia = () => {
   );
 
   return (
-    <Section id="academia" number="06" title="Formación Académica">
+    <Section id="academia" number="04" title="Formación Académica">
       <ol className="relative ml-2 space-y-8 border-l border-border/60 pl-6">
         {carreras.map((c, idx) => {
           const ongoing = isOngoing(c.periodo);

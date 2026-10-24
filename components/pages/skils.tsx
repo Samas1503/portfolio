@@ -166,7 +166,7 @@ const Skills = () => {
   };
 
   return (
-    <Section id="skills" number="04" title="Habilidades">
+    <Section id="skills" number="06" title="Habilidades">
       <div className="-mt-2 mb-6 flex flex-wrap items-center justify-between gap-3">
         <p className="text-xs text-muted-foreground">
           Los porcentajes reflejan el uso real de cada tecnología en los
