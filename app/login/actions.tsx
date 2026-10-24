@@ -29,24 +29,22 @@ export async function login(prevState: unknown, formData: FormData) {
   let userId = user?.id;
 
   if (!userId) {
-    // Bootstrap: si todavía no existe el usuario en la BD y las credenciales
-    // coinciden con las de entorno, se crea el usuario una sola vez.
-    const { data: existing } = await supabase
-      .from("Usuarios")
-      .select("id")
-      .eq("email", email)
-      .maybeSingle();
+    // Bootstrap: si las credenciales coinciden con las de entorno, se crea
+    // el usuario o se re-hashea el existente (el hash depende de
+    // SESSION_SECRET, que puede diferir entre entornos).
     if (
-      !existing &&
       email === process.env.ADMIN_EMAIL &&
       password === process.env.ADMIN_PASSWORD
     ) {
-      const { data: created } = await supabase
+      const { data: upserted } = await supabase
         .from("Usuarios")
-        .insert({ email, password_hash: hash, nombre: "Admin" })
+        .upsert(
+          { email, password_hash: hash, nombre: "Admin" },
+          { onConflict: "email" }
+        )
         .select("id")
         .single();
-      userId = created?.id;
+      userId = upserted?.id;
     }
   }
 
