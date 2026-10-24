@@ -276,7 +276,6 @@ const Portfolio = () => {
                 <ModalTriggerButton
                   tipoFormulario="project"
                   id={Number(data.id)}
-                  omitFields={["image"]}
                   title={`Editar: ${data.titulo}`}
                   defaultValues={{ ...data, tags: toTags(data.tags).join(", ") }}
                   transform={(values) => ({ ...values, tags: parseTags(values.tags) })}
