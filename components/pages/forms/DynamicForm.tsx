@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Github } from "lucide-react";
 import { cn } from "@/lib/utils";
 import GoogleMaps from "../google-maps";
 
@@ -47,6 +47,8 @@ export function DynamicForm<T extends z.ZodTypeAny>({
   );
   
   const fileRefs = useRef<Record<string, File | null>>({});
+  const [filling, setFilling] = useState(false);
+  const [fillError, setFillError] = useState<string | null>(null);
 
   const form = useForm<z.infer<T>>({
     resolver: zodResolver(schema),
@@ -65,6 +67,42 @@ export function DynamicForm<T extends z.ZodTypeAny>({
   });
 
   const hasFileField = fields.some((f) => f.type === "file");
+  const hasRepoField = fields.some((f) => f.name === "urlGithub");
+
+  const fillFromRepo = async () => {
+    const url = String(
+      form.getValues("urlGithub" as Path<z.infer<T>>) ?? ""
+    ).trim();
+    if (!url) {
+      setFillError("Ingresá la URL del repositorio primero");
+      return;
+    }
+    setFilling(true);
+    setFillError(null);
+    try {
+      const res = await fetch(
+        `/api/repo-fill?url=${encodeURIComponent(url)}`
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Error al leer el repo");
+      for (const [key, value] of Object.entries(data)) {
+        if (typeof value !== "string" || !value) continue;
+        if (key === "categoria") {
+          setDropdownValues((prev) => ({ ...prev, categoria: value }));
+        }
+        form.setValue(
+          key as Path<z.infer<T>>,
+          value as PathValue<z.infer<T>, Path<z.infer<T>>>,
+          { shouldDirty: true }
+        );
+      }
+    } catch (error) {
+      setFillError((error as Error).message);
+    } finally {
+      setFilling(false);
+    }
+  };
+
 
   const handleFinalSubmit = async (data: z.infer<T>) => {
     if (hasFileField) {
@@ -200,6 +238,27 @@ export function DynamicForm<T extends z.ZodTypeAny>({
                     )}
                   </FormControl>
                   <FormMessage />
+                  {field.name === "urlGithub" && hasRepoField && (
+                    <div className="mt-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={filling}
+                        onClick={fillFromRepo}
+                      >
+                        <Github className="size-4" />
+                        {filling
+                          ? "Leyendo repositorio…"
+                          : "Rellenar desde repositorio"}
+                      </Button>
+                      {fillError && (
+                        <p className="mt-1 text-xs text-destructive">
+                          {fillError}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </FormItem>
               )}
             />
