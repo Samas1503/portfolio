@@ -31,6 +31,7 @@ const certificadoHref = (v: string) =>
 
 const Eventos = () => {
   const [items, setItems] = useState<Item[]>();
+  const [showAll, setShowAll] = useState(false);
   const resource = "eventos" as FormType;
 
   useEffect(() => {
@@ -82,7 +83,7 @@ const Eventos = () => {
   return (
     <Section id="eventos" number="05" title="Participaciones">
       <ol className="relative ml-2 space-y-8 border-l border-border/60 pl-6">
-        {eventos.map((e, idx) => {
+        {(showAll ? eventos : eventos?.slice(0, 5))?.map((e, idx) => {
           const ongoing = isOngoing(e.periodo);
           return (
             <li key={e.id} className="relative">
@@ -162,7 +163,18 @@ const Eventos = () => {
         })}
       </ol>
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex flex-wrap justify-center gap-3">
+        {eventos && eventos.length > 5 && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowAll((v) => !v)}
+          >
+            {showAll
+              ? "Ver menos"
+              : `Ver las ${eventos.length} participaciones`}
+          </Button>
+        )}
         <ModalTriggerButton
           onSuccess={(r: unknown) => handleCreate(r as Item)}
           tipoFormulario="eventos"

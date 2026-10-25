@@ -29,10 +29,22 @@ const renderParagraph = (text: string) =>
     )
   );
 
+const SOFT_SKILLS = [
+  "Resolución de problemas",
+  "Trabajo en equipo",
+  "Comunicación técnica",
+  "Gestión del tiempo",
+  "Aprendizaje continuo",
+  "Pensamiento analítico",
+  "Adaptabilidad",
+  "Liderazgo",
+  "Inglés (UNJu)",
+  "Perseverancia",
+] as const;
+
 const AboutMe = ({ perfil }: { perfil: Perfil | null }) => {
   const [data, setData] = useState(perfil);
   const { usuario } = useUsuario();
-
 
   const paragraphs = (data?.descripcion ?? "")
     .split(/\n\s*\n/)
@@ -64,15 +76,25 @@ const AboutMe = ({ perfil }: { perfil: Perfil | null }) => {
             <p key={i}>{renderParagraph(p)}</p>
           ))}
         </div>
-        <div className="group relative mx-auto w-48 sm:w-44">
-          <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-xl border-2 border-primary transition group-hover:translate-x-2 group-hover:translate-y-2" />
-          <Image
-            src="/profile.jpg"
-            alt="Foto de Samuel Elias Paredes"
-            width={300}
-            height={300}
-            className="relative aspect-square rounded-xl object-cover grayscale-[30%] transition group-hover:grayscale-0"
-          />
+        <div className="mx-auto flex w-48 flex-col items-center gap-5 sm:w-44">
+          <div className="group relative w-full">
+            <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-xl border-2 border-primary transition group-hover:translate-x-2 group-hover:translate-y-2" />
+            <Image
+              src="/profile.jpg"
+              alt="Foto de Samuel Elias Paredes"
+              width={300}
+              height={300}
+              className="relative aspect-square rounded-xl object-cover grayscale-[30%] transition group-hover:grayscale-0"
+            />
+          </div>
+          {data?.telefono && (
+            <Link
+              href={`tel:${data.telefono}`}
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              <Phone /> Hablemos
+            </Link>
+          )}
         </div>
       </div>
 
@@ -91,14 +113,21 @@ const AboutMe = ({ perfil }: { perfil: Perfil | null }) => {
         </div>
       )}
 
-      {data?.telefono && (
-        <Link
-          href={`tel:${data.telefono}`}
-          className={buttonVariants({ variant: "outline", className: "mt-8" })}
-        >
-          <Phone /> Hablemos
-        </Link>
-      )}
+      <div className="mt-10">
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-card-foreground">
+          Habilidades blandas
+        </h3>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {SOFT_SKILLS.map((s) => (
+            <span
+              key={s}
+              className="rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary transition hover:bg-primary hover:text-primary-foreground"
+            >
+              {s}
+            </span>
+          ))}
+        </div>
+      </div>
     </Section>
   );
 };
