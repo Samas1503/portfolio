@@ -29,6 +29,8 @@ export const PERFIL_ABOUT_FIELDS = [
   "clientes",
   "proyectos",
   "telefono",
+  "habilidadesBlandas",
+  "intereses",
 ];
 
 export const toFormValues = (row: object) =>
@@ -136,6 +138,8 @@ export const formsData = {
       clientes: z.string(),
       proyectos: z.string(),
       telefono: z.string(),
+      habilidadesBlandas: z.string().optional(),
+      intereses: z.string().optional(),
     }),
     fields: [
       { label: "Nombre", name: "nombre", placeholder: "Tu nombre", type: "text" as const },
@@ -181,6 +185,18 @@ export const formsData = {
         label: "Teléfono",
         name: "telefono",
         placeholder: "Ej: 3884558285",
+        type: "text" as const,
+      },
+      {
+        label: "Habilidad blanda",
+        name: "habilidadesBlandas",
+        placeholder: "Ej: Trabajo en equipo",
+        type: "text" as const,
+      },
+      {
+        label: "Interés personal",
+        name: "intereses",
+        placeholder: "Ej: Hackathons",
         type: "text" as const,
       },
     ],

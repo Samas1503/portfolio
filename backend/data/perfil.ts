@@ -12,6 +12,8 @@ export type Perfil = {
   clientes: string | null;
   proyectos: string | null;
   telefono: string | null;
+  habilidadesBlandas: string | null;
+  intereses: string | null;
 };
 
 export async function getPerfil(): Promise<Perfil | null> {

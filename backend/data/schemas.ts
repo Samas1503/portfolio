@@ -103,8 +103,10 @@ export const schemas = {
       clientes: text,
       proyectos: text,
       telefono: text,
+      habilidadesBlandas: text,
+      intereses: text,
     },
-    { cvUrl: "cv_url" }
+    { cvUrl: "cv_url", habilidadesBlandas: "habilidades_blandas" }
   ),
   contacto: defineTable("Contacto", {
     nombre: text,

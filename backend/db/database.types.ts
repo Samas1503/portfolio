@@ -213,7 +213,9 @@ export type Database = {
           cv_url: string | null
           descripcion: string | null
           experiencia: string | null
+          habilidades_blandas: string | null
           id: number
+          intereses: string | null
           nombre: string | null
           proyectos: string | null
           resumen: string | null
@@ -226,7 +228,9 @@ export type Database = {
           cv_url?: string | null
           descripcion?: string | null
           experiencia?: string | null
+          habilidades_blandas?: string | null
           id?: number
+          intereses?: string | null
           nombre?: string | null
           proyectos?: string | null
           resumen?: string | null
@@ -239,7 +243,9 @@ export type Database = {
           cv_url?: string | null
           descripcion?: string | null
           experiencia?: string | null
+          habilidades_blandas?: string | null
           id?: number
+          intereses?: string | null
           nombre?: string | null
           proyectos?: string | null
           resumen?: string | null
