@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 type Shape = "carrera" | "curso" | "evento";
@@ -61,12 +61,31 @@ const MiniIcon3D = ({
   className?: string;
 }) => {
   const { resolvedTheme } = useTheme();
+  const host = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  // Cada Canvas es un contexto WebGL: en móvil se excede el límite del
+  // navegador y se mueren los más viejos (hero) y los más nuevos (iconos
+  // fuera de pantalla). Solo se monta el canvas cerca del viewport.
+  useEffect(() => {
+    const el = host.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { rootMargin: "150px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <div className={className} aria-hidden="true">
-      <MiniScene
-        color={resolvedTheme === "light" ? "#e7000b" : "#fb2c36"}
-        shape={shape}
-      />
+    <div ref={host} className={className} aria-hidden="true">
+      {visible && (
+        <MiniScene
+          color={resolvedTheme === "light" ? "#e7000b" : "#fb2c36"}
+          shape={shape}
+        />
+      )}
     </div>
   );
 };
