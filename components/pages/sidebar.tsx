@@ -83,11 +83,25 @@ const Sidebar = ({
       },
       { rootMargin: "-35% 0px -60% 0px" }
     );
-    sections.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-    return () => observer.disconnect();
+    const observed = new WeakSet<Element>();
+    const observeAll = () => {
+      sections.forEach(({ id }) => {
+        const el = document.getElementById(id);
+        if (el && !observed.has(el)) {
+          observed.add(el);
+          observer.observe(el);
+        }
+      });
+    };
+    observeAll();
+    // Las secciones se montan de forma lazy al scrollear: el MutationObserver
+    // re-intenta la observación cuando aparecen en el DOM.
+    const mo = new MutationObserver(observeAll);
+    mo.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      mo.disconnect();
+      observer.disconnect();
+    };
   }, []);
 
   return (
