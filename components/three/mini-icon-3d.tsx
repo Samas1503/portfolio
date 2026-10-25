@@ -3,10 +3,19 @@
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { Canvas, useFrame } from "@react-three/fiber";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 type Shape = "carrera" | "curso" | "evento";
+
+// Cada Canvas es un contexto WebGL; los navegadores limitan el total
+// (~8-16). Los mini-íconos comparten hasta MAX_3D slots — uno menos que
+// el límite seguro para que el elemento principal siempre tenga contexto.
+// Sin slot se muestra el PNG pre-renderizado del mismo mesh
+// (public/icons3d/, generado por scripts/gen-icon-fallbacks.mjs).
+const MAX_3D = 7;
+let active3D = 0;
 
 function Mesh({ color, shape }: { color: string; shape: Shape }) {
   const ref = useRef<THREE.Mesh>(null);
@@ -62,29 +71,59 @@ const MiniIcon3D = ({
 }) => {
   const { resolvedTheme } = useTheme();
   const host = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+  const heldSlot = useRef(false);
+  const [render3D, setRender3D] = useState(false);
 
-  // Cada Canvas es un contexto WebGL: en móvil se excede el límite del
-  // navegador y se mueren los más viejos (hero) y los más nuevos (iconos
-  // fuera de pantalla). Solo se monta el canvas cerca del viewport.
   useEffect(() => {
+    const release = () => {
+      if (heldSlot.current) {
+        heldSlot.current = false;
+        active3D -= 1;
+      }
+    };
     const el = host.current;
     if (!el) return;
     const io = new IntersectionObserver(
-      ([entry]) => setVisible(entry.isIntersecting),
-      { rootMargin: "150px" }
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!heldSlot.current && active3D < MAX_3D) {
+            heldSlot.current = true;
+            active3D += 1;
+          }
+          setRender3D(heldSlot.current);
+        } else {
+          release();
+          setRender3D(false);
+        }
+      },
+      { rootMargin: "80px" }
     );
     io.observe(el);
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      release();
+    };
   }, []);
+
+  const color = resolvedTheme === "light" ? "#e7000b" : "#fb2c36";
+  const fallbackSrc = `/icons3d/${shape}-${
+    resolvedTheme === "light" ? "light" : "dark"
+  }.png`;
 
   return (
     <div ref={host} className={className} aria-hidden="true">
-      {visible && (
-        <MiniScene
-          color={resolvedTheme === "light" ? "#e7000b" : "#fb2c36"}
-          shape={shape}
-        />
+      {render3D ? (
+        <MiniScene color={color} shape={shape} />
+      ) : (
+        <div className="relative h-full w-full">
+          <Image
+            src={fallbackSrc}
+            alt=""
+            fill
+            sizes="96px"
+            className="object-contain"
+          />
+        </div>
       )}
     </div>
   );
