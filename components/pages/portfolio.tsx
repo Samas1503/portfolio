@@ -30,6 +30,7 @@ import { apiFetch } from "./fetch/tech-all";
 import { formsData, FormType } from "./forms/formsData";
 import DeleteButton from "../shared/delete-button";
 import Section from "../shared/section";
+import Spinner from "../shared/spinner";
 
 type Portfolio = typeof formsData.project.schema;
 type Project = Omit<z.infer<Portfolio>, "tags"> & {
@@ -246,6 +247,9 @@ const Portfolio = () => {
       {total === 0 && dataPortfolio && (
         <p className="text-sm text-muted-foreground">No hay proyectos con ese filtro.</p>
       )}
+      {dataPortfolio === undefined ? (
+        <Spinner />
+      ) : (
       <ul className="grid gap-6 sm:grid-cols-2">
         {visible?.map((data) => (
           <li
@@ -343,6 +347,7 @@ const Portfolio = () => {
           </li>
         ))}
       </ul>
+      )}
 
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         {total > INITIAL_VISIBLE && (

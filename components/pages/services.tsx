@@ -14,6 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Section from "../shared/section";
+import Spinner from "../shared/spinner";
 import { apiFetch } from "./fetch/tech-all";
 import { useUsuario } from "@/context/UserContext";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
@@ -61,7 +62,7 @@ const byGroup = (
 ) => minOrden(a[1]) - minOrden(b[1]);
 
 const Services = () => {
-  const [servicios, setServicios] = useState<Servicio[]>([]);
+  const [servicios, setServicios] = useState<Servicio[]>();
   const { usuario } = useUsuario();
   const [dragSource, setDragSource] = useState<DragSource | null>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
@@ -78,21 +79,23 @@ const Services = () => {
   const toggle = async (item: Servicio) => {
     const estado = !item.estado;
     setServicios((prev) =>
-      prev.map((s) => (s.id === item.id ? { ...s, estado } : s))
+      (prev ?? []).map((s) => (s.id === item.id ? { ...s, estado } : s))
     );
     try {
       await apiFetch({ resource, method: "PATCH", id: item.id, data: { estado } });
     } catch (error) {
       console.error("No se pudo actualizar el servicio", error);
       setServicios((prev) =>
-        prev.map((s) => (s.id === item.id ? { ...s, estado: !estado } : s))
+        (prev ?? []).map((s) =>
+          s.id === item.id ? { ...s, estado: !estado } : s
+        )
       );
     }
   };
 
   const groups = useMemo(() => {
     const map = new Map<string, Servicio[]>();
-    servicios
+    (servicios ?? [])
       .filter((s) => usuario || s.estado)
       .forEach((s) => {
         const key = s.tipo ?? "Otros";
@@ -163,9 +166,9 @@ const Services = () => {
 
     setDragSource(null);
     setDropTarget(null);
-    setServicios((flat) => flat.map((s) => byId.get(s.id) ?? s));
+    setServicios((flat) => (flat ?? []).map((s) => byId.get(s.id) ?? s));
 
-    const prevOrden = new Map(prev.map((s) => [s.id, s.orden]));
+    const prevOrden = new Map((prev ?? []).map((s) => [s.id, s.orden]));
     const updates = nextWithOrden.filter((s) => prevOrden.get(s.id) !== s.orden);
     try {
       await Promise.all(
@@ -238,9 +241,9 @@ const Services = () => {
 
     setDragGroup(null);
     setGroupDropTarget(null);
-    setServicios((flat) => flat.map((s) => byId.get(s.id) ?? s));
+    setServicios((flat) => (flat ?? []).map((s) => byId.get(s.id) ?? s));
 
-    const prevOrden = new Map(prev.map((s) => [s.id, s.orden]));
+    const prevOrden = new Map((prev ?? []).map((s) => [s.id, s.orden]));
     const updates = nextWithOrden.filter((s) => prevOrden.get(s.id) !== s.orden);
     try {
       await Promise.all(
@@ -270,6 +273,9 @@ const Services = () => {
           para mover el grupo.
         </p>
       )}
+      {servicios === undefined ? (
+        <Spinner />
+      ) : (
       <div className="grid gap-4">
         {groups.map(([tipo, items]) => {
           const Icon = ICONS[items[0]?.icono ?? ""] ?? Check;
@@ -397,7 +403,7 @@ const Services = () => {
                         className="size-6 shrink-0"
                         onSuccess={(id) =>
                           setServicios((prev) =>
-                            prev.filter((s) => s.id !== id)
+                            (prev ?? []).filter((s) => s.id !== id)
                           )
                         }
                       />
@@ -409,6 +415,7 @@ const Services = () => {
           );
         })}
       </div>
+      )}
       <div className="mt-8 flex justify-center">
         <ModalTriggerButton
           tipoFormulario={resource}

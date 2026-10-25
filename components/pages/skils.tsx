@@ -1,6 +1,7 @@
 "use client";
 
 import Section from "../shared/section";
+import Spinner from "../shared/spinner";
 import {
   BadgeCheck,
   Calculator,
@@ -43,7 +44,7 @@ const nivelFromValor = (valor: number): Skill["nivel"] =>
   valor >= 75 ? "Experimentado" : valor >= 45 ? "Intermedio" : "Básico";
 
 const Skills = () => {
-  const [dataSkills, setDataSkills] = useState<Record<string, ArraySkill>>({});
+  const [dataSkills, setDataSkills] = useState<Record<string, ArraySkill>>();
   const [excluded, setExcluded] = useState<Set<number>>(new Set());
   const [syncing, setSyncing] = useState(false);
   const [dragSource, setDragSource] = useState<DragSource | null>(null);
@@ -61,7 +62,7 @@ const Skills = () => {
     const nivel = nivelFromValor(valor);
     setDataSkills((prev) => ({
       ...prev,
-      [item.tipo]: prev[item.tipo].map((s) =>
+      [item.tipo]: (prev?.[item.tipo] ?? []).map((s) =>
         s.id === item.id ? { ...s, valor, nivel } : s
       ),
     }));
@@ -176,6 +177,7 @@ const Skills = () => {
 
   const handleDelete = (id: number, tipoElemento: string) => {
     setDataSkills((prev) => {
+      if (!prev) return prev;
       if (prev[tipoElemento]) {
         const updatedTipo = prev[tipoElemento]?.filter(
           (item) => item.id !== id
@@ -197,7 +199,7 @@ const Skills = () => {
   const handleCreate = (data: Skill) => {
     setDataSkills((prev) => ({
       ...prev,
-      [data.tipo]: [...(prev[data.tipo] || []), data],
+      [data.tipo]: [...(prev?.[data.tipo] || []), data],
     }));
   };
 
@@ -243,7 +245,7 @@ const Skills = () => {
     next.splice(to, 0, moved);
     // Reindex globalmente (rangos contiguos por grupo) para que el orden
     // de cada grupo (su min `orden`) se mantenga estable.
-    const entries = Object.entries(dataSkills).sort(byGroup);
+    const entries = Object.entries(dataSkills ?? {}).sort(byGroup);
     let cursor = 0;
     const nextRecord = Object.fromEntries(
       entries.map(([t, g]) => [
@@ -257,7 +259,7 @@ const Skills = () => {
     setDataSkills(nextRecord);
 
     const prevOrden = new Map(
-      Object.values(prev).flat().map((s) => [s.id!, s.orden])
+      Object.values(prev ?? {}).flat().map((s) => [s.id!, s.orden])
     );
     const updates = Object.values(nextRecord)
       .flat()
@@ -312,7 +314,7 @@ const Skills = () => {
       return;
     }
     const prev = dataSkills;
-    const nextGroups = Object.entries(dataSkills).sort(byGroup);
+    const nextGroups = Object.entries(dataSkills ?? {}).sort(byGroup);
     const from = nextGroups.findIndex(([t]) => t === dragGroup);
     const toIdx = nextGroups.findIndex(([t]) => t === tipo);
     if (from < 0 || toIdx < 0) {
@@ -335,7 +337,7 @@ const Skills = () => {
     setDataSkills(nextRecord);
 
     const prevOrden = new Map(
-      Object.values(prev).flat().map((s) => [s.id!, s.orden])
+      Object.values(prev ?? {}).flat().map((s) => [s.id!, s.orden])
     );
     const updates = Object.values(nextRecord)
       .flat()
@@ -385,6 +387,9 @@ const Skills = () => {
           </div>
         )}
       </div>
+      {dataSkills === undefined ? (
+        <Spinner />
+      ) : (
       <div className="grid gap-6">
         {Object.entries(dataSkills)
           .sort(byGroup)
@@ -569,6 +574,7 @@ const Skills = () => {
           );
           })}
       </div>
+      )}
 
       <div className="mt-8 flex justify-center">
         <ModalTriggerButton

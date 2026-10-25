@@ -19,6 +19,7 @@ import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { apiFetch } from "./fetch/tech-all";
 import DeleteButton from "../shared/delete-button";
 import Section from "../shared/section";
+import Spinner from "../shared/spinner";
 import { formsData, FormType } from "./forms/formsData";
 
 const GoogleMaps = dynamic(() => import("./google-maps"), {
@@ -156,6 +157,9 @@ const Experience = () => {
 
   return (
     <Section id="experience" number="03" title="Experiencia">
+      {dataExperience === undefined ? (
+        <Spinner />
+      ) : (
       <ol className="group/list relative ml-2 space-y-4 border-l border-border/70 sm:ml-4">
         {sorted.map((data, idx) => {
           const isCurrent = !data.fecha_fin;
@@ -260,6 +264,7 @@ const Experience = () => {
           );
         })}
       </ol>
+      )}
 
       <div className="mt-8 flex justify-center">
         <ModalTriggerButton

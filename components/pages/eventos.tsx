@@ -9,6 +9,7 @@ import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { apiFetch } from "./fetch/tech-all";
 import DeleteButton from "../shared/delete-button";
 import Section from "../shared/section";
+import Spinner from "../shared/spinner";
 import { formsData, FormType } from "./forms/formsData";
 import MiniIcon3D from "@/components/three/mini-icon-3d";
 
@@ -82,6 +83,9 @@ const Eventos = () => {
 
   return (
     <Section id="eventos" number="05" title="Participaciones">
+      {items === undefined ? (
+        <Spinner />
+      ) : (
       <ol className="relative ml-2 space-y-8 border-l border-border/60 pl-6">
         {(showAll ? eventos : eventos?.slice(0, 5))?.map((e, idx) => {
           const ongoing = isOngoing(e.periodo);
@@ -162,6 +166,7 @@ const Eventos = () => {
           );
         })}
       </ol>
+      )}
 
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         {eventos && eventos.length > 5 && (

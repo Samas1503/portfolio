@@ -8,6 +8,7 @@ import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { apiFetch } from "./fetch/tech-all";
 import DeleteButton from "../shared/delete-button";
 import Section from "../shared/section";
+import Spinner from "../shared/spinner";
 import { formsData, FormType } from "./forms/formsData";
 import MiniIcon3D from "@/components/three/mini-icon-3d";
 type Academia = typeof formsData.academia.schema;
@@ -74,6 +75,9 @@ const Academia = () => {
 
   return (
     <Section id="academia" number="04" title="Formación Académica">
+      {items === undefined ? (
+        <Spinner />
+      ) : (
       <ol className="relative ml-2 space-y-8 border-l border-border/60 pl-6">
         {carreras.map((c, idx) => {
           const ongoing = isOngoing(c.periodo);
@@ -132,6 +136,7 @@ const Academia = () => {
           );
         })}
       </ol>
+      )}
 
       {cursos.length > 0 && (
         <div className="mt-10">

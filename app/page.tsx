@@ -10,6 +10,7 @@ import Portfolio from "@/components/pages/portfolio";
 import Services from "@/components/pages/services";
 import Works from "@/components/pages/experience";
 import Sidebar from "@/components/pages/sidebar";
+import LazyLoad from "@/components/shared/lazy-load";
 import Spotlight from "@/components/shared/spotlight";
 import { getPerfil } from "@/backend/data/perfil";
 import { getContactos } from "@/backend/data/contactos";
@@ -26,12 +27,24 @@ export default async function Home() {
         <Sidebar perfil={perfil} contactos={contactos} />
         <main className="pt-16 lg:w-[52%] lg:py-24">
           <AboutMe perfil={perfil} />
-          <Services />
-          <Works />
-          <Academia />
-          <Eventos />
-          <Portfolio />
-          <Skills />
+          <LazyLoad>
+            <Services />
+          </LazyLoad>
+          <LazyLoad>
+            <Works />
+          </LazyLoad>
+          <LazyLoad>
+            <Academia />
+          </LazyLoad>
+          <LazyLoad>
+            <Eventos />
+          </LazyLoad>
+          <LazyLoad>
+            <Portfolio />
+          </LazyLoad>
+          <LazyLoad>
+            <Skills />
+          </LazyLoad>
           <Contact contactos={contactos} />
           <Footer />
         </main>
