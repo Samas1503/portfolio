@@ -74,6 +74,39 @@ export type Database = {
         }
         Relationships: []
       }
+      Eventos: {
+        Row: {
+          certificado: string | null
+          descripcion: string | null
+          estado: boolean | null
+          id: number
+          organizador: string | null
+          periodo: string | null
+          tipo: string | null
+          titulo: string | null
+        }
+        Insert: {
+          certificado?: string | null
+          descripcion?: string | null
+          estado?: boolean | null
+          id?: number
+          organizador?: string | null
+          periodo?: string | null
+          tipo?: string | null
+          titulo?: string | null
+        }
+        Update: {
+          certificado?: string | null
+          descripcion?: string | null
+          estado?: boolean | null
+          id?: number
+          organizador?: string | null
+          periodo?: string | null
+          tipo?: string | null
+          titulo?: string | null
+        }
+        Relationships: []
+      }
       Experiencia: {
         Row: {
           cargo: string | null

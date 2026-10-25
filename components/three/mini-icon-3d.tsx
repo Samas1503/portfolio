@@ -6,7 +6,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
 
-type Shape = "carrera" | "curso";
+type Shape = "carrera" | "curso" | "evento";
 
 function Mesh({ color, shape }: { color: string; shape: Shape }) {
   const ref = useRef<THREE.Mesh>(null);
@@ -20,6 +20,8 @@ function Mesh({ color, shape }: { color: string; shape: Shape }) {
     <mesh ref={ref}>
       {shape === "carrera" ? (
         <icosahedronGeometry args={[1, 0]} />
+      ) : shape === "evento" ? (
+        <dodecahedronGeometry args={[1, 0]} />
       ) : (
         <torusKnotGeometry args={[0.7, 0.22, 64, 8]} />
       )}

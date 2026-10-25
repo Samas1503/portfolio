@@ -2,6 +2,7 @@ import AboutMe from "@/components/pages/about-me";
 import Academia from "@/components/pages/academia";
 import VgpuAurora from "@/components/three/vgpu-aurora";
 import Contact from "@/components/pages/contact";
+import Eventos from "@/components/pages/eventos";
 import Skills from "@/components/pages/skils";
 import Footer from "@/components/pages/footer";
 import Navbar from "@/components/pages/narvar";
@@ -28,6 +29,7 @@ export default async function Home() {
           <Services />
           <Works />
           <Academia />
+          <Eventos />
           <Portfolio />
           <Skills />
           <Contact contactos={contactos} />

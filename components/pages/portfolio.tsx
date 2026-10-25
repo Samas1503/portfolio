@@ -157,7 +157,7 @@ const Portfolio = () => {
   const visible = showAll ? filtered : filtered.slice(0, INITIAL_VISIBLE);
 
   return (
-    <Section id="projects" number="05" title="Proyectos">
+    <Section id="projects" number="06" title="Proyectos">
       {(categorias.length > 0 || tags.length > 0) && (
         <div className="mb-8 flex flex-wrap items-center gap-3">
           <DropdownMenu>

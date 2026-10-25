@@ -18,6 +18,7 @@ el DELETE borra la fila).
 | `Servicios` | `tipo`, `icono`, `nombre`, `estado` | Servicios ofrecidos, agrupados por `tipo` | `servicios` |
 | `Experiencia` | `empresa`, `cargo`, `fecha_inicio`, `fecha_fin`, `ubicacion`, `latitud`, `longitud`, `nombre_referencia`, `nro_referencia bigint`, `estado` | Experiencia laboral; `fecha_fin` null = trabajo actual | `experience` |
 | `Academia` | `tipo`, `institucion`, `titulo`, `periodo`, `descripcion`, `diploma`, `estado` | Formación: `tipo` = `"Carrera"` o `"Curso"` | `academia` |
+| `Eventos` | `tipo`, `organizador`, `titulo`, `periodo`, `descripcion`, `certificado`, `estado` | Participaciones: `tipo` = `"Evento"`/`"Competencia"`/`"Torneo"`/`"Actividad"`; `certificado` = `uploads/…` o URL externa | `eventos` |
 | `Perfil` | `nombre`, `rol`, `alias`, `resumen`, `cv_url`, `descripcion`, `experiencia`, `clientes`, `proyectos`, `telefono` | Fila única con los datos del dueño (header + about + stats). La PK se llama `SobreMi_pkey` (rename en migración remota) | `perfil` |
 | `Contacto` | `nombre`, `titulo`, `link`, `icono`, `estado` | Links de contacto; `icono` se mapea en `CONTACT_ICONS` | `contacto` |
 | `Mensajes` | `id_mensaje`, `origen`, `nombre`, `destino`, `mensaje`, `estado` | Historial de mensajes del formulario de contacto | `mensajes` |
@@ -76,6 +77,7 @@ En `supabase/migrations/`, aplicadas en orden por timestamp:
 | `20261020160000_dashboard.sql` | Crea `Usuarios`, `Visitas`, `Interacciones` |
 | `20261020170000_academia.sql` | Crea `Academia` |
 | `20261020180000_academia_diploma.sql` | `Academia.diploma` |
+| `20261024120000_eventos.sql` | Crea `Eventos` |
 
 ## Cambiar el schema
 

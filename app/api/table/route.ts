@@ -50,11 +50,14 @@ export const POST = withValidation(
       if (contentType?.includes("multipart/form-data")) {
         const formData = await req.formData();
 
-        const file =
-          formData.get("file") ||
-          formData.get("image") ||
-          formData.get("audio") ||
-          formData.get("video");
+        // Cualquier campo con un File cuenta como upload: el public_id se
+        // guarda en la columna que lleva el nombre del campo (p. ej. "image",
+        // "certificado"). La key genérica "file" mantiene el mapeo por
+        // mime-type para no romper uploads anteriores.
+        const fileEntry = Array.from(formData.entries()).find(
+          ([, value]) => value instanceof File && value.size > 0
+        ) as [string, File] | undefined;
+        const file = fileEntry?.[1];
 
         for (const [key, value] of formData.entries()) {
           if (typeof value === "string") {
@@ -65,7 +68,7 @@ export const POST = withValidation(
           formFields.tags = parseTags(formFields.tags);
         }
 
-        if (file && file instanceof File) {
+        if (file) {
           const hexName = Buffer.from(file.name).toString("hex").slice(0, 16);
           const uniqueName = `${hexName}-${Date.now()}`;
 
@@ -73,7 +76,10 @@ export const POST = withValidation(
 
           uploadedFileInfo = {
             name: `uploads/${uniqueName}`,
-            type: file.type,
+            field:
+              fileEntry && fileEntry[0] !== "file"
+                ? fileEntry[0]
+                : file.type.split("/")[0],
           };
         }
       }
@@ -81,8 +87,7 @@ export const POST = withValidation(
       const body = contentType?.includes("multipart/form-data")
         ? {
             ...formFields,
-            [String(uploadedFileInfo?.type.split("/")[0] || "")]:
-              uploadedFileInfo?.name,
+            [String(uploadedFileInfo?.field || "")]: uploadedFileInfo?.name,
           }
         : (ctx.validated?.body as object);
 

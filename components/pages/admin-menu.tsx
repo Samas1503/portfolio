@@ -25,6 +25,7 @@ const ADMIN_SECTIONS = [
   { id: "services", label: "Servicios" },
   { id: "experience", label: "Experiencia" },
   { id: "academia", label: "Formación" },
+  { id: "eventos", label: "Participaciones" },
   { id: "projects", label: "Proyectos" },
   { id: "skills", label: "Habilidades" },
   { id: "contact", label: "Contacto" },

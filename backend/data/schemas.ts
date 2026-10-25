@@ -120,6 +120,15 @@ export const schemas = {
     diploma: text,
     estado: bool,
   }),
+  eventos: defineTable("Eventos", {
+    tipo: text,
+    organizador: text,
+    titulo: text,
+    periodo: text,
+    descripcion: text,
+    certificado: text,
+    estado: bool,
+  }),
   mensajes: defineTable("Mensajes", {
     id_mensaje: text,
     origen: text,

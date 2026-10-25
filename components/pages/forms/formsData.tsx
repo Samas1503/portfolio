@@ -362,6 +362,31 @@ export const formsData = {
       { label: "Diploma (link)", name: "diploma", placeholder: "https://...", type: "text" as const },
     ],
   },
+  eventos: {
+    schema: z.object({
+      id: z.number().optional(),
+      tipo: z.enum(["Evento", "Competencia", "Torneo", "Actividad"]),
+      organizador: z.string(),
+      titulo: z.string(),
+      periodo: z.string(),
+      descripcion: z.string().optional(),
+      certificado: z.string().optional(),
+    }),
+    fields: [
+      {
+        label: "Tipo",
+        name: "tipo",
+        placeholder: "Tipo",
+        type: "dropdown" as const,
+        values: ["Evento", "Competencia", "Torneo", "Actividad"],
+      },
+      { label: "Organizador", name: "organizador", placeholder: "Ej: IEEE, MLH, universidad", type: "text" as const },
+      { label: "Título", name: "titulo", placeholder: "Ej: Hackathon Nacional", type: "text" as const },
+      { label: "Período", name: "periodo", placeholder: "Ej: 2024 o MAR 2025", type: "text" as const },
+      { label: "Descripción", name: "descripcion", placeholder: "Opcional", type: "textarea" as const },
+      { label: "Certificado", name: "certificado", placeholder: "Imagen del certificado", accept: "image/*", type: "file" as const },
+    ],
+  },
   mensajes: {
     schema: z.object({
       id: z.number().optional(),

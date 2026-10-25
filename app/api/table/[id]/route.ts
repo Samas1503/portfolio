@@ -68,11 +68,14 @@ export const PATCH = withValidation(
       if (contentType?.includes("multipart/form-data")) {
         const formData = await req.formData();
 
-        const file =
-          formData.get("file") ||
-          formData.get("image") ||
-          formData.get("audio") ||
-          formData.get("video");
+        // Cualquier campo con un File cuenta como upload: el public_id se
+        // guarda en la columna que lleva el nombre del campo (p. ej. "image",
+        // "certificado"). La key genérica "file" mantiene el mapeo por
+        // mime-type para no romper uploads anteriores.
+        const fileEntry = Array.from(formData.entries()).find(
+          ([, value]) => value instanceof File && value.size > 0
+        ) as [string, File] | undefined;
+        const file = fileEntry?.[1];
 
         const formFields: Record<string, unknown> = {};
         for (const [key, value] of formData.entries()) {
@@ -82,23 +85,24 @@ export const PATCH = withValidation(
           formFields.tags = parseTags(formFields.tags as string);
         }
 
-        let uploadedFileInfo: { name: string; type: string } | null = null;
-        if (file && file instanceof File) {
+        let uploadedFileInfo: { name: string; field: string } | null = null;
+        if (file) {
           const hexName = Buffer.from(file.name).toString("hex").slice(0, 16);
           const uniqueName = `${hexName}-${Date.now()}`;
           await uploadImageCloudinaryFromFile(file, uniqueName);
           uploadedFileInfo = {
             name: `uploads/${uniqueName}`,
-            type: file.type,
+            field:
+              fileEntry && fileEntry[0] !== "file"
+                ? fileEntry[0]
+                : file.type.split("/")[0],
           };
         }
 
         body = {
           ...formFields,
           ...(uploadedFileInfo
-            ? {
-                [uploadedFileInfo.type.split("/")[0]]: uploadedFileInfo.name,
-              }
+            ? { [uploadedFileInfo.field]: uploadedFileInfo.name }
             : {}),
         };
       }
@@ -150,7 +154,7 @@ export const DELETE = withValidation(
       const data = (await services.getDataByIdService(
         Number(params.id),
         tipo
-      )) as { image?: string };
+      )) as { image?: string; certificado?: string };
       if (!data)
         return NextResponse.json({ error: "No encontrado" }, { status: 404 });
       const deleted = await services.deleteDataByIdService(
@@ -161,6 +165,9 @@ export const DELETE = withValidation(
         if (data?.image) {
           await deleteImageCloudinary(data.image);
         }
+      }
+      if (tipo === "eventos" && data?.certificado?.startsWith("uploads/")) {
+        await deleteImageCloudinary(data.certificado);
       }
       if (!deleted)
         return NextResponse.json(

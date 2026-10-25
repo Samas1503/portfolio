@@ -34,9 +34,10 @@ Cada sección usa `Section` (`components/shared/section.tsx`):
 | 02 | `services` | `services.tsx` | `GET tipo=servicios`, agrupa por `tipo`; check `estado` (los no visibles solo los ve el admin) |
 | 03 | `experience` | `experience.tsx` | `tipo=experience`; timeline ordenada por `fecha_fin` (vacío = actual); `MapDialog` con Google Maps si hay lat/lng |
 | 04 | `academia` | `academia.tsx` | `tipo=academia`; `Carrera` en timeline, `Curso` en `<details>`; `MiniIcon3D` por tipo |
-| 05 | `projects` | `portfolio.tsx` | `tipo=project`; filtros por `categoria`/`tags`, orden por `periodo`, 6 visibles + "Ver más"; clicks trackean a `/api/track` |
-| 06 | `skills` | `skils.tsx` | `tipo=skills`; barras por `valor`, badge `nivel`; admin: sync/exclusiones/slider |
-| 07 | `contact` | `contact.tsx` | `contactos` (server prop) + `ContactForm` → `/api/send` |
+| 05 | `eventos` | `eventos.tsx` | `tipo=eventos`; participaciones en eventos/competencias/torneos; timeline por año; `certificado` = imagen `uploads/` (CldImage) o link externo |
+| 06 | `projects` | `portfolio.tsx` | `tipo=project`; filtros por `categoria`/`tags`, orden por `periodo`, 6 visibles + "Ver más"; clicks trackean a `/api/track` |
+| 07 | `skills` | `skils.tsx` | `tipo=skills`; barras por `valor`, badge `nivel`; admin: sync/exclusiones/slider |
+| 08 | `contact` | `contact.tsx` | `contactos` (server prop) + `ContactForm` → `/api/send` |
 
 ## Sidebar (`components/pages/sidebar.tsx`)
 
@@ -54,7 +55,7 @@ mover el parámetro `mood` del shader (0 → 1 a lo largo de la página).
 ## Navbar móvil (`components/pages/narvar.tsx`)
 
 Barra fija `bottom-5` redondeada, solo `< lg`. Items de `itemsNavbar`
-(`data.tsx`: Inicio + las 7 secciones) más `ToggleTheme`, `AdminMenu iconOnly`
+(`data.tsx`: Inicio + las 8 secciones) más `ToggleTheme`, `AdminMenu iconOnly`
 y `LogOutButton`.
 
 ## Tema claro/oscuro
