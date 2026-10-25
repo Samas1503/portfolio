@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BellPlus,
   Blocks,
@@ -10,6 +10,7 @@ import {
   Database,
   GripVertical,
   PanelsTopLeft,
+  RefreshCw,
   Server,
   type LucideIcon,
 } from "lucide-react";
@@ -71,10 +72,25 @@ const Services = () => {
     null
   );
   const listRefs = useRef<Record<string, HTMLUListElement | null>>({});
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchData = useCallback(async () => {
+    const data = await apiFetch({ resource });
+    setServicios(data as Servicio[]);
+  }, []);
 
   useEffect(() => {
-    apiFetch({ resource }).then((data) => setServicios(data as Servicio[]));
-  }, []);
+    fetchData();
+  }, [fetchData]);
+
+  const handleReload = async () => {
+    setRefreshing(true);
+    try {
+      await fetchData();
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const toggle = async (item: Servicio) => {
     const estado = !item.estado;
@@ -176,11 +192,11 @@ const Services = () => {
           apiFetch({ resource, method: "PATCH", id: s.id, data: { orden: s.orden } })
         )
       );
-      apiFetch({ resource }).then((data) => setServicios(data as Servicio[]));
+      fetchData();
     } catch (error) {
       console.log(error);
       setServicios(prev);
-      apiFetch({ resource }).then((data) => setServicios(data as Servicio[]));
+      fetchData();
     }
   };
 
@@ -251,11 +267,11 @@ const Services = () => {
           apiFetch({ resource, method: "PATCH", id: s.id, data: { orden: s.orden } })
         )
       );
-      apiFetch({ resource }).then((data) => setServicios(data as Servicio[]));
+      fetchData();
     } catch (error) {
       console.log(error);
       setServicios(prev);
-      apiFetch({ resource }).then((data) => setServicios(data as Servicio[]));
+      fetchData();
     }
   };
 
@@ -416,17 +432,28 @@ const Services = () => {
         })}
       </div>
       )}
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex items-center justify-center gap-3">
         <ModalTriggerButton
           tipoFormulario={resource}
           title="Agregar servicio"
           transform={(data) => ({ ...data, estado: true })}
-          onSuccess={() =>
-            apiFetch({ resource }).then((data) => setServicios(data as Servicio[]))
-          }
+          onSuccess={fetchData}
         >
           <Button type="button">Agregar servicio</Button>
         </ModalTriggerButton>
+        {usuario && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleReload}
+            disabled={refreshing}
+            aria-label="Recargar"
+            title="Recargar"
+          >
+            <RefreshCw className={refreshing ? "animate-spin" : ""} />
+          </Button>
+        )}
       </div>
     </Section>
   );

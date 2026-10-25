@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { CldImage } from "next-cloudinary";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import {
   BriefcaseBusiness,
@@ -12,9 +12,11 @@ import {
   ListFilter,
   Lock,
   Pencil,
+  RefreshCw,
   X,
 } from "lucide-react";
 import { parseTags } from "@/utils/tags";
+import { useUsuario } from "@/context/UserContext";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -98,17 +100,30 @@ const ProjectImage = ({ src, alt }: { src?: string | null; alt: string }) => {
 
 const Portfolio = () => {
   const [dataPortfolio, setDataPortfolio] = useState<ArrayPortfolio>();
+  const [refreshing, setRefreshing] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const [categoria, setCategoria] = useState<string | null>(null);
   const [tag, setTag] = useState<string | null>(null);
   const resource = "project";
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await apiFetch({ resource });
-      setDataPortfolio(data as ArrayPortfolio);
-    };
-    fetchData();
+  const { usuario } = useUsuario();
+
+  const fetchData = useCallback(async () => {
+    const data = await apiFetch({ resource });
+    setDataPortfolio(data as ArrayPortfolio);
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleReload = async () => {
+    setRefreshing(true);
+    try {
+      await fetchData();
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleDelete = (id: number) => {
     setDataPortfolio((prev) =>
@@ -361,6 +376,19 @@ const Portfolio = () => {
         >
           <Button type="button">Agregar Proyecto</Button>
         </ModalTriggerButton>
+        {usuario && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleReload}
+            disabled={refreshing}
+            aria-label="Recargar"
+            title="Recargar"
+          >
+            <RefreshCw className={refreshing ? "animate-spin" : ""} />
+          </Button>
+        )}
       </div>
     </Section>
   );

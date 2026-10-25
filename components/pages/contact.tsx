@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { GripVertical, Pencil, Plus } from "lucide-react";
+import { GripVertical, Pencil, Plus, RefreshCw } from "lucide-react";
 import ContactForm from "./forms/contact-form";
 import Section from "../shared/section";
 import DeleteButton from "../shared/delete-button";
@@ -28,6 +28,7 @@ const Contact = ({ contactos }: { contactos: Contacto[] }) => {
   const [items, setItems] = useState<Contacto[]>(() =>
     [...contactos].sort(byOrden)
   );
+  const [refreshing, startTransition] = useTransition();
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -202,7 +203,7 @@ const Contact = ({ contactos }: { contactos: Contacto[] }) => {
           );
         })}
       </div>
-      <div className="mt-4 flex">
+      <div className="mt-4 flex items-center gap-2">
         <ModalTriggerButton
           tipoFormulario="contacto"
           title="Agregar red"
@@ -213,6 +214,19 @@ const Contact = ({ contactos }: { contactos: Contacto[] }) => {
             <Plus /> Agregar red
           </Button>
         </ModalTriggerButton>
+        {usuario && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => startTransition(refresh)}
+            disabled={refreshing}
+            aria-label="Recargar"
+            title="Recargar"
+          >
+            <RefreshCw className={refreshing ? "animate-spin" : ""} />
+          </Button>
+        )}
       </div>
       <div className="mt-8 rounded-xl border border-border bg-card/50 backdrop-blur-sm p-5">
         <ContactForm />

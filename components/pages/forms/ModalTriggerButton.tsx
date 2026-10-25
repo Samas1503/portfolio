@@ -11,6 +11,7 @@ import { DynamicForm } from "./DynamicForm";
 import { formsData, FormType } from "./formsData";
 import { useUsuario } from "@/context/UserContext";
 import { apiFetch } from "../fetch/tech-all";
+import { parseTags } from "@/utils/tags";
 import { FieldType } from "./types";
 
 // Mapa de formularios disponibles
@@ -60,6 +61,24 @@ export const ModalTriggerButton = ({
       transform && !(data instanceof FormData)
         ? transform(data as Record<string, unknown>)
         : data;
+
+    // PATCH responde solo el id, así que el estado local se actualiza con el
+    // payload enviado. Si viajó como FormData (forms con archivo) hay que
+    // convertirlo a objeto plano: spread de FormData devuelve {} y la card
+    // quedaría desactualizada. Los File se descartan del merge (el public_id
+    // nuevo lo genera el servidor).
+    const sentValues: Record<string, unknown> =
+      payload instanceof FormData
+        ? Object.fromEntries(
+            Array.from(payload.entries()).filter(
+              (entry): entry is [string, string] => typeof entry[1] === "string"
+            )
+          )
+        : { ...(payload as Record<string, unknown>) };
+    if (typeof sentValues.tags === "string") {
+      sentValues.tags = parseTags(sentValues.tags);
+    }
+
     const result = await apiFetch({
       resource: tipoFormulario,
       method: isEdit ? "PATCH" : "POST",
@@ -68,7 +87,7 @@ export const ModalTriggerButton = ({
     });
 
     const typedData = data as { tipo: string };
-    onSuccess?.(isEdit ? { ...(payload as object), id } : result, typedData.tipo);
+    onSuccess?.(isEdit ? { ...sentValues, id } : result, typedData.tipo);
     setOpen(false);
   };
 

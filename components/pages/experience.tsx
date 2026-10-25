@@ -2,9 +2,9 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { z } from "zod";
-import { CalendarRange, MapPin, Pencil, Phone } from "lucide-react";
+import { CalendarRange, MapPin, Pencil, Phone, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "../ui/button";
 import {
@@ -21,6 +21,7 @@ import DeleteButton from "../shared/delete-button";
 import Section from "../shared/section";
 import Spinner from "../shared/spinner";
 import { formsData, FormType } from "./forms/formsData";
+import { useUsuario } from "@/context/UserContext";
 
 const GoogleMaps = dynamic(() => import("./google-maps"), {
   ssr: false,
@@ -119,14 +120,27 @@ const MapDialog = ({
 
 const Experience = () => {
   const [dataExperience, setDataExperiencie] = useState<ArrayExperiencia>();
+  const [refreshing, setRefreshing] = useState(false);
   const resource = "experience";
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await apiFetch({ resource });
-      setDataExperiencie(data as ArrayExperiencia);
-    };
-    fetchData();
+  const { usuario } = useUsuario();
+
+  const fetchData = useCallback(async () => {
+    const data = await apiFetch({ resource });
+    setDataExperiencie(data as ArrayExperiencia);
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleReload = async () => {
+    setRefreshing(true);
+    try {
+      await fetchData();
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleDelete = (id: number) => {
     setDataExperiencie((prev) =>
@@ -266,13 +280,26 @@ const Experience = () => {
       </ol>
       )}
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex items-center justify-center gap-3">
         <ModalTriggerButton
           onSuccess={(result: unknown) => handleCreate(result as Experiencia)}
           tipoFormulario="experience"
         >
           <Button type="button">Agregar Experiencia Laboral</Button>
         </ModalTriggerButton>
+        {usuario && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleReload}
+            disabled={refreshing}
+            aria-label="Recargar"
+            title="Recargar"
+          >
+            <RefreshCw className={refreshing ? "animate-spin" : ""} />
+          </Button>
+        )}
       </div>
     </Section>
   );

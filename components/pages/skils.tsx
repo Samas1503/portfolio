@@ -47,6 +47,7 @@ const Skills = () => {
   const [dataSkills, setDataSkills] = useState<Record<string, ArraySkill>>();
   const [excluded, setExcluded] = useState<Set<number>>(new Set());
   const [syncing, setSyncing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [dragSource, setDragSource] = useState<DragSource | null>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
   const [dragGroup, setDragGroup] = useState<string | null>(null);
@@ -107,6 +108,15 @@ const Skills = () => {
       if (res.ok) setExcluded(new Set((await res.json()) as number[]));
     } catch {
       // La columna Skills.excluida puede no existir todavía.
+    }
+  };
+
+  const handleReload = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([fetchData(), fetchExclusions()]);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -379,6 +389,17 @@ const Skills = () => {
             >
               <RefreshCw className={syncing ? "animate-spin" : ""} />
               {syncing ? "Recalculando…" : "Actualizar desde repositorios"}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleReload}
+              disabled={refreshing}
+              aria-label="Recargar"
+              title="Recargar"
+            >
+              <RefreshCw className={refreshing ? "animate-spin" : ""} />
             </Button>
             <span className="text-xs text-muted-foreground">
               Tocá <Calculator className="inline size-3.5 align-text-bottom" />{" "}

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { CldImage, getCldImageUrl } from "next-cloudinary";
-import { ExternalLink, Pencil, Trophy } from "lucide-react";
+import { ExternalLink, Pencil, RefreshCw, Trophy } from "lucide-react";
 import { Button } from "../ui/button";
 import { ModalTriggerButton } from "./forms/ModalTriggerButton";
 import { apiFetch } from "./fetch/tech-all";
@@ -11,6 +11,7 @@ import DeleteButton from "../shared/delete-button";
 import Section from "../shared/section";
 import Spinner from "../shared/spinner";
 import { formsData, FormType } from "./forms/formsData";
+import { useUsuario } from "@/context/UserContext";
 import MiniIcon3D from "@/components/three/mini-icon-3d";
 
 type Eventos = typeof formsData.eventos.schema;
@@ -33,11 +34,27 @@ const certificadoHref = (v: string) =>
 const Eventos = () => {
   const [items, setItems] = useState<Item[]>();
   const [showAll, setShowAll] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const resource = "eventos" as FormType;
+  const { usuario } = useUsuario();
+
+  const fetchData = useCallback(async () => {
+    const d = await apiFetch({ resource });
+    setItems(d as Item[]);
+  }, [resource]);
 
   useEffect(() => {
-    apiFetch({ resource: "eventos" }).then((d) => setItems(d as Item[]));
-  }, []);
+    fetchData();
+  }, [fetchData]);
+
+  const handleReload = async () => {
+    setRefreshing(true);
+    try {
+      await fetchData();
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleDelete = (id: number) =>
     setItems((prev) => prev?.filter((i) => Number(i.id) !== id));
@@ -186,6 +203,19 @@ const Eventos = () => {
         >
           <Button type="button">Agregar Participación</Button>
         </ModalTriggerButton>
+        {usuario && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleReload}
+            disabled={refreshing}
+            aria-label="Recargar"
+            title="Recargar"
+          >
+            <RefreshCw className={refreshing ? "animate-spin" : ""} />
+          </Button>
+        )}
       </div>
     </Section>
   );
