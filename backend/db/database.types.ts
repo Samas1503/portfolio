@@ -54,6 +54,7 @@ export type Database = {
           id: number
           link: string | null
           nombre: string | null
+          orden: number | null
           titulo: string | null
         }
         Insert: {
@@ -62,6 +63,7 @@ export type Database = {
           id?: number
           link?: string | null
           nombre?: string | null
+          orden?: number | null
           titulo?: string | null
         }
         Update: {
@@ -70,6 +72,7 @@ export type Database = {
           id?: number
           link?: string | null
           nombre?: string | null
+          orden?: number | null
           titulo?: string | null
         }
         Relationships: []
@@ -293,6 +296,7 @@ export type Database = {
           icono: string | null
           id: number
           nombre: string | null
+          orden: number | null
           tipo: string | null
         }
         Insert: {
@@ -300,6 +304,7 @@ export type Database = {
           icono?: string | null
           id?: number
           nombre?: string | null
+          orden?: number | null
           tipo?: string | null
         }
         Update: {
@@ -307,6 +312,7 @@ export type Database = {
           icono?: string | null
           id?: number
           nombre?: string | null
+          orden?: number | null
           tipo?: string | null
         }
         Relationships: []
@@ -318,6 +324,7 @@ export type Database = {
           id: number
           nivel: string | null
           nombre: string | null
+          orden: number | null
           tipo: string | null
           valor: number | null
         }
@@ -327,6 +334,7 @@ export type Database = {
           id?: number
           nivel?: string | null
           nombre?: string | null
+          orden?: number | null
           tipo?: string | null
           valor?: number | null
         }
@@ -336,6 +344,7 @@ export type Database = {
           id?: number
           nivel?: string | null
           nombre?: string | null
+          orden?: number | null
           tipo?: string | null
           valor?: number | null
         }

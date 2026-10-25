@@ -4,6 +4,7 @@ import Section from "../shared/section";
 import {
   BadgeCheck,
   Calculator,
+  GripVertical,
   Lock,
   RefreshCw,
 } from "lucide-react";
@@ -16,8 +17,27 @@ import { useEffect, useRef, useState } from "react";
 import { useUsuario } from "@/context/UserContext";
 import { z } from "zod";
 
-type Skill = z.infer<typeof formsData.skills.schema>;
+type Skill = z.infer<typeof formsData.skills.schema> & {
+  orden?: number | null;
+};
 type ArraySkill = Skill[];
+
+const byOrden = (a: Skill, b: Skill) =>
+  (a.orden ?? Number.MAX_SAFE_INTEGER) -
+    (b.orden ?? Number.MAX_SAFE_INTEGER) || (a.id ?? 0) - (b.id ?? 0);
+
+type DragSource = { tipo: string; index: number };
+type DropTarget = { tipo: string; index: number; after: boolean };
+type GroupDropTarget = { tipo: string; after: boolean };
+
+const minOrden = (items: ArraySkill) =>
+  items.reduce(
+    (m, s) => Math.min(m, s.orden ?? Number.MAX_SAFE_INTEGER),
+    Number.MAX_SAFE_INTEGER
+  );
+
+const byGroup = (a: [string, ArraySkill], b: [string, ArraySkill]) =>
+  minOrden(a[1]) - minOrden(b[1]);
 
 const nivelFromValor = (valor: number): Skill["nivel"] =>
   valor >= 75 ? "Experimentado" : valor >= 45 ? "Intermedio" : "Básico";
@@ -26,6 +46,13 @@ const Skills = () => {
   const [dataSkills, setDataSkills] = useState<Record<string, ArraySkill>>({});
   const [excluded, setExcluded] = useState<Set<number>>(new Set());
   const [syncing, setSyncing] = useState(false);
+  const [dragSource, setDragSource] = useState<DragSource | null>(null);
+  const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
+  const [dragGroup, setDragGroup] = useState<string | null>(null);
+  const [groupDropTarget, setGroupDropTarget] = useState<GroupDropTarget | null>(
+    null
+  );
+  const [dragSuspended, setDragSuspended] = useState(false);
   const resource = "skills";
   const { usuario } = useUsuario();
   const saveTimers = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
@@ -65,7 +92,10 @@ const Skills = () => {
 
     setDataSkills(
       Object.fromEntries(
-        Array.from(map.entries()).map(([key, value]) => [key, value])
+        Array.from(map.entries()).map(([key, value]) => [
+          key,
+          [...value].sort(byOrden),
+        ])
       )
     );
   };
@@ -82,6 +112,12 @@ const Skills = () => {
   useEffect(() => {
     fetchData();
     fetchExclusions();
+  }, []);
+
+  useEffect(() => {
+    const resume = () => setDragSuspended(false);
+    window.addEventListener("mouseup", resume);
+    return () => window.removeEventListener("mouseup", resume);
   }, []);
 
   const handleSync = async () => {
@@ -165,6 +201,164 @@ const Skills = () => {
     }));
   };
 
+  const handleDragOver = (
+    e: React.DragEvent<HTMLLIElement>,
+    tipo: string,
+    index: number
+  ) => {
+    if (!usuario || dragSource == null || dragSource.tipo !== tipo) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    const rect = e.currentTarget.getBoundingClientRect();
+    const after = e.clientY > rect.top + rect.height / 2;
+    setDropTarget((prev) =>
+      prev?.tipo === tipo && prev.index === index && prev.after === after
+        ? prev
+        : { tipo, index, after }
+    );
+  };
+
+  const handleDrop = async (
+    e: React.DragEvent<HTMLLIElement>,
+    tipo: string,
+    items: ArraySkill
+  ) => {
+    e.preventDefault();
+    if (
+      !usuario ||
+      dragSource == null ||
+      dropTarget == null ||
+      dragSource.tipo !== tipo ||
+      dropTarget.tipo !== tipo
+    ) {
+      setDragSource(null);
+      setDropTarget(null);
+      return;
+    }
+    const prev = dataSkills;
+    const next = [...items];
+    const [moved] = next.splice(dragSource.index, 1);
+    let to = dropTarget.index + (dropTarget.after ? 1 : 0);
+    if (to > dragSource.index) to -= 1;
+    next.splice(to, 0, moved);
+    // Reindex globalmente (rangos contiguos por grupo) para que el orden
+    // de cada grupo (su min `orden`) se mantenga estable.
+    const entries = Object.entries(dataSkills).sort(byGroup);
+    let cursor = 0;
+    const nextRecord = Object.fromEntries(
+      entries.map(([t, g]) => [
+        t,
+        (t === tipo ? next : g).map((s) => ({ ...s, orden: cursor++ })),
+      ])
+    );
+
+    setDragSource(null);
+    setDropTarget(null);
+    setDataSkills(nextRecord);
+
+    const prevOrden = new Map(
+      Object.values(prev).flat().map((s) => [s.id!, s.orden])
+    );
+    const updates = Object.values(nextRecord)
+      .flat()
+      .filter((s) => prevOrden.get(s.id!) !== s.orden);
+    try {
+      await Promise.all(
+        updates.map((s) =>
+          apiFetch({ resource, method: "PATCH", id: s.id!, data: { orden: s.orden } })
+        )
+      );
+      await fetchData();
+    } catch (error) {
+      console.log(error);
+      setDataSkills(prev);
+      await fetchData();
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDragSource(null);
+    setDropTarget(null);
+  };
+
+  const handleGroupDragOver = (
+    e: React.DragEvent<HTMLDivElement>,
+    tipo: string
+  ) => {
+    if (!usuario || dragGroup == null || dragGroup === tipo) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    const rect = e.currentTarget.getBoundingClientRect();
+    const after = e.clientY > rect.top + rect.height / 2;
+    setGroupDropTarget((prev) =>
+      prev?.tipo === tipo && prev.after === after ? prev : { tipo, after }
+    );
+  };
+
+  const handleGroupDrop = async (
+    e: React.DragEvent<HTMLDivElement>,
+    tipo: string
+  ) => {
+    e.preventDefault();
+    if (
+      !usuario ||
+      dragGroup == null ||
+      groupDropTarget == null ||
+      groupDropTarget.tipo !== tipo ||
+      dragGroup === tipo
+    ) {
+      setDragGroup(null);
+      setGroupDropTarget(null);
+      return;
+    }
+    const prev = dataSkills;
+    const nextGroups = Object.entries(dataSkills).sort(byGroup);
+    const from = nextGroups.findIndex(([t]) => t === dragGroup);
+    const toIdx = nextGroups.findIndex(([t]) => t === tipo);
+    if (from < 0 || toIdx < 0) {
+      setDragGroup(null);
+      setGroupDropTarget(null);
+      return;
+    }
+    const [moved] = nextGroups.splice(from, 1);
+    let to = toIdx + (groupDropTarget.after ? 1 : 0);
+    if (to > from) to -= 1;
+    nextGroups.splice(to, 0, moved);
+    // Rangos contiguos: el grupo en posición i arranca donde terminó el anterior.
+    let cursor = 0;
+    const nextRecord = Object.fromEntries(
+      nextGroups.map(([t, g]) => [t, g.map((s) => ({ ...s, orden: cursor++ }))])
+    );
+
+    setDragGroup(null);
+    setGroupDropTarget(null);
+    setDataSkills(nextRecord);
+
+    const prevOrden = new Map(
+      Object.values(prev).flat().map((s) => [s.id!, s.orden])
+    );
+    const updates = Object.values(nextRecord)
+      .flat()
+      .filter((s) => prevOrden.get(s.id!) !== s.orden);
+    try {
+      await Promise.all(
+        updates.map((s) =>
+          apiFetch({ resource, method: "PATCH", id: s.id!, data: { orden: s.orden } })
+        )
+      );
+      await fetchData();
+    } catch (error) {
+      console.log(error);
+      setDataSkills(prev);
+      await fetchData();
+    }
+  };
+
+  const handleGroupDragEnd = () => {
+    setDragGroup(null);
+    setGroupDropTarget(null);
+  };
+
   return (
     <Section id="skills" number="07" title="Habilidades">
       <div className="-mt-2 mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -192,19 +386,95 @@ const Skills = () => {
         )}
       </div>
       <div className="grid gap-6">
-        {Object.entries(dataSkills).map(([key, items]) => (
+        {Object.entries(dataSkills)
+          .sort(byGroup)
+          .map(([key, items]) => {
+          const groupIndicator =
+            groupDropTarget?.tipo === key &&
+            dragGroup != null &&
+            dragGroup !== key
+              ? groupDropTarget.after
+                ? "inset-x-1 -bottom-3 h-1"
+                : "inset-x-1 -top-3 h-1"
+              : null;
+          return (
           <div
             key={key}
-            className="rounded-xl border border-border bg-card/50 backdrop-blur-sm p-5"
+            onDragOver={(e) => handleGroupDragOver(e, key)}
+            onDrop={(e) => handleGroupDrop(e, key)}
+            className={`relative rounded-xl border border-border bg-card/50 backdrop-blur-sm p-5 ${
+              dragGroup === key ? "opacity-50" : ""
+            }`}
           >
-            <h3 className="mb-4 font-mono text-sm uppercase tracking-widest text-primary">
+            {groupIndicator && (
+              <span
+                aria-hidden
+                className={`pointer-events-none absolute rounded bg-primary ${groupIndicator}`}
+              />
+            )}
+            <h3
+              draggable={!!usuario}
+              onDragStart={(e) => {
+                e.dataTransfer.setData("text/plain", `group:${key}`);
+                e.dataTransfer.effectAllowed = "move";
+                setDragGroup(key);
+              }}
+              onDragEnd={handleGroupDragEnd}
+              className={`mb-4 flex items-center gap-2 font-mono text-sm uppercase tracking-widest text-primary ${
+                usuario ? "cursor-grab" : ""
+              }`}
+            >
+              {usuario && (
+                <GripVertical
+                  aria-hidden
+                  className="size-4 shrink-0 text-muted-foreground/50"
+                />
+              )}
               {key}
             </h3>
             <ul className="space-y-4">
-              {items.map((item) => (
-                <li key={item.id}>
+              {items.map((item, index) => {
+                const isDragging =
+                  dragSource?.tipo === key && dragSource.index === index;
+                const indicator =
+                  dropTarget?.tipo === key &&
+                  dropTarget.index === index &&
+                  dragSource != null &&
+                  !(dragSource.tipo === key && dragSource.index === index)
+                    ? dropTarget.after
+                      ? "inset-x-1 -bottom-2 h-1"
+                      : "inset-x-1 -top-2 h-1"
+                    : null;
+                return (
+                <li
+                  key={item.id}
+                  draggable={!!usuario && !dragSuspended}
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData("text/plain", String(index));
+                    e.dataTransfer.effectAllowed = "move";
+                    setDragSource({ tipo: key, index });
+                  }}
+                  onDragOver={(e) => handleDragOver(e, key, index)}
+                  onDrop={(e) => handleDrop(e, key, items)}
+                  onDragEnd={handleDragEnd}
+                  className={`relative ${usuario ? "cursor-grab" : ""} ${
+                    isDragging ? "cursor-grabbing opacity-50" : ""
+                  }`}
+                >
+                  {indicator && (
+                    <span
+                      aria-hidden
+                      className={`pointer-events-none absolute rounded bg-primary ${indicator}`}
+                    />
+                  )}
                   <div className="flex items-center justify-between gap-2">
                     <p className="flex min-w-0 items-center gap-2 text-sm font-medium text-card-foreground">
+                      {usuario && (
+                        <GripVertical
+                          aria-hidden
+                          className="size-4 shrink-0 text-muted-foreground/50"
+                        />
+                      )}
                       <BadgeCheck className="size-4 shrink-0 text-primary" />
                       <span className="truncate">{item.nombre}</span>
                     </p>
@@ -245,7 +515,11 @@ const Skills = () => {
                     </div>
                   </div>
                   {usuario && excluded.has(Number(item.id)) ? (
-                    <div className="mt-2 flex items-center gap-3">
+                    <div
+                      className="mt-2 flex items-center gap-3"
+                      onMouseDown={() => setDragSuspended(true)}
+                      onMouseUp={() => setDragSuspended(false)}
+                    >
                       <input
                         type="range"
                         min={0}
@@ -288,10 +562,12 @@ const Skills = () => {
                     </div>
                   )}
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </div>
-        ))}
+          );
+          })}
       </div>
 
       <div className="mt-8 flex justify-center">

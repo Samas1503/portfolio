@@ -65,12 +65,14 @@ export const schemas = {
     nivel: text,
     valor: int,
     estado: bool,
+    orden: int,
   }),
   servicios: defineTable("Servicios", {
     tipo: text,
     icono: text,
     nombre: text,
     estado: bool,
+    orden: int,
   }),
   experience: defineTable(
     "Experiencia",
@@ -110,6 +112,7 @@ export const schemas = {
     link: text,
     icono: text,
     estado: bool,
+    orden: int,
   }),
   academia: defineTable("Academia", {
     tipo: text,
