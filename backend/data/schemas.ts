@@ -56,6 +56,7 @@ export const schemas = {
       rol: text,
       periodo: text,
       estado: bool,
+      destacado: bool,
     },
     { urlGithub: "url_github", urlDemo: "url_demo" }
   ),
@@ -86,6 +87,7 @@ export const schemas = {
       longitud: double,
       nombreReferencia: text,
       nroReferencia: bigint,
+      logros: text,
       estado: bool,
     },
     { nombreReferencia: "nombre_referencia", nroReferencia: "nro_referencia" }
@@ -105,8 +107,16 @@ export const schemas = {
       telefono: text,
       habilidadesBlandas: text,
       intereses: text,
+      cvTitulo: text,
+      cvResumen: text,
+      idiomas: text,
     },
-    { cvUrl: "cv_url", habilidadesBlandas: "habilidades_blandas" }
+    {
+      cvUrl: "cv_url",
+      habilidadesBlandas: "habilidades_blandas",
+      cvTitulo: "cv_titulo",
+      cvResumen: "cv_resumen",
+    }
   ),
   contacto: defineTable("Contacto", {
     nombre: text,

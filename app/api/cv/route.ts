@@ -1,9 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/backend/db/supabase";
+import { generateCvPdf } from "@/backend/cv";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 const BUCKET = "portfolio";
 const MAX_BYTES = 4 * 1024 * 1024;
 const PUBLIC_PREFIX = `/storage/v1/object/public/${BUCKET}/`;
+
+// Builds the CV from the current database contents on every request.
+export async function GET(req: NextRequest) {
+  try {
+    const siteUrl = req.nextUrl.origin;
+    const { pdf, nombre } = await generateCvPdf(siteUrl);
+    const filename = `${(nombre || "CV").replace(/[^\p{L}\p{N}]+/gu, "_")}_CV.pdf`
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+    const disposition = req.nextUrl.searchParams.has("download") ? "attachment" : "inline";
+    return new NextResponse(new Uint8Array(pdf), {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `${disposition}; filename="${filename}"`,
+        "Cache-Control": "no-store",
+      },
+    });
+  } catch (error) {
+    console.log("No se pudo generar el CV:", error);
+    return NextResponse.json({ error: "No se pudo generar el CV" }, { status: 500 });
+  }
+}
 
 export async function POST(req: NextRequest) {
   const form = await req.formData();

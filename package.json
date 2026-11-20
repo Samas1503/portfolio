@@ -23,6 +23,7 @@
     "@radix-ui/react-slot": "^1.2.0",
     "@react-email/render": "^1.0.6",
     "@react-google-maps/api": "^2.20.7",
+    "@react-pdf/renderer": "^4.9.0",
     "@react-three/fiber": "^9.8.2",
     "@supabase/supabase-js": "^2.118.0",
     "class-variance-authority": "^0.7.1",

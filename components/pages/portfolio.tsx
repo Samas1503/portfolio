@@ -13,6 +13,7 @@ import {
   Lock,
   Pencil,
   RefreshCw,
+  Star,
   X,
 } from "lucide-react";
 import { parseTags } from "@/utils/tags";
@@ -38,6 +39,7 @@ type Portfolio = typeof formsData.project.schema;
 type Project = Omit<z.infer<Portfolio>, "tags"> & {
   tags?: string[] | string | null;
   categoria?: string | null;
+  destacado?: boolean | null;
 };
 type ArrayPortfolio = Project[];
 
@@ -133,6 +135,16 @@ const Portfolio = () => {
 
   const handleCreate = (data: Project) => {
     setDataPortfolio((prev) => [...(prev ?? []), data]);
+  };
+
+  const toggleDestacado = async (project: Project) => {
+    const destacado = !project.destacado;
+    handleUpdate({ ...project, destacado });
+    try {
+      await apiFetch({ resource, method: "PATCH", id: Number(project.id), data: { destacado } });
+    } catch {
+      handleUpdate({ ...project, destacado: !destacado });
+    }
   };
 
   const handleUpdate = (data: Project) => {
@@ -292,6 +304,17 @@ const Portfolio = () => {
                 {String(data.titulo)}
               </h3>
               <div className="flex shrink-0 gap-2">
+                <Button
+                  type="button"
+                  variant={data.destacado ? "default" : "outline"}
+                  className="size-7"
+                  aria-pressed={Boolean(data.destacado)}
+                  aria-label={`${data.destacado ? "Quitar de" : "Destacar en"} el CV: ${data.titulo}`}
+                  title={data.destacado ? "Destacado en el CV" : "Destacar en el CV"}
+                  onClick={() => toggleDestacado(data)}
+                >
+                  <Star />
+                </Button>
                 <ModalTriggerButton
                   tipoFormulario="project"
                   id={Number(data.id)}
