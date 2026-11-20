@@ -119,6 +119,7 @@ export type Database = {
           fecha_inicio: string | null
           id: number
           latitud: number | null
+          logros: string | null
           longitud: number | null
           nombre_referencia: string | null
           nro_referencia: number | null
@@ -132,6 +133,7 @@ export type Database = {
           fecha_inicio?: string | null
           id?: number
           latitud?: number | null
+          logros?: string | null
           longitud?: number | null
           nombre_referencia?: string | null
           nro_referencia?: number | null
@@ -145,6 +147,7 @@ export type Database = {
           fecha_inicio?: string | null
           id?: number
           latitud?: number | null
+          logros?: string | null
           longitud?: number | null
           nombre_referencia?: string | null
           nro_referencia?: number | null
@@ -210,11 +213,14 @@ export type Database = {
         Row: {
           alias: string | null
           clientes: string | null
+          cv_resumen: string | null
+          cv_titulo: string | null
           cv_url: string | null
           descripcion: string | null
           experiencia: string | null
           habilidades_blandas: string | null
           id: number
+          idiomas: string | null
           intereses: string | null
           nombre: string | null
           proyectos: string | null
@@ -225,11 +231,14 @@ export type Database = {
         Insert: {
           alias?: string | null
           clientes?: string | null
+          cv_resumen?: string | null
+          cv_titulo?: string | null
           cv_url?: string | null
           descripcion?: string | null
           experiencia?: string | null
           habilidades_blandas?: string | null
           id?: number
+          idiomas?: string | null
           intereses?: string | null
           nombre?: string | null
           proyectos?: string | null
@@ -240,11 +249,14 @@ export type Database = {
         Update: {
           alias?: string | null
           clientes?: string | null
+          cv_resumen?: string | null
+          cv_titulo?: string | null
           cv_url?: string | null
           descripcion?: string | null
           experiencia?: string | null
           habilidades_blandas?: string | null
           id?: number
+          idiomas?: string | null
           intereses?: string | null
           nombre?: string | null
           proyectos?: string | null
@@ -258,6 +270,7 @@ export type Database = {
         Row: {
           categoria: string | null
           descripcion: string | null
+          destacado: boolean | null
           estado: boolean | null
           id: number
           image: string | null
@@ -271,6 +284,7 @@ export type Database = {
         Insert: {
           categoria?: string | null
           descripcion?: string | null
+          destacado?: boolean | null
           estado?: boolean | null
           id?: number
           image?: string | null
@@ -284,6 +298,7 @@ export type Database = {
         Update: {
           categoria?: string | null
           descripcion?: string | null
+          destacado?: boolean | null
           estado?: boolean | null
           id?: number
           image?: string | null

@@ -132,16 +132,14 @@ const Sidebar = ({
           <Link className={buttonVariants()} href="#contact">
             <Mail /> Contactame
           </Link>
-          {perfil?.cvUrl && (
-            <Link
-              className={buttonVariants({ variant: "outline" })}
-              href={perfil.cvUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Paperclip /> Descargar CV
-            </Link>
-          )}
+          <a
+            className={buttonVariants({ variant: "outline" })}
+            href={perfil?.cvUrl || "/api/cv"}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Paperclip /> Descargar CV
+          </a>
         </div>
 
         {usuario && perfil && (

@@ -140,6 +140,9 @@ export const formsData = {
       telefono: z.string(),
       habilidadesBlandas: z.string().optional(),
       intereses: z.string().optional(),
+      cvTitulo: z.string().optional(),
+      cvResumen: z.string().optional(),
+      idiomas: z.string().optional(),
     }),
     fields: [
       { label: "Nombre", name: "nombre", placeholder: "Tu nombre", type: "text" as const },
@@ -152,7 +155,7 @@ export const formsData = {
         type: "textarea" as const,
       },
       {
-        label: "Link del CV (o subí un PDF con el botón del CV)",
+        label: "Link del CV (vacío = CV generado automáticamente con tus datos)",
         name: "cvUrl",
         placeholder: "https://…",
         type: "text" as const,
@@ -198,6 +201,24 @@ export const formsData = {
         name: "intereses",
         placeholder: "Ej: Hackathons",
         type: "text" as const,
+      },
+      {
+        label: "Título del CV (línea bajo tu nombre)",
+        name: "cvTitulo",
+        placeholder: "Ej: Analista Programador | Backend Developer",
+        type: "text" as const,
+      },
+      {
+        label: "Resumen profesional del CV",
+        name: "cvResumen",
+        placeholder: "Párrafo de presentación para el CV",
+        type: "textarea" as const,
+      },
+      {
+        label: "Idiomas del CV (uno por línea, \"Idioma: Nivel\")",
+        name: "idiomas",
+        placeholder: "Español: Nativo",
+        type: "textarea" as const,
       },
     ],
   },
@@ -295,6 +316,7 @@ export const formsData = {
       longitud: z.coerce.number(),
       nombreReferencia: z.string(),
       nroReferencia: z.coerce.number(),
+      logros: z.string().optional(),
     }),
     fields: [
       {
@@ -356,6 +378,12 @@ export const formsData = {
         name: "nroReferencia",
         placeholder: "Nro de Referencia",
         type: "number" as const,
+      },
+      {
+        label: "Logros para el CV (uno por línea)",
+        name: "logros",
+        placeholder: "Qué hiciste y con qué tecnologías",
+        type: "textarea" as const,
       },
     ],
   },

@@ -70,6 +70,13 @@ HTTP request
 - **Admin UI:** `ModalTriggerButton` + `DynamicForm` renderizan formularios de
   alta/edición a partir de `components/pages/forms/formsData.tsx`, que define un
   schema Zod + `fields` por formulario. Solo se muestran si `useUsuario()` es true.
+- **CV automático:** `GET /api/cv` arma el PDF en cada request con los datos
+  de Supabase (`backend/cv/`, `@react-pdf/renderer`): agrupa y ordena
+  experiencia, proyectos, skills, eventos y academia, y prueba layouts cada vez
+  más compactos hasta que entra en una hoja A4. Campos propios del CV:
+  `Perfil.cv_titulo/cv_resumen/idiomas`, `Experiencia.logros` (un logro por
+  línea) y `Proyectos.destacado` (estrella en la card). Si `Perfil.cv_url`
+  tiene un link o un PDF subido, el botón "Descargar CV" usa ese en su lugar.
 - **Datos del lado servidor:** `backend/data/perfil.ts` y `contactos.ts` son
   helpers que usan el repository directamente desde Server Components
   (`app/page.tsx` los usa con `force-dynamic`).
