@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // pdfkit loads its standard fonts with a dynamic require that file tracing misses.
+  outputFileTracingIncludes: {
+    "/api/cv": ["./node_modules/pdfkit/js/standard-fonts/**", "./node_modules/pdfkit/js/data/**"],
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "5mb",
